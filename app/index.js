@@ -2,7 +2,7 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow } = require('electron')
 const path = require('path')
-import SerialPort from 'serialport'
+const SerialPort = require('serialport')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -24,10 +24,7 @@ function createWindow() {
 	// Open the DevTools.
 	mainWindow.webContents.openDevTools()
 
-	const serialport = new SerialPort('')
-	serialport.on('event', () => {
-
-	})
+	SerialPort.list(console.log)
 
 	// Emitted when the window is closed.
 	mainWindow.on('closed', function () {
