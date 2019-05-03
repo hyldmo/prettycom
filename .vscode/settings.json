@@ -1,7 +1,16 @@
 {
-	"typescript.tsdk": "node_modules\\typescript\\lib",
-	"files.associations": {
+    "typescript.tsdk": "node_modules\\typescript\\lib",
+    "files.associations": {
         ".prettierrc": "json",
         ".env": "ini"
     },
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "app/**/*.js": true,
+        "app/**/*.map": true
+    }
 }

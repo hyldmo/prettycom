@@ -1,100 +1,81 @@
-import { eventChannel } from 'redux-saga';
-import { call, cancel, fork, put, select, take, takeEvery, takeLatest  } from 'redux-saga/effects'
-import { Actions } from '../actions'
-import { socketChannel } from './watchMessages'
+import { call, cancel, fork, put, take, takeEvery, takeLatest  } from 'redux-saga/effects'
+import { Action, Actions } from '../actions'
+import watchMessages, { socketChannel } from './watchMessages'
 
 export default function* watchConnects () {
 	yield takeEvery('CONNECT', connectToServer)
-	yield takeLatest('LIST', listDevices)
+	yield takeLatest('DEVICE_LIST', listDevices)
 }
 
 function* watchDeviceList (socket: WebSocket) {
 	const msgChannel = yield call(socketChannel, socket)
 	try {
 		while (true) {
-			const data = yield take(msgChannel)
+			const message: string = yield take(msgChannel)
+			const type = message.substr(0, message.indexOf(':'))
+			const data = message.substr(message.indexOf(':') + 1)
 			console.log(data)
+			switch (type) {
+				case 'ADD':
+					yield put(Actions.addDevice(JSON.parse(data)))
+					break
+				case 'REMOVE':
+					yield put(Actions.removeDevice(JSON.parse(data)))
+					break
+			}
 		}
 	} finally {
 		console.log(`Stopped watching messages from ${socket.url}`)
 	}
 }
 
-function* listDevices (action: typeof Actions.listDevices) {
+function* listDevices () {
 	try {
 		const URI = `ws://localhost:31130?mode=LIST`
 		const socket = new WebSocket(URI)
-		yield put(Actions.connecting(socket.url))
-		const channel = yield call(connectChannel, socket)
+		const channel = yield call(socketChannel, socket)
 
 		while (true) {
 			yield take(channel)
-			yield put(Actions.connected(socket.url))
-			const messageTask = yield fork(watchDeviceList, socket)
-			yield take((a: any) =>  a.type === 'CLOSE_TAB' && a.payload === socket.url)
-			yield cancel(messageTask)
+			yield fork(watchDeviceList, socket)
 		}
 	} finally {
-		console.log('Disconnected')
+		console.log('Disconnected from device listing')
 	}
 }
 
-function* connectToServer (action: any) {
-	yield select((s: any) => s)
-	/*
+function* connectToServer (action: typeof Actions.connect) {
+	const { baud, device } = action.payload
 	try {
-		const { server, port, username, password, channels } = action.payload
-		const URI = `ws://localhost:31130?server=${server}&port=${port}&username=${username}&password=${password}&channels=${encodeURIComponent(channels)}`
+		const URI = `ws://localhost:31130?mode=CONNECT&baud=${baud}&device=${encodeURIComponent(device)}`
 		const socket = new WebSocket(URI)
 		yield put(Actions.connecting(socket.url))
-		const channel = yield call(connectChannel, socket)
+		const channel = yield call(socketChannel, socket)
 
 		while (true) {
 			yield take(channel)
-			yield put(Actions.connected(socket.url))
+			yield put(Actions.connected(null, device))
 			const userMessageTask = yield fork(watchUserSentMessages, socket)
-			const messageTask = yield fork(watchMessages, socket)
-			yield take((a: IAction<string>) =>  a.type === 'CLOSE_TAB' && a.payload === socket.url)
+			const messageTask = yield fork(watchMessages, socket, device)
+			yield take<any>((a: Action) =>  a.type === 'DISCONNECT' && a.payload === device)
 			yield cancel(userMessageTask)
 			yield cancel(messageTask)
 		}
 	} finally {
-		console.log('Disconnected')
+		console.log(`Disconnected from ${device}`)
 	}
-	*/
 }
 
-/*
 function* watchUserSentMessages (socket: WebSocket) {
-	const send = (message: ClientMessage) => socket.send(JSON.stringify(message))
+	const send = (message: string) => socket.send(message)
 	try {
 		while (true) {
-			type MessageAction = IActionMeta<string, {channel: string, server: string}>
-			const { payload, meta }: MessageAction = yield take((action: MessageAction) => {
-				return action.type === 'SEND_MESSAGE' && action.meta.server === socket.url
+			const { payload } = yield take<any>((action: Action) => {
+				return action.type === 'DEVICE_MSG' && action.payload === socket.url
 			})
-			if (payload.startsWith('/'))
-				send({
-					channel: 'STATUS',
-					message: payload.substring(1)
-				})
-			else
-				send({
-					channel: meta.channel,
-					message: payload
-				})
+			send(payload)
 		}
 	} finally {
 		console.log(`Stopped watching messages to ${socket.url}`)
 	}
-}
-*/
-
-function* connectChannel (socket: WebSocket) {
-	return eventChannel(emitter => {
-		socket.onopen = event => {
-			emitter(event)
-		}
-		return socket.close
-	})
 }
