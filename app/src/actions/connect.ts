@@ -8,8 +8,8 @@ export default {
 	connected: createAction<'CONNECTED', null, string>('CONNECTED'),
 	disconnect: createAction<'DISCONNECT', string>('DISCONNECT'),
 	listDevices: createAction<'DEVICE_LIST'>('DEVICE_LIST'),
-	addDevice: createAction<'DEVICE_ADD', PortInfo>('DEVICE_ADD'),
-	removeDevice: createAction<'DEVICE_REMOVE', PortInfo>('DEVICE_REMOVE'),
+	addDevice: createAction<'DEVICE_ADD', PortInfo, PortInfo['comName']>('DEVICE_ADD'),
+	removeDevice: createAction<'DEVICE_REMOVE', PortInfo, PortInfo['comName']>('DEVICE_REMOVE'),
 	sendMessage: createAction<'DEVICE_MSG', string>('DEVICE_MSG'),
 	dataReceived: createAction<'DEVICE_DATA_RECEIVED', Message, string>('DEVICE_DATA_RECEIVED')
 }

@@ -2,7 +2,6 @@ import { About, Home, NotFound, Tracker } from 'components/Routes'
 import React from 'react'
 import { hot } from 'react-hot-loader'
 import { Route, Switch } from 'react-router'
-import Footer from './Footer'
 import Navbar from './Navbar'
 
 import './App.less'
@@ -18,7 +17,6 @@ const App: React.StatelessComponent = () => (
 				<Route component={NotFound}/>
 			</Switch>
 		</main>
-		<Footer />
 	</>
 )
 

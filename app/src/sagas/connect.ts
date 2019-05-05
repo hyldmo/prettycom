@@ -1,5 +1,6 @@
 import { call, cancel, fork, put, take, takeEvery, takeLatest  } from 'redux-saga/effects'
-import { Action, Actions } from '../actions'
+import { PortInfo } from 'serialport'
+import { Actions } from '../actions'
 import watchMessages, { socketChannel } from './watchMessages'
 
 export default function* watchConnects () {
@@ -14,13 +15,13 @@ function* watchDeviceList (socket: WebSocket) {
 			const message: string = yield take(msgChannel)
 			const type = message.substr(0, message.indexOf(':'))
 			const data = message.substr(message.indexOf(':') + 1)
-			console.log(data)
+			const device: PortInfo = JSON.parse(data)
 			switch (type) {
 				case 'ADD':
-					yield put(Actions.addDevice(JSON.parse(data)))
+					yield put(Actions.addDevice(device, device.comName))
 					break
 				case 'REMOVE':
-					yield put(Actions.removeDevice(JSON.parse(data)))
+					yield put(Actions.removeDevice(device, device.comName))
 					break
 			}
 		}
@@ -57,7 +58,7 @@ function* connectToServer (action: typeof Actions.connect) {
 			yield put(Actions.connected(null, device))
 			const userMessageTask = yield fork(watchUserSentMessages, socket)
 			const messageTask = yield fork(watchMessages, socket, device)
-			yield take<any>((a: Action) =>  a.type === 'DISCONNECT' && a.payload === device)
+			yield take((a: any) =>  a.type === 'DISCONNECT' && a.payload === device)
 			yield cancel(userMessageTask)
 			yield cancel(messageTask)
 		}
@@ -70,7 +71,7 @@ function* watchUserSentMessages (socket: WebSocket) {
 	const send = (message: string) => socket.send(message)
 	try {
 		while (true) {
-			const { payload } = yield take<any>((action: Action) => {
+			const { payload } = yield take((action: any) => {
 				return action.type === 'DEVICE_MSG' && action.payload === socket.url
 			})
 			send(payload)

@@ -1,6 +1,8 @@
+import { Action } from 'actions'
 import { createHashHistory } from 'history'
 import { routerMiddleware } from 'react-router-redux'
 import { applyMiddleware, compose, createStore } from 'redux'
+import { createLogger } from 'redux-logger'
 import createSagaMiddleware from 'redux-saga'
 import { State } from 'types'
 import rootReducer from './reducers'
@@ -12,6 +14,13 @@ const sagaMiddleware = createSagaMiddleware()
 
 export const history = createHashHistory()
 const middlewares = [sagaMiddleware, routerMiddleware(history)]
+
+const logger = createLogger({
+	predicate: (getState, action: Action) => action.type !== 'DEVICE_ADD'
+})
+
+if (__DEV__)
+	middlewares.push(logger)
 
 const composeEnhancers: typeof compose = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 

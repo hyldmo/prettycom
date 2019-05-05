@@ -1,5 +1,5 @@
 import { Actions } from 'actions'
-import { eventChannel } from 'redux-saga'
+import { END, eventChannel } from 'redux-saga'
 import { call, put, take } from 'redux-saga/effects'
 
 export default function* watchMessages (socket: WebSocket, device: string) {
@@ -9,7 +9,8 @@ export default function* watchMessages (socket: WebSocket, device: string) {
 		while (true) {
 			const data = yield take(msgChannel)
 			msg = msg.concat(data)
-			if (['\0', '\r', '\n'].includes(data)) {
+			console.log('MSG', msg)
+			if (['\0', '\r', '\n'].some(c => data.includes(c))) {
 				yield put(Actions.dataReceived({
 					timestamp: new Date(),
 					content: msg
@@ -26,7 +27,10 @@ export function* socketChannel (socket: WebSocket) {
 	return eventChannel(emitter => {
 		socket.onmessage = event => {
 			emitter(event.data)
-			// TODO: Handle non-irc message events
+		}
+		socket.onclose = socket.onerror = event => {
+			console.error(event)
+			emitter(END)
 		}
 		return socket.close
 	})

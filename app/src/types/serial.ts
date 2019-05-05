@@ -11,6 +11,7 @@ export type Message = {
 }
 
 export type SerialDevice = PortInfo & {
+	available: boolean
 	connected: boolean
 	messages: Message[]
 }

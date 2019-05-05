@@ -9,3 +9,5 @@ src/**/*.less.d.ts
 
 app/*.js
 app/*.map
+
+*.tsbuildinfo

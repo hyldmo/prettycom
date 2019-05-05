@@ -11,6 +11,18 @@ export function device (state: SerialDevice, action: Action): SerialDevice {
 
 	switch (action.type) {
 
+		case 'DEVICE_ADD':
+			return {
+				...state,
+				available: true
+			}
+
+		case 'DEVICE_REMOVE':
+			return {
+				...state,
+				available: false
+			}
+
 		case 'CONNECTED':
 			return {
 				...state,
@@ -31,16 +43,21 @@ export function device (state: SerialDevice, action: Action): SerialDevice {
 export default function (state: DevicesState = initialState, action: Action): DevicesState {
 	switch (action.type) {
 		case 'DEVICE_ADD':
-			return [
-				...state,
-				{
-					...action.payload,
-					connected: false,
-					messages: []
-				}
-			]
+			if (state.some(s => s.comName === action.payload.comName))
+				return state.map(d => device(d, action))
+			else
+				return [
+					...state,
+					{
+						...action.payload,
+						available: true,
+						connected: false,
+						messages: []
+					}
+				]
 
 		case 'CONNECTED':
+		case 'DEVICE_REMOVE':
 		case 'DEVICE_DATA_RECEIVED':
 			return state.map(d => device(d, action))
 		default:

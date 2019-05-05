@@ -2,6 +2,16 @@ import SerialPort, { PortInfo } from 'serialport'
 import * as url from 'url'
 import * as WebSocket from 'ws'
 
+const mock: PortInfo & { path: string } = {
+	path: '/dev/tty.usbmodem1421',
+	comName: 'COM_DEMO',
+	manufacturer: 'Arduino (www.arduino.cc)',
+	serialNumber: '752303138333518011C1',
+	locationId: '14200000',
+	vendorId: '2341',
+	productId: '0043'
+}
+
 export default class Server {
 	public wss: WebSocket.Server
 	public on: WebSocket.Server['on']
@@ -36,9 +46,20 @@ export default class Server {
 						}
 					})
 				}, 1000)
+				setInterval(async () => {
+					ws.send(`ADD:${JSON.stringify(mock)}`)
+				}, 1000)
+
 			} else if (mode === 'CONNECT')  {
 				if (typeof device !== 'string' || isNaN(baudrate))
 					return
+
+				if (device === mock.comName) {
+					setInterval(async () => {
+						ws.send(`GT ${new Date().getTime()}\n`)
+					}, 1000)
+					return
+				}
 
 				const serial = new SerialPort(device, { baudRate: baudrate })
 
