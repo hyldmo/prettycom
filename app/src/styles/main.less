@@ -5,6 +5,10 @@
 	box-sizing: border-box;
 }
 
+a {
+	color: @main-color;
+}
+
 html, body {
 	height: 100%;
 	overflow-y: overlay;
@@ -16,15 +20,12 @@ body {
 	background-color: @background-color;
 }
 
-button, input {
-	padding: 0.5em;
-	background-color: @background-color;
-	outline: none;
-	border: 2px solid @main-color;
-}
-
 button, input, table, fieldset {
 	border-radius: 0.25em;
+}
+
+main {
+	max-height: 100%;
 }
 
 #root {
@@ -33,12 +34,11 @@ button, input, table, fieldset {
 	height: 100%;
 	grid-template-areas:
 		"nav  nav    nav"
-		"left main   right"
-		"left footer right";
-	grid-template-rows: @header-height 1fr 4rem;
+		"left main   right";
+	grid-template-rows: @header-height minmax(10px, max-content);
 	grid-template-columns: @grid-columns;
 
-	.tablet() {
+	.tablet({
 		grid-template-columns: 0 100% 0;
-	}
+	})
 }

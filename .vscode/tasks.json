@@ -4,9 +4,8 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "identifier": "build",
             "type": "npm",
-            "script": "build",
+            "script": "electron:build",
             "problemMatcher": [
                 "$tsc"
             ]

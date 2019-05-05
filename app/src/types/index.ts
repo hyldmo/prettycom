@@ -1,5 +1,6 @@
 import reducers from 'reducers'
 export * from './tracker'
+export * from './serial'
 
 export type State = ReturnType<typeof reducers>
 

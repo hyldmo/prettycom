@@ -12,7 +12,6 @@ header {
 
 		ul {
 			list-style: none;
-			margin: calc(@header-height / 3) 0;
 			padding: 0;
 
 			li {
@@ -21,7 +20,15 @@ header {
 					content: "|";
 					margin: 0.3rem;
 				}
+
+				input[type="number"] {
+					width: 6rem;
+				}
 			}
 		}
 	}
+
+	.tablet({
+		grid-template-columns: 0 100% 0;
+	})
 }
