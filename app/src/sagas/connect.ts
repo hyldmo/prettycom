@@ -58,7 +58,7 @@ function* connectToServer (action: typeof Actions.connect) {
 			yield put(Actions.connected(null, device))
 			const userMessageTask = yield fork(watchUserSentMessages, socket)
 			const messageTask = yield fork(watchMessages, socket, device)
-			yield take((a: any) =>  a.type === 'DISCONNECT' && a.payload === device)
+			yield take((a: any) =>  a.type === 'DISCONNECT' && a.meta === device)
 			yield cancel(userMessageTask)
 			yield cancel(messageTask)
 		}

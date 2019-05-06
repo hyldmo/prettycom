@@ -1,4 +1,4 @@
-import { About, Home, NotFound, Tracker } from 'components/Routes'
+import { About, Home, NotFound } from 'components/Routes'
 import React from 'react'
 import { hot } from 'react-hot-loader'
 import { Route, Switch } from 'react-router'
@@ -12,7 +12,6 @@ const App: React.StatelessComponent = () => (
 		<main>
 			<Switch>
 				<Route exact path="/" component={Home} />
-				<Route exact path="/tracker" component={Tracker} />
 				<Route exact path="/about" component={About} />
 				<Route component={NotFound}/>
 			</Switch>

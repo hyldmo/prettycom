@@ -1,5 +1,6 @@
 @import "~normalize.css";
 @import "./variables.less";
+@import "~bulma/css/bulma.css";
 
 * {
 	box-sizing: border-box;
@@ -20,10 +21,6 @@ body {
 	background-color: @background-color;
 }
 
-button, input, table, fieldset {
-	border-radius: 0.25em;
-}
-
 main {
 	max-height: 100%;
 }
@@ -36,9 +33,5 @@ main {
 		"nav  nav    nav"
 		"left main   right";
 	grid-template-rows: @header-height minmax(10px, max-content);
-	grid-template-columns: @grid-columns;
-
-	.tablet({
-		grid-template-columns: 0 100% 0;
-	})
+	grid-template-columns: 0 100% 0;
 }

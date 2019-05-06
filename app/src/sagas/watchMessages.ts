@@ -9,7 +9,6 @@ export default function* watchMessages (socket: WebSocket, device: string) {
 		while (true) {
 			const data = yield take(msgChannel)
 			msg = msg.concat(data)
-			console.log('MSG', msg)
 			if (['\0', '\r', '\n'].some(c => data.includes(c))) {
 				yield put(Actions.dataReceived({
 					timestamp: new Date(),

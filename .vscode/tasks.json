@@ -8,7 +8,11 @@
             "script": "electron:build",
             "problemMatcher": [
                 "$tsc"
-            ]
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
     ]
 }

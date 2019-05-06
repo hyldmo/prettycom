@@ -10,7 +10,6 @@ export function device (state: SerialDevice, action: Action): SerialDevice {
 		return state
 
 	switch (action.type) {
-
 		case 'DEVICE_ADD':
 			return {
 				...state,
@@ -21,6 +20,12 @@ export function device (state: SerialDevice, action: Action): SerialDevice {
 			return {
 				...state,
 				available: false
+			}
+
+		case 'DISCONNECT':
+			return {
+				...state,
+				connected: false
 			}
 
 		case 'CONNECTED':
@@ -57,6 +62,7 @@ export default function (state: DevicesState = initialState, action: Action): De
 				]
 
 		case 'CONNECTED':
+		case 'DISCONNECT':
 		case 'DEVICE_REMOVE':
 		case 'DEVICE_DATA_RECEIVED':
 			return state.map(d => device(d, action))

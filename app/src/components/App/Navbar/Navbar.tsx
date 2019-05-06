@@ -12,22 +12,48 @@ const Navbar: React.StatelessComponent<Props> = ({ devices, connectSerial, disco
 	const [selected, setDevice] = useState('')
 	const [baud, setBaud] = useState(2400)
 
+	const selectedDevice = devices.find(dev => dev.comName === selected)
+
 	return (
 		<header>
 			<nav>
 				<ul>
 					<li><Link to="/">Home</Link></li>
 					<li>
-						<select className="devices" value={selected} onChange={e => setDevice(e.target.value)}>
+						<select className="select is-small" value={selected} onChange={e => setDevice(e.target.value)}>
 							<option value="">Select COM</option>
 							{devices.map(device => (
-								<option key={device.comName} value={device.comName}>{device.comName}</option>
+								<option key={device.comName} value={device.comName} disabled={device.connected}>
+									{device.comName}
+								</option>
 							))}
 						</select>
 					</li>
-					<li><input type="number" placeholder="Enter baud rate" value={baud} onChange={e => setBaud(Number.parseInt(e.target.value, 10))} /></li>
-					<li><button disabled={!selected} onClick={_ => connectSerial({ baud, device: selected })}>Connect</button></li>
-					<li><button disabled={!selected} onClick={_ => disconnect(selected)}>Disconnect</button></li>
+					<li>
+						<input
+							className="input is-small"
+							type="number"
+							placeholder="Enter baud rate"
+							value={baud}
+							onChange={e => setBaud(Number.parseInt(e.target.value, 10))}
+						/>
+					</li>
+					<li>
+						<button
+							className="button is-small"
+							disabled={!selected || (selectedDevice && selectedDevice.connected)}
+							onClick={_ => connectSerial({ baud, device: selected })}>
+								Connect
+						</button>
+					</li>
+					<li>
+						<button
+							className="button is-small"
+							disabled={!selected || (selectedDevice && !selectedDevice.connected)}
+							onClick={_ => disconnect(null, selected)}>
+							Disconnect
+						</button>
+					</li>
 				</ul>
 			</nav>
 		</header >
