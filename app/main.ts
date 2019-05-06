@@ -21,7 +21,8 @@ function createWindow () {
 	mainWindow.loadFile(path.resolve(__dirname, 'index.html'))
 
 	// Open the DevTools.
-	mainWindow.webContents.openDevTools()
+	if (process.env.NODE_ENV === 'development')
+		mainWindow.webContents.openDevTools()
 
 	// Emitted when the window is closed.
 	mainWindow.on('closed', () => {

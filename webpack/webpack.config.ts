@@ -12,7 +12,7 @@ const config: webpack.Configuration = {
 
 	resolve: {
 		alias: getFolders(path.join(context, tsConfig.compilerOptions.baseUrl)),
-		extensions: ['.js', '.ts', '.scss', '.css']
+		extensions: ['.js', '.ts', '.tsx', '.scss', '.css']
 	},
 
 	module: {
