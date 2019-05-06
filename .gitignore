@@ -5,9 +5,13 @@ node_modules
 dist/
 package-lock.json
 compilation-stats.json
-src/**/*.less.d.ts
+src/**/*.scss.d.ts
 
 app/**/*.js
 app/**/*.map
+app/index.html
+app/*.css
 
 *.tsbuildinfo
+
+Release/

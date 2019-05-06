@@ -4,7 +4,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { State } from 'types'
 
-import './home.less'
+import './Sessions.scss'
 
 type Props = ReturnType<typeof mapStateToProps> & typeof dispatchToProps
 

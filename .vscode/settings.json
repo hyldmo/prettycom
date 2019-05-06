@@ -2,7 +2,7 @@
     "typescript.tsdk": "node_modules\\typescript\\lib",
     "files.associations": {
         ".prettierrc": "json",
-        ".env": "ini"
+        "*.env": "ini"
     },
     "files.exclude": {
         "**/.git": true,

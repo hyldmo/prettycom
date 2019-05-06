@@ -1,0 +1,17 @@
+$header-height: 3.5rem;
+$max-width: 60rem;
+$grid-columns: auto $max-width auto;
+$main-color: #ddd;
+$background-color: #2f3136;
+
+$color-main: #108EE9;
+
+@mixin tablet {
+	@media (max-width: $max-width) {
+		@content;
+	}
+}
+
+@function shade($brightness, $alpha: 100%) {
+	@return rgba($brightness, $brightness, $brightness, $alpha / 100);
+}

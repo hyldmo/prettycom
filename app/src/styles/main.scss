@@ -1,5 +1,5 @@
 @import "~normalize.css";
-@import "./variables.less";
+@import "./variables.scss";
 @import "~bulma/css/bulma.css";
 
 * {
@@ -7,7 +7,7 @@
 }
 
 a {
-	color: @main-color;
+	color: $main-color;
 }
 
 html, body {
@@ -17,8 +17,8 @@ html, body {
 
 body {
 	font-family: sans-serif;
-	color: @main-color;
-	background-color: @background-color;
+	color: $main-color;
+	background-color: $background-color;
 }
 
 main {
@@ -32,6 +32,6 @@ main {
 	grid-template-areas:
 		"nav  nav    nav"
 		"left main   right";
-	grid-template-rows: @header-height minmax(10px, max-content);
+	grid-template-rows: $header-height minmax(10px, max-content);
 	grid-template-columns: 0 100% 0;
 }

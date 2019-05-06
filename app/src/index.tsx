@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import 'styles/main.less'
+import 'styles/main.scss'
 
 import Root from './components/App'
 

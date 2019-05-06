@@ -45,10 +45,10 @@ export default class Server {
 							ws.send(`ADD:${JSON.stringify(a)}`)
 						}
 					})
-				}, 1000)
+				}, 100)
 				setInterval(async () => {
 					ws.send(`ADD:${JSON.stringify(mock)}`)
-				}, 1000)
+				}, 100)
 
 			} else if (mode === 'CONNECT')  {
 				if (typeof device !== 'string' || isNaN(baudrate))

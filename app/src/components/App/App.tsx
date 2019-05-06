@@ -1,18 +1,18 @@
-import { About, Home, NotFound } from 'components/Routes'
+import { NotFound, Sessions, Settings } from 'components/Routes'
 import React from 'react'
 import { hot } from 'react-hot-loader'
 import { Route, Switch } from 'react-router'
 import Navbar from './Navbar'
 
-import './App.less'
+import './App.scss'
 
 const App: React.StatelessComponent = () => (
 	<>
 		<Navbar/>
 		<main>
 			<Switch>
-				<Route exact path="/" component={Home} />
-				<Route exact path="/about" component={About} />
+				<Route exact path="/" component={Sessions} />
+				<Route exact path="/settings" component={Settings} />
 				<Route component={NotFound}/>
 			</Switch>
 		</main>

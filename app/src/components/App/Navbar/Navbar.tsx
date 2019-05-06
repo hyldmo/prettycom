@@ -1,24 +1,25 @@
 import { Actions } from 'actions'
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link  } from 'react-router-dom'
 import { State } from 'types'
 
-import './navbar.less'
+import './navbar.scss'
 
 type Props = ReturnType<typeof mapStateToProps> & typeof dispatchToProps
 
-const Navbar: React.StatelessComponent<Props> = ({ devices, connectSerial, disconnect }) => {
+const Navbar: React.StatelessComponent<Props> = ({ location, devices, connectSerial, disconnect }) => {
 	const [selected, setDevice] = useState('')
 	const [baud, setBaud] = useState(2400)
 
 	const selectedDevice = devices.find(dev => dev.comName === selected)
 
+	const isSettingsOpen = (location && location.pathname.includes('settings'))
+
 	return (
 		<header>
 			<nav>
 				<ul>
-					<li><Link to="/">Home</Link></li>
 					<li>
 						<select className="select is-small" value={selected} onChange={e => setDevice(e.target.value)}>
 							<option value="">Select COM</option>
@@ -40,7 +41,7 @@ const Navbar: React.StatelessComponent<Props> = ({ devices, connectSerial, disco
 					</li>
 					<li>
 						<button
-							className="button is-small"
+							className="button is-small is-success"
 							disabled={!selected || (selectedDevice && selectedDevice.connected)}
 							onClick={_ => connectSerial({ baud, device: selected })}>
 								Connect
@@ -48,11 +49,16 @@ const Navbar: React.StatelessComponent<Props> = ({ devices, connectSerial, disco
 					</li>
 					<li>
 						<button
-							className="button is-small"
+							className="button is-small is-warning"
 							disabled={!selected || (selectedDevice && !selectedDevice.connected)}
 							onClick={_ => disconnect(null, selected)}>
 							Disconnect
 						</button>
+					</li>
+					<li className="settings">
+						<Link to={isSettingsOpen ? '/' : 'settings'} className="button is-small is-link">
+							{isSettingsOpen ? 'Close' : 'Settings'}
+						</Link>
 					</li>
 				</ul>
 			</nav>
@@ -61,6 +67,7 @@ const Navbar: React.StatelessComponent<Props> = ({ devices, connectSerial, disco
 }
 
 const mapStateToProps = (state: State) => ({
+	location: state.routing.location,
 	devices: state.devices
 })
 
