@@ -5,8 +5,9 @@ cache: yarn
 script:
   - yarn lint
   - yarn stylelint
-  - yarn test:cover
-  - yarn prod
+  - yarn electron:build
+  - yarn webpack:build
+  - yarn dist --all
 
 notifications:
   email: false

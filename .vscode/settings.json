@@ -10,6 +10,8 @@
         "**/.hg": true,
         "**/CVS": true,
         "**/.DS_Store": true,
+        "app/index.html": true,
+        "app/*.css": true,
         "app/**/*.js": true,
         "app/**/*.map": true
     }
