@@ -7,7 +7,7 @@ package-lock.json
 compilation-stats.json
 src/**/*.less.d.ts
 
-app/*.js
-app/*.map
+app/**/*.js
+app/**/*.map
 
 *.tsbuildinfo
