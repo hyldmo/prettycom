@@ -14,6 +14,7 @@
         "Redux",
         "CSSNext"
     ],
+    "main": "./app/main.js",
     "scripts": {
         "dev": "concurrently --kill-others-on-fail \"yarn electron:build\" \"yarn webpack:dev\" \"yarn webpack:wait\"",
         "build": "concurrently \"yarn lint\" \"yarn stylelint\" \"yarn electron:build\" \"yarn webpack:build\"",
@@ -27,16 +28,6 @@
         "stylelint": "stylelint app/**/*.scss --syntax scss",
         "stats": "env-cmd ./.env webpack --config webpack.production.config.ts --profile --json > compilation-stats.json",
         "postinstall": "electron-rebuild"
-    },
-    "main": "./app/main.js",
-    "build": {
-        "buildDependenciesFromSource": false,
-        "files": [
-            "./app/**/*",
-            "./app/main.js",
-            "./app/index.html",
-            "./app/renderer.js"
-        ]
     },
     "dependencies": {
         "serialport": "^7.1.5",
