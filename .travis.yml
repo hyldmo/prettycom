@@ -14,3 +14,6 @@ notifications:
 
 before_install:
   - yarn --frozen-lockfile
+  - ./install-wine.sh
+
+sudo: required
