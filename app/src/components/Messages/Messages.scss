@@ -7,15 +7,18 @@ $border-radius: 10px;
 	input {
 		border-radius: $border-radius;
 		background-color: #36393f;
+		margin-top: 0.5em;
 		padding: 0.25em 0.5em;
 		color: inherit;
-
+		outline: none;
 		border: 1px solid #474a4f;
 	}
 }
 
 .messages {
 	flex-grow: 1;
+	flex-shrink: 0;
+	flex-basis: 0;
 	list-style: none;
 	overflow-y: scroll;
 	border-radius: $border-radius;

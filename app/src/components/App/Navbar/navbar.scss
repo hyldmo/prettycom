@@ -4,10 +4,9 @@ header {
 	grid-area: nav;
 	border-bottom: 1px solid #474a4f;
 
-	display: grid;
-	grid-template-columns: $grid-columns;
 
 	nav {
+		height: 100%;
 		grid-column: 2 / 3;
 
 		ul {
