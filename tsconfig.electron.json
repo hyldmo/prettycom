@@ -1,5 +1,6 @@
 {
 	"compilerOptions": {
+		"outDir": "app",
 		"incremental": true,
 		"inlineSourceMap": true,
 		"strict": true,

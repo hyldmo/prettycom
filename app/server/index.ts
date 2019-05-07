@@ -36,8 +36,10 @@ export default class Server {
 			const { mode, baud, device } = url.parse(req.url || '', true).query
 			const baudrate = Number.parseInt(baud as any, 10)
 
+			this.wss.on('error', ws.close)
+
 			if (mode === 'LIST') {
-				setInterval(async () => {
+				const int1 = setInterval(async () => {
 					const devices = await SerialPort.list()
 					devices.forEach(a => {
 						if (!this.devices.find(b => a.comName === b.comName)) {
@@ -46,9 +48,14 @@ export default class Server {
 						}
 					})
 				}, 100)
-				setInterval(async () => {
+				const int2 = setInterval(() => {
 					ws.send(`ADD:${JSON.stringify(mock)}`)
 				}, 100)
+
+				ws.addEventListener('close', () => {
+					clearInterval(int1)
+					clearInterval(int2)
+				})
 
 			} else if (mode === 'CONNECT')  {
 				if (typeof device !== 'string' || isNaN(baudrate))
@@ -62,20 +69,36 @@ export default class Server {
 				}
 
 				const serial = new SerialPort(device, { baudRate: baudrate })
-
-				serial.on('error', (data: unknown) => {
-					console.error(data)
-					ws.send(data)
-				})
+				console.info(`Device ${device} opened`)
 
 				serial.on('data', (data: Blob) => {
 					ws.send(data.toString())
 				})
 
-				ws.onmessage = (message) => {
+				ws.addEventListener('message', (message) => {
+					console.log('Sending message', message)
+
 					serial.write(message.data.toString())
-				}
+				})
+
+				ws.addEventListener('close', event => {
+					if (serial.isOpen)
+						serial.close()
+				})
+
+				serial.on('error', (data: object) => {
+					console.error(data)
+					ws.send(data.toString())
+					ws.close()
+				})
+
+				this.wss.on('error', error => {
+					console.error(error)
+					if (serial.isOpen)
+						serial.close()
+				})
 			}
 		})
+
 	}
 }

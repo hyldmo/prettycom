@@ -10,11 +10,11 @@ type Props = ReturnType<typeof mapStateToProps> & typeof dispatchToProps
 
 class Home extends React.Component<Props> {
 	render () {
-		const { devices } = this.props
+		const { devices, sendMessage } = this.props
 		return (
 			<div className="sessions">
 				{devices.filter(device => device.connected || device.messages.length > 0).map(device => (
-					<Messages key={device.comName} device={device} />
+					<Messages key={device.comName} device={device} onSend={msg => sendMessage(msg, device.comName)} />
 				))}
 			</div>
 		)
@@ -27,6 +27,7 @@ const mapStateToProps = (state: State) => ({
 
 const dispatchToProps = {
 	connectSerial: Actions.connect,
+	sendMessage: Actions.sendMessage,
 	disconnect: Actions.disconnect
 }
 

@@ -1,7 +1,7 @@
 import { Actions } from 'actions'
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
-import { Link  } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { State } from 'types'
 
 import './navbar.scss'
@@ -24,8 +24,8 @@ const Navbar: React.StatelessComponent<Props> = ({ location, devices, connectSer
 						<select className="select is-small" value={selected} onChange={e => setDevice(e.target.value)}>
 							<option value="">Select COM</option>
 							{devices.map(device => (
-								<option key={device.comName} value={device.comName} disabled={device.connected}>
-									{device.comName}
+								<option key={device.comName} value={device.comName}>
+									({device.comName}) {device.manufacturer} {device.productId}
 								</option>
 							))}
 						</select>
@@ -44,13 +44,13 @@ const Navbar: React.StatelessComponent<Props> = ({ location, devices, connectSer
 							className="button is-small is-success"
 							disabled={!selected || (selectedDevice && selectedDevice.connected)}
 							onClick={_ => connectSerial({ baud, device: selected })}>
-								Connect
+							Connect
 						</button>
 					</li>
 					<li>
 						<button
 							className="button is-small is-warning"
-							disabled={!selected || (selectedDevice && !selectedDevice.connected)}
+							disabled={!selected || (selectedDevice && (!selectedDevice.connected || !selectedDevice.available))}
 							onClick={_ => disconnect(null, selected)}>
 							Disconnect
 						</button>
