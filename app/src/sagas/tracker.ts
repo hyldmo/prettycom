@@ -15,7 +15,7 @@ export default function* () {
 
 function* save () {
 	yield call(sleep, 100)
-	const tracker: State['tracker'] = yield select<(s: State) => unknown>(s => s.tracker)
+	const tracker: State = yield select<(s: State) => unknown>(s => s)
 	localStorage.setItem(SAVE_KEY, JSON.stringify(tracker))
 }
 
