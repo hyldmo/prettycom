@@ -71,7 +71,7 @@ export class Messages extends React.Component<Props, State> {
 					type="text"
 					className="chatbox"
 					value={message}
-					disabled={!device.connected}
+					disabled={device.connState !== 'CONNECTED'}
 					onChange={e => this.setState({ message: e.target.value })}
 					onKeyUp={this.onKey}
 				/>

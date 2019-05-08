@@ -42,15 +42,15 @@ const Navbar: React.StatelessComponent<Props> = ({ location, devices, connectSer
 					<li>
 						<button
 							className="button is-small is-success"
-							disabled={!selected || (selectedDevice && selectedDevice.connected)}
+							disabled={!selected || (selectedDevice && selectedDevice.connState !== 'DISCONNECTED')}
 							onClick={_ => connectSerial({ baud, device: selected })}>
-							Connect
+							Connect{selectedDevice && selectedDevice.connState === 'CONNECTING' && 'ing'}
 						</button>
 					</li>
 					<li>
 						<button
 							className="button is-small is-warning"
-							disabled={!selected || (selectedDevice && (!selectedDevice.connected || !selectedDevice.available))}
+							disabled={!selected || (selectedDevice && selectedDevice.connState === 'DISCONNECTED')}
 							onClick={_ => disconnect(null, selected)}>
 							Disconnect
 						</button>

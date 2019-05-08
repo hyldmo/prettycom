@@ -1,7 +1,7 @@
-import { call, cancel, fork, put, take, takeEvery, takeLatest  } from 'redux-saga/effects'
+import { call, put, race, take, takeEvery, takeLatest, spawn  } from 'redux-saga/effects'
 import { PortInfo } from 'serialport'
-import { Actions } from '../actions'
-import { socketChannel, watchMessages, watchUserSentMessages } from './watchMessages'
+import { Action, Actions } from '../actions'
+import { socketChannel, waitForOpen, watchMessages, watchUserSentMessages } from './watchMessages'
 
 export default function* watchConnects () {
 	yield takeEvery('CONNECT', connectToServer)
@@ -37,35 +37,41 @@ function* listDevices () {
 		const channel = yield call(socketChannel, socket)
 
 		yield take(channel)
-		yield fork(watchDeviceList, socket)
+		yield call(watchDeviceList, socket)
 	} finally {
 		console.log('Disconnected from device listing')
 	}
 }
 
-function* connectToServer (action: typeof Actions.connect) {
+function* connectToServer (action: typeof Actions.connect): any {
 	const { baud, device } = action.payload
 	const URI = `ws://localhost:31130?mode=CONNECT&baud=${baud}&device=${encodeURIComponent(device)}`
 	const socket = new WebSocket(URI)
 	try {
-		yield put(Actions.connecting(socket.url))
-		const channel = yield call(socketChannel, socket)
-
-		yield take(channel)
+		yield put(Actions.connecting(null, device))
+		yield call(waitForOpen, socket)
 		yield put(Actions.connected(null, device))
-		const userMessageTask = yield fork(watchUserSentMessages, socket, device)
-		const messageTask = yield fork(watchMessages, socket, device)
 
-		yield take((a: any) =>  a.type === 'DISCONNECT' && a.meta === device)
-		yield cancel(userMessageTask)
-		yield cancel(messageTask)
+		yield race([
+			call(watchUserSentMessages, socket, device),
+			call(watchMessages, socket, device),
+			take<any>((a: Action) =>  a.type === 'DISCONNECT' && a.meta === device)
+		])
 	} catch (err) {
-		console.error('UH OH SPAGHETTIO')
-		yield put(Actions.disconnect(null, device))
+		console.error(err)
+		const message: string | undefined = err.message
+		if (message) {
+			const code = Number.parseInt(message.split(':')[0], 10)
+			if (code === 1006)
+				return yield spawn(connectToServer, action)
+			else
+				alert(err.message)
+		}
 	} finally {
 		if (socket.readyState === socket.OPEN)
 			socket.close()
 
 		console.log(`Disconnected from ${device}`)
+		yield put(Actions.disconnected(null, device))
 	}
 }

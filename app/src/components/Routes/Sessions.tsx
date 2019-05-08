@@ -13,7 +13,7 @@ class Home extends React.Component<Props> {
 		const { devices, sendMessage } = this.props
 		return (
 			<div className="sessions">
-				{devices.filter(device => device.connected || device.messages.length > 0).map(device => (
+				{devices.filter(device => device.connState === 'CONNECTED' || device.messages.length > 0).map(device => (
 					<Messages key={device.comName} device={device} onSend={msg => sendMessage(msg, device.comName)} />
 				))}
 			</div>
