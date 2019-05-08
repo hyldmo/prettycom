@@ -10,18 +10,31 @@ type Props = {
 
 type State = {
 	message: string
+	autoScroll: boolean;
 }
 
 export class Messages extends React.Component<Props, State> {
 	state = {
-		message: ''
+		message: '',
+		autoScroll: true
 	}
 
 	private ref = React.createRef<HTMLUListElement>()
 
-	componentDidUpdate (prevProps: Props) {
+	componentDidUpdate (prevProps: Props, prevState: State) {
+		const { autoScroll } = this.state
+		const messagesChanged = prevProps.device.messages.length !== this.props.device.messages.length
+		if (autoScroll && (!prevState.autoScroll || messagesChanged)) {
+			const elem = this.ref.current
+			if (elem) {
+				elem.scrollTop = elem.scrollHeight
+			}
+		}
+	}
+
+	scrollBottom () {
 		const elem = this.ref.current
-		if (elem && prevProps.device.messages.length !== this.props.device.messages.length) {
+		if (elem) {
 			elem.scrollTop = elem.scrollHeight
 		}
 	}
@@ -36,12 +49,18 @@ export class Messages extends React.Component<Props, State> {
 
 	render () {
 		const { device } = this.props
-		const { message } = this.state
+		const { message, autoScroll: scrollToBottom } = this.state
 		return (
 			<div className="session">
-				<div>{device.comName}</div>
+				<div className="properties">
+					<span>{device.comName}</span>
+					<label>
+						<input type="checkbox" onChange={e => this.setState({ autoScroll: e.target.checked })} checked={scrollToBottom} />
+						<span>Autoscroll</span>
+					</label>
+				</div>
 				<ul className="messages" ref={this.ref}>
-					{device.messages.slice(-500).map((msg, i) =>
+					{device.messages.map((msg, i) =>
 						<li key={i}>
 							<span className="timestamp">[{msg.timestamp.toLocaleTimeString()}]:</span>
 							<span className="content">{msg.content}</span>
@@ -50,6 +69,7 @@ export class Messages extends React.Component<Props, State> {
 				</ul>
 				<input
 					type="text"
+					className="chatbox"
 					value={message}
 					disabled={!device.connected}
 					onChange={e => this.setState({ message: e.target.value })}
