@@ -3,7 +3,10 @@
 	flex-flow: row nowrap;
 	flex: 1;
 	max-height: 100%;
-	padding: 0.5rem 0;
+
+    padding-top: 0.5rem;
+    padding-bottom: 0.75rem;
+
 	align-items: stretch;
 
 	> * {
