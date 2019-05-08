@@ -18,12 +18,13 @@ function createWindow () {
 	})
 
 	// and load the index.html of the app.
-	mainWindow.loadFile(path.resolve(__dirname, 'index.html'))
-
 	// Open the DevTools.
-	if (process.env.NODE_ENV === 'development')
+	if (process.env.NODE_ENV === 'development') {
+		mainWindow.loadURL(`http://localhost:${process.env.PORT}/index.html`)
 		mainWindow.webContents.openDevTools()
-
+	} else {
+		mainWindow.loadFile(path.resolve(__dirname, 'index.html'))
+	}
 	// Emitted when the window is closed.
 	mainWindow.on('closed', () => {
 		// Dereference the window object, usually you would store windows

@@ -1,3 +1,4 @@
+import HtmlWebpackPlugin from 'html-webpack-plugin'
 import path from 'path'
 import webpack from 'webpack'
 import { getFolders } from '../app/src/utils/webpack'
@@ -34,6 +35,12 @@ const config: webpack.Configuration = {
 	},
 
 	plugins: [
+		new HtmlWebpackPlugin({
+			title: packageJSON.name,
+			version: packageJSON.version,
+			template: 'app/index.ejs',
+			filename: 'index.html'
+		}),
 		new webpack.DefinePlugin({
 			'process.env.PACKAGE_NAME': JSON.stringify(packageJSON.name),
 			'process.env.PACKAGE_VERSION': JSON.stringify(packageJSON.version)

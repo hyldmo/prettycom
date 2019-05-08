@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><%= htmlWebpackPlugin.options.title %></title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script>
-      // You can also require other files to run in this process
-      require('./renderer.js')
-    </script>
-  </body>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title><%= htmlWebpackPlugin.options.title %></title>
+	</head>
+	<body>
+		<div id="root"></div>
+		<script>
+			if (process.env.NODE_ENV === 'development') {
+				const path = require('path')
+				require(path.resolve('app','renderer.js'))
+			} else {
+				require('renderer.js')
+			}
+		</script>
+	</body>
 </html>
