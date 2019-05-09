@@ -1,5 +1,6 @@
-import { call, put, race, take, takeEvery, takeLatest, spawn  } from 'redux-saga/effects'
+import { call, put, race, spawn, take, takeEvery, takeLatest  } from 'redux-saga/effects'
 import { PortInfo } from 'serialport'
+import { sleep } from 'utils'
 import { Action, Actions } from '../actions'
 import { socketChannel, waitForOpen, watchMessages, watchUserSentMessages } from './watchMessages'
 
@@ -43,7 +44,7 @@ function* listDevices () {
 	}
 }
 
-function* connectToServer (action: typeof Actions.connect): any {
+function* connectToServer (action: typeof Actions.connect, retries = 5): any {
 	const { baud, device } = action.payload
 	const URI = `ws://localhost:31130?mode=CONNECT&baud=${baud}&device=${encodeURIComponent(device)}`
 	const socket = new WebSocket(URI)
@@ -51,6 +52,7 @@ function* connectToServer (action: typeof Actions.connect): any {
 		yield put(Actions.connecting(null, device))
 		yield call(waitForOpen, socket)
 		yield put(Actions.connected(null, device))
+		retries++
 
 		yield race([
 			call(watchUserSentMessages, socket, device),
@@ -62,10 +64,12 @@ function* connectToServer (action: typeof Actions.connect): any {
 		const message: string | undefined = err.message
 		if (message) {
 			const code = Number.parseInt(message.split(':')[0], 10)
-			if (code === 1006)
-				return yield spawn(connectToServer, action)
-			else
+			if (code === 1006 && retries > 0) {
+				yield call(sleep, 400)
+				return yield spawn(connectToServer, action, --retries)
+			} else {
 				alert(err.message)
+			}
 		}
 	} finally {
 		if (socket.readyState === socket.OPEN)

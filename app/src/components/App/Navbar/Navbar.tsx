@@ -10,7 +10,7 @@ type Props = ReturnType<typeof mapStateToProps> & typeof dispatchToProps
 
 const Navbar: React.StatelessComponent<Props> = ({ location, devices, connectSerial, disconnect }) => {
 	const [selected, setDevice] = useState('')
-	const [baud, setBaud] = useState(2400)
+	const [baud, setBaud] = useState(38400)
 
 	const selectedDevice = devices.find(dev => dev.comName === selected)
 

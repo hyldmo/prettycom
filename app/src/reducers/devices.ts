@@ -30,6 +30,12 @@ export function device (state: SerialDevice, action: Action): SerialDevice {
 				connState: action.type
 			}
 
+		case 'DEVICE_MSG':
+			return {
+				...state,
+				history: state.history.reduce((a, b) => a.includes(b) ? a : [...a, b], [action.payload])
+			}
+
 		case 'DEVICE_DATA_RECEIVED':
 			return {
 				...state,
@@ -53,10 +59,12 @@ export default function (state: DevicesState = initialState, action: Action): De
 						...action.payload,
 						available: true,
 						connState: 'DISCONNECTED',
-						messages: []
+						messages: [],
+						history: []
 					}
 				]
 
+		case 'DEVICE_MSG':
 		case 'CONNECTED':
 		case 'CONNECTING':
 		case 'DISCONNECTED':
