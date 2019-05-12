@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import React, { KeyboardEventHandler } from 'react'
 import { SerialDevice } from 'types'
 
@@ -6,6 +7,7 @@ import './Messages.scss'
 type Props = {
 	device: SerialDevice
 	onSend: (message: string) => void
+	onClear: () => void
 }
 
 type State = {
@@ -74,16 +76,24 @@ export class Messages extends React.Component<Props, State> {
 	}
 
 	render () {
-		const { device } = this.props
-		const { message, autoScroll: scrollToBottom } = this.state
+		const { device, onClear } = this.props
+		const { message, autoScroll } = this.state
 		return (
 			<div className="session">
 				<div className="properties">
 					<span>{device.comName}</span>
-					<label>
-						<input type="checkbox" onChange={e => this.setState({ autoScroll: e.target.checked })} checked={scrollToBottom} />
-						<span>Autoscroll</span>
-					</label>
+					<div className="field is-grouped">
+						<button className="button is-small is-danger" title="Clear console" onClick={onClear}>
+							<span className="icon"><i className="fas fa-eraser" /></span>
+						</button>
+						<button
+							className={cn('button', 'is-small', 'is-warning', { 'is-inverted': !autoScroll, 'is-outlined': autoScroll })}
+							title="Scroll to bottom"
+							onClick={_ => this.setState({ autoScroll: !autoScroll })}
+						>
+							<span className="icon"><i className="fas fa-angle-double-down" /></span>
+						</button>
+					</div>
 				</div>
 				<ul className="messages" ref={this.ulRef}>
 					{device.messages.map((msg, i) =>

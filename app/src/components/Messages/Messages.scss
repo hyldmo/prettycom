@@ -15,7 +15,7 @@ $border-radius: 10px;
 	}
 
 	.properties {
-		margin-bottom: 0.25em;
+		margin-bottom: 0.5em;
 		display: flex;
 		flex-flow: row wrap;
 		justify-content: space-between;
@@ -24,6 +24,10 @@ $border-radius: 10px;
 		input {
 			margin: 0 0.25em;
 		}
+	}
+
+	.is-grouped > * {
+		margin-left: 0.5em;
 	}
 }
 
