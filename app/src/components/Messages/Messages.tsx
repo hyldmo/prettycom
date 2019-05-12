@@ -18,7 +18,7 @@ export class Messages extends React.Component<Props, State> {
 	state = {
 		message: '',
 		autoScroll: true,
-		historyIndex: 0
+		historyIndex: -1
 	}
 
 	private ulRef = React.createRef<HTMLUListElement>()
@@ -48,7 +48,7 @@ export class Messages extends React.Component<Props, State> {
 				const endchar = '\n' // TODO: Add this to settings
 				const message = e.currentTarget.value
 				this.props.onSend(message + endchar)
-				this.setState({ message: '' })
+				this.setState({ message: '', historyIndex: -1 })
 				break
 			}
 			case 38:
@@ -57,6 +57,8 @@ export class Messages extends React.Component<Props, State> {
 				const historyIndex = e.keyCode === 38
 					? Math.min(this.state.historyIndex + 1, history.length - 1)
 					: Math.max(this.state.historyIndex - 1, -1)
+
+				console.log(history[historyIndex], historyIndex)
 
 				const message = history[historyIndex] || ''
 				this.setState({ historyIndex, message }, () => {
