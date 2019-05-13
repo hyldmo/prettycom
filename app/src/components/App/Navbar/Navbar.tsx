@@ -2,11 +2,23 @@ import { Actions } from 'actions'
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { State } from 'types'
+import { SerialDevice, State } from 'types'
 
 import './navbar.scss'
 
 type Props = ReturnType<typeof mapStateToProps> & typeof dispatchToProps
+
+const getConnectedText = (device?: SerialDevice): string => {
+	if (!device) return ''
+	switch (device.connState) {
+		case 'CONNECTING':
+			return 'ing'
+		case 'CONNECTED':
+			return 'ed'
+		default:
+			return ''
+	}
+}
 
 const Navbar: React.StatelessComponent<Props> = ({ location, devices, connectSerial, disconnect }) => {
 	const [selected, setDevice] = useState('')
@@ -44,7 +56,7 @@ const Navbar: React.StatelessComponent<Props> = ({ location, devices, connectSer
 							className="button is-small is-success"
 							disabled={!selected || (selectedDevice && selectedDevice.connState !== 'DISCONNECTED')}
 							onClick={_ => connectSerial({ baud, device: selected })}>
-							Connect{selectedDevice && selectedDevice.connState === 'CONNECTING' && 'ing'}
+							Connect{getConnectedText(selectedDevice)}
 						</button>
 					</li>
 					<li>
