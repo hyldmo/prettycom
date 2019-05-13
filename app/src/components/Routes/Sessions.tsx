@@ -9,8 +9,8 @@ import './Sessions.scss'
 type Props = ReturnType<typeof mapStateToProps> & typeof dispatchToProps
 
 class Home extends React.Component<Props> {
-	render () {
-		const { devices, sendMessage, clearMessages } = this.props
+	render() {
+		const { devices, sendMessage, clearMessages, disconnect } = this.props
 		return (
 			<div className="sessions">
 				{devices.filter(device => device.connState === 'CONNECTED' || device.messages.length > 0).map(device => (
@@ -19,6 +19,7 @@ class Home extends React.Component<Props> {
 						device={device}
 						onSend={msg => sendMessage(msg, device.comName)}
 						onClear={() => clearMessages(null, device.comName)}
+						onClose={() => disconnect(null, device.comName)}
 					/>
 				))}
 			</div>

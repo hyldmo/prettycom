@@ -20,14 +20,21 @@ $border-radius: 10px;
 		flex-flow: row wrap;
 		justify-content: space-between;
 		align-items: baseline;
-
-		input {
-			margin: 0 0.25em;
-		}
 	}
 
 	.is-grouped > * {
 		margin-left: 0.5em;
+	}
+
+	&.disconnected {
+		.device-name::after {
+			content: '(Disconnected)';
+			margin-left: 0.25em;
+			color: transparentize($main-color, 0.4);
+		}
+		.chatbox {
+			cursor: not-allowed;
+		}
 	}
 }
 
