@@ -3,5 +3,19 @@
 	flex-flow: row nowrap;
 	flex: 1;
 	max-height: 100%;
-	padding: 0.5rem 0;
+
+	padding-top: 0.5rem;
+	padding-bottom: 0.75rem;
+
+	align-items: stretch;
+
+	> * {
+		flex: 1 1 0;
+		&:not(:last-child) {
+			margin-right: 1rem;
+		}
+		display: inline-flex;
+		flex-flow: column nowrap;
+		justify-content: stretch;
+	}
 }

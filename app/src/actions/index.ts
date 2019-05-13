@@ -1,9 +1,9 @@
 import ConnectActions from './connect'
-import TrackerActions from './tracker'
+import SettingsActions from './settings'
 import VersionActions from './version'
 
 export const Actions = {
-	...TrackerActions,
+	...SettingsActions,
 	...VersionActions,
 	...ConnectActions
 }

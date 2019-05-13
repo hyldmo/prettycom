@@ -1,16 +1,28 @@
 import { Actions } from 'actions'
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
-import { Link  } from 'react-router-dom'
-import { State } from 'types'
+import { Link } from 'react-router-dom'
+import { SerialDevice, State } from 'types'
 
 import './navbar.scss'
 
 type Props = ReturnType<typeof mapStateToProps> & typeof dispatchToProps
 
+const getConnectedText = (device?: SerialDevice): string => {
+	if (!device) return ''
+	switch (device.connState) {
+		case 'CONNECTING':
+			return 'ing'
+		case 'CONNECTED':
+			return 'ed'
+		default:
+			return ''
+	}
+}
+
 const Navbar: React.StatelessComponent<Props> = ({ location, devices, connectSerial, disconnect }) => {
 	const [selected, setDevice] = useState('')
-	const [baud, setBaud] = useState(2400)
+	const [baud, setBaud] = useState(38400)
 
 	const selectedDevice = devices.find(dev => dev.comName === selected)
 
@@ -24,8 +36,8 @@ const Navbar: React.StatelessComponent<Props> = ({ location, devices, connectSer
 						<select className="select is-small" value={selected} onChange={e => setDevice(e.target.value)}>
 							<option value="">Select COM</option>
 							{devices.map(device => (
-								<option key={device.comName} value={device.comName} disabled={device.connected}>
-									{device.comName}
+								<option key={device.comName} value={device.comName}>
+									({device.comName}) {device.manufacturer} {device.productId}
 								</option>
 							))}
 						</select>
@@ -42,15 +54,15 @@ const Navbar: React.StatelessComponent<Props> = ({ location, devices, connectSer
 					<li>
 						<button
 							className="button is-small is-success"
-							disabled={!selected || (selectedDevice && selectedDevice.connected)}
+							disabled={!selected || (selectedDevice && selectedDevice.connState !== 'DISCONNECTED')}
 							onClick={_ => connectSerial({ baud, device: selected })}>
-								Connect
+							Connect{getConnectedText(selectedDevice)}
 						</button>
 					</li>
 					<li>
 						<button
 							className="button is-small is-warning"
-							disabled={!selected || (selectedDevice && !selectedDevice.connected)}
+							disabled={!selected || (selectedDevice && selectedDevice.connState === 'DISCONNECTED')}
 							onClick={_ => disconnect(null, selected)}>
 							Disconnect
 						</button>

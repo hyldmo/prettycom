@@ -23,6 +23,9 @@ body {
 
 main {
 	max-height: 100%;
+	display: flex;
+	flex-flow: column nowrap;
+
 }
 
 #root {
@@ -32,6 +35,6 @@ main {
 	grid-template-areas:
 		"nav  nav    nav"
 		"left main   right";
-	grid-template-rows: $header-height minmax(10px, max-content);
+	grid-template-rows: $header-height auto;
 	grid-template-columns: 0 100% 0;
 }

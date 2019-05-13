@@ -16,7 +16,7 @@ export const history = createHashHistory()
 const middlewares = [sagaMiddleware, routerMiddleware(history)]
 
 const logger = createLogger({
-	predicate: (getState, action: Action) => action.type !== 'DEVICE_ADD'
+	predicate: (getState, action: Action) => !['DEVICE_ADD', 'DEVICE_DATA_RECEIVED'].includes(action.type)
 })
 
 if (__DEV__)

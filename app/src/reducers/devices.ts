@@ -22,22 +22,30 @@ export function device (state: SerialDevice, action: Action): SerialDevice {
 				available: false
 			}
 
-		case 'DISCONNECT':
+		case 'CONNECTED':
+		case 'CONNECTING':
+		case 'DISCONNECTED':
 			return {
 				...state,
-				connected: false
+				connState: action.type
 			}
 
-		case 'CONNECTED':
+		case 'DEVICE_MSG':
 			return {
 				...state,
-				connected: true
+				history: state.history.reduce((a, b) => a.includes(b) ? a : [...a, b], [action.payload])
 			}
 
 		case 'DEVICE_DATA_RECEIVED':
 			return {
 				...state,
 				messages: state.messages.concat(action.payload)
+			}
+
+		case 'DEVICE_CLEAR_MESSAGES':
+			return {
+				...state,
+				messages: []
 			}
 
 		default:
@@ -56,15 +64,19 @@ export default function (state: DevicesState = initialState, action: Action): De
 					{
 						...action.payload,
 						available: true,
-						connected: false,
-						messages: []
+						connState: 'DISCONNECTED',
+						messages: [],
+						history: []
 					}
 				]
 
+		case 'DEVICE_MSG':
 		case 'CONNECTED':
-		case 'DISCONNECT':
+		case 'CONNECTING':
+		case 'DISCONNECTED':
 		case 'DEVICE_REMOVE':
 		case 'DEVICE_DATA_RECEIVED':
+		case 'DEVICE_CLEAR_MESSAGES':
 			return state.map(d => device(d, action))
 		default:
 			return state

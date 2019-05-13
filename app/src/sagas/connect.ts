@@ -1,7 +1,8 @@
-import { call, cancel, fork, put, take, takeEvery, takeLatest  } from 'redux-saga/effects'
+import { call, put, race, spawn, take, takeEvery, takeLatest  } from 'redux-saga/effects'
 import { PortInfo } from 'serialport'
-import { Actions } from '../actions'
-import watchMessages, { socketChannel } from './watchMessages'
+import { sleep } from 'utils'
+import { Action, Actions } from '../actions'
+import { socketChannel, waitForOpen, watchMessages, watchUserSentMessages } from './watchMessages'
 
 export default function* watchConnects () {
 	yield takeEvery('CONNECT', connectToServer)
@@ -26,7 +27,7 @@ function* watchDeviceList (socket: WebSocket) {
 			}
 		}
 	} finally {
-		console.log(`Stopped watching messages from ${socket.url}`)
+		console.log(`Stopped watching for devices from ${socket.url}`)
 	}
 }
 
@@ -36,47 +37,45 @@ function* listDevices () {
 		const socket = new WebSocket(URI)
 		const channel = yield call(socketChannel, socket)
 
-		while (true) {
-			yield take(channel)
-			yield fork(watchDeviceList, socket)
-		}
+		yield take(channel)
+		yield call(watchDeviceList, socket)
 	} finally {
 		console.log('Disconnected from device listing')
 	}
 }
 
-function* connectToServer (action: typeof Actions.connect) {
+function* connectToServer (action: typeof Actions.connect, retries = 5): any {
 	const { baud, device } = action.payload
+	const URI = `ws://localhost:31130?mode=CONNECT&baud=${baud}&device=${encodeURIComponent(device)}`
+	const socket = new WebSocket(URI)
 	try {
-		const URI = `ws://localhost:31130?mode=CONNECT&baud=${baud}&device=${encodeURIComponent(device)}`
-		const socket = new WebSocket(URI)
-		yield put(Actions.connecting(socket.url))
-		const channel = yield call(socketChannel, socket)
+		yield put(Actions.connecting(null, device))
+		yield call(waitForOpen, socket)
+		yield put(Actions.connected(null, device))
+		retries++
 
-		while (true) {
-			yield take(channel)
-			yield put(Actions.connected(null, device))
-			const userMessageTask = yield fork(watchUserSentMessages, socket)
-			const messageTask = yield fork(watchMessages, socket, device)
-			yield take((a: any) =>  a.type === 'DISCONNECT' && a.meta === device)
-			yield cancel(userMessageTask)
-			yield cancel(messageTask)
+		yield race([
+			call(watchUserSentMessages, socket, device),
+			call(watchMessages, socket, device),
+			take<any>((a: Action) =>  a.type === 'DISCONNECT' && a.meta === device)
+		])
+	} catch (err) {
+		console.error(err)
+		const message: string | undefined = err.message
+		if (message) {
+			const code = Number.parseInt(message.split(':')[0], 10)
+			if (code === 1006 && retries > 0) {
+				yield call(sleep, 400)
+				return yield spawn(connectToServer, action, --retries)
+			} else {
+				alert(err.message)
+			}
 		}
 	} finally {
+		if (socket.readyState === socket.OPEN)
+			socket.close()
+
 		console.log(`Disconnected from ${device}`)
-	}
-}
-
-function* watchUserSentMessages (socket: WebSocket) {
-	const send = (message: string) => socket.send(message)
-	try {
-		while (true) {
-			const { payload } = yield take((action: any) => {
-				return action.type === 'DEVICE_MSG' && action.payload === socket.url
-			})
-			send(payload)
-		}
-	} finally {
-		console.log(`Stopped watching messages to ${socket.url}`)
+		yield put(Actions.disconnected(null, device))
 	}
 }

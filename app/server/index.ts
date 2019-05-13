@@ -1,4 +1,5 @@
 import SerialPort, { PortInfo } from 'serialport'
+import { setInterval } from 'timers'
 import * as url from 'url'
 import * as WebSocket from 'ws'
 
@@ -10,6 +11,10 @@ const mock: PortInfo & { path: string } = {
 	locationId: '14200000',
 	vendorId: '2341',
 	productId: '0043'
+}
+
+function log (level: keyof typeof console, ...args: any[]) {
+	console[level]('Server: ', ...args)
 }
 
 export default class Server {
@@ -28,16 +33,20 @@ export default class Server {
 			return this.wss.close(cb)
 		}
 
-		console.log(`Listening for websocket connections on port ${options.port}`)
+		log('info', `Listening for websocket connections on port ${options.port}`)
 
 		this.wss.on('connection', (ws, req) => {
 			// const send = (message: object) => ws.send(JSON.stringify(message), err => err && console.error(err))
-
 			const { mode, baud, device } = url.parse(req.url || '', true).query
 			const baudrate = Number.parseInt(baud as any, 10)
 
+			const ping = setInterval(ws.ping, 10 * 1000)
+			ws.on('close', () => clearInterval(ping))
+
+			this.wss.on('error', ws.close)
+
 			if (mode === 'LIST') {
-				setInterval(async () => {
+				const int1 = setInterval(async () => {
 					const devices = await SerialPort.list()
 					devices.forEach(a => {
 						if (!this.devices.find(b => a.comName === b.comName)) {
@@ -46,36 +55,65 @@ export default class Server {
 						}
 					})
 				}, 100)
-				setInterval(async () => {
+				const int2 = setInterval(() => {
 					ws.send(`ADD:${JSON.stringify(mock)}`)
 				}, 100)
 
+				ws.addEventListener('close', () => {
+					clearInterval(int1)
+					clearInterval(int2)
+				})
+
 			} else if (mode === 'CONNECT')  {
-				if (typeof device !== 'string' || isNaN(baudrate))
+				if (typeof device !== 'string' || isNaN(baudrate)) {
+					ws.close(1007, 'Invalid parameters')
 					return
+				}
 
 				if (device === mock.comName) {
 					setInterval(async () => {
 						ws.send(`GT ${new Date().getTime()}\n`)
 					}, 1000)
+
+					ws.addEventListener('message', (message) => {
+						ws.send(`Received: ${message.data.toString()}`)
+					})
 					return
 				}
 
 				const serial = new SerialPort(device, { baudRate: baudrate })
-
-				serial.on('error', (data: unknown) => {
-					console.error(data)
-					ws.send(data)
-				})
+				log('info', `Device ${device} opened`)
 
 				serial.on('data', (data: Blob) => {
 					ws.send(data.toString())
 				})
 
-				ws.onmessage = (message) => {
+				ws.addEventListener('message', (message) => {
+					log('info', 'Sending message', message)
+
 					serial.write(message.data.toString())
-				}
+				})
+
+				ws.addEventListener('close', event => {
+					if (serial.isOpen)
+						serial.close()
+				})
+
+				serial.on('error', (data: object) => {
+					log('error', data)
+					ws.send(data.toString())
+					ws.close(1008, data.toString())
+				})
+
+				this.wss.on('error', error => {
+					log('error', error)
+					if (serial.isOpen)
+						serial.close()
+				})
+			} else {
+				ws.close(1007, 'Invalid mode')
 			}
 		})
+
 	}
 }

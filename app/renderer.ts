@@ -7,7 +7,7 @@ import Server from './server'
 const server = new Server({ port: 31130 })
 
 server.on('error', (error) => {
-	console.warn(error)
+	console.warn('Server error:', error)
 })
 
 window.onbeforeunload = () => {

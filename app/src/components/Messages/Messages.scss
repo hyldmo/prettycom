@@ -2,12 +2,48 @@
 
 $border-radius: 10px;
 
+.session {
+	color: $main-color;
+	.chatbox {
+		border-radius: $border-radius;
+		background-color: #36393f;
+		margin-top: 0.75em;
+		padding: 0.25em 0.5em;
+		color: inherit;
+		outline: none;
+		border: 1px solid #474a4f;
+	}
+
+	.properties {
+		margin-bottom: 0.5em;
+		display: flex;
+		flex-flow: row wrap;
+		justify-content: space-between;
+		align-items: baseline;
+	}
+
+	.is-grouped > * {
+		margin-left: 0.5em;
+	}
+
+	&.disconnected {
+		.device-name::after {
+			content: '(Disconnected)';
+			margin-left: 0.25em;
+			color: transparentize($main-color, 0.4);
+		}
+		.chatbox {
+			cursor: not-allowed;
+		}
+	}
+}
+
 .messages {
-	max-height: 100%;
 	flex-grow: 1;
+	flex-shrink: 0;
+	flex-basis: 0;
 	list-style: none;
 	overflow-y: scroll;
-
 	border-radius: $border-radius;
 	background-color: #36393f;
 	padding: 0.25em 0.5em 0.25em;
@@ -32,6 +68,10 @@ $border-radius: 10px;
 		font-size: 0.8em;
 		color: shade(245, 40%);
 		margin-right: 0.5em;
+	}
+
+	.content {
+		white-space: pre-wrap;
 	}
 
 	&::-webkit-scrollbar {
