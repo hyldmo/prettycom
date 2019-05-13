@@ -74,6 +74,10 @@ export default class Server {
 					setInterval(async () => {
 						ws.send(`GT ${new Date().getTime()}\n`)
 					}, 1000)
+
+					ws.addEventListener('message', (message) => {
+						ws.send(`Received: ${message.data.toString()}`)
+					})
 					return
 				}
 
