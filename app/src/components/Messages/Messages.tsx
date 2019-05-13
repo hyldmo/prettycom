@@ -44,6 +44,11 @@ export class Messages extends React.Component<Props, State> {
 		}
 	}
 
+	componentWillUnmount () {
+		if (this.messageInterval !== null)
+			clearInterval(this.messageInterval)
+	}
+
 	scrollBottom () {
 		const elem = this.ulRef.current
 		if (elem) {

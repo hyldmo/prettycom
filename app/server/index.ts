@@ -59,10 +59,10 @@ export default class Server {
 					ws.send(`ADD:${JSON.stringify(mock)}`)
 				}, 100)
 
-				ws.addEventListener('close', () => {
+				ws.onclose = () => {
 					clearInterval(int1)
 					clearInterval(int2)
-				})
+				}
 
 			} else if (mode === 'CONNECT')  {
 				if (typeof device !== 'string' || isNaN(baudrate)) {
@@ -75,9 +75,9 @@ export default class Server {
 						ws.send(`GT ${new Date().getTime()}\n`)
 					}, 1000)
 
-					ws.addEventListener('message', (message) => {
+					ws.onmessage = message => {
 						ws.send(`Received: ${message.data.toString()}`)
-					})
+					}
 					return
 				}
 
@@ -88,16 +88,16 @@ export default class Server {
 					ws.send(data.toString())
 				})
 
-				ws.addEventListener('message', (message) => {
+				ws.onmessage = message => {
 					log('info', 'Sending message', message)
 
 					serial.write(message.data.toString())
-				})
+				}
 
-				ws.addEventListener('close', event => {
+				ws.onclose = event => {
 					if (serial.isOpen)
 						serial.close()
-				})
+				}
 
 				serial.on('error', (data: object) => {
 					log('error', data)
