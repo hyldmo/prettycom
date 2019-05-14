@@ -1,15 +1,30 @@
 language: node_js
 node_js: 10
 cache: yarn
-
-script:
-  - yarn dist
-
-notifications:
-  email: false
+matrix:
+  include:
+    - os: linux
+    - os: osx
+    - os: windows
+      filter_secrets: false # TODO: Disable this https://travis-ci.community/t/current-known-issues-please-read-this-before-posting-a-new-topic/264
+      env:
+        - YARN_GPG=no
 
 before_install:
   - yarn --frozen-lockfile
-  - ./install-wine.sh
 
-sudo: required
+script:
+  - yarn build
+  - yarn package
+
+# deploy:
+#   provider: releases
+#   api_key: $GH_TOKEN
+#   file: Release/prettycom-$OS_NAME-x64.
+#   skip_cleanup: true
+#   draft: true
+#   on:
+#     branch: travis3
+
+notifications:
+  email: false
