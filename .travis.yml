@@ -1,14 +1,13 @@
 language: node_js
 node_js: 10
 os:
-  - windows
+#  - windows
   - linux
   - osx
-cache: yarn
 
 script:
   - yarn build
-  - yarn package --executable-name=prettycom-$TRAVIS_OS_NAME-x64
+  - yarn package --executable-name prettycom-"$TRAVIS_OS_NAME"-x64
 
 before_install:
   - yarn --frozen-lockfile
@@ -16,9 +15,11 @@ before_install:
 deploy:
   provider: releases
   api_key: $GITHUB_OAUTH_TOKEN
-  file: prettycom-$TRAVIS_OS_NAME-x64
+  file: Release/prettycom-"$TRAVIS_OS_NAME"-x64
   skip_cleanup: true
   draft: true
+  on:
+    branch: travis3
 
 notifications:
   email: false
