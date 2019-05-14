@@ -1,21 +1,23 @@
 language: node_js
 node_js: 10
+cache: yarn
+filter_secrets: false # TODO: Disable this https://travis-ci.community/t/current-known-issues-please-read-this-before-posting-a-new-topic/264
 os:
-#  - windows
+  - windows
   - linux
   - osx
+
+before_install:
+  - yarn --frozen-lockfile
 
 script:
   - yarn build
   - yarn package --executable-name prettycom-"$TRAVIS_OS_NAME"-x64
 
-before_install:
-  - yarn --frozen-lockfile
-
 deploy:
   provider: releases
   api_key: $GITHUB_OAUTH_TOKEN
-  file: Release/prettycom-"$TRAVIS_OS_NAME"-x64
+  file: Release/prettycom-$TRAVIS_OS_NAME-x64
   skip_cleanup: true
   draft: true
   on:
