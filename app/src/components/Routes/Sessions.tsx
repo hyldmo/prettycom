@@ -9,7 +9,7 @@ import './Sessions.scss'
 type Props = ReturnType<typeof mapStateToProps> & typeof dispatchToProps
 
 class Home extends React.Component<Props> {
-	render() {
+	render () {
 		const { devices, sendMessage, clearMessages, disconnect } = this.props
 		return (
 			<div className="sessions">

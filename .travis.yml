@@ -3,11 +3,7 @@ node_js: 10
 cache: yarn
 
 script:
-  - yarn lint
-  - yarn stylelint
-  - yarn electron:build
-  - yarn webpack:build
-  - yarn dist --all
+  - yarn dist
 
 notifications:
   email: false
