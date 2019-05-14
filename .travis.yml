@@ -1,5 +1,9 @@
 language: node_js
 node_js: 10
+os:
+  - windows
+  - linux
+  - osx
 cache: yarn
 
 script:
@@ -10,6 +14,5 @@ notifications:
 
 before_install:
   - yarn --frozen-lockfile
-  - ./install-wine.sh
 
 sudo: required
