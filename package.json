@@ -18,7 +18,7 @@
     "scripts": {
         "dev": "npm-run-all --parallel electron:build webpack:dev webpack:wait",
         "build": "npm-run-all --parallel lint:* *:build",
-        "package": "electron-packager . --out Release --overwrite --ignore \"(.*\\.(ts|scss))\"",
+        "package": "env-cmd ./.env electron-builder",
         "dist": "npm-run-all clean build package",
         "clean": "rimraf app/**/*.js app/**/*.map app/*/**.css dist **/*.tsbuildinfo",
         "webpack:dev": "env-cmd ./.env webpack-dev-server --config webpack/webpack.development.config.ts --progress --colors --hot",
@@ -31,8 +31,16 @@
         "stats": "env-cmd ./.env webpack --config webpack.production.config.ts --profile --json > compilation-stats.json",
         "postinstall": "electron-rebuild"
     },
+    "build": {
+        "appId": "hyldmo.prettycom.app",
+        "directories": {
+            "buildResources": ".",
+            "output": "Release"
+        },
+        "npmRebuild": false,
+        "artifactName": "${productName}-${os}-${arch}.${ext}"
+    },
     "dependencies": {
-        "npm-run-all": "^4.1.5",
         "serialport": "^7.1.5",
         "ws": "^7.0.0"
     },
@@ -63,7 +71,7 @@
         "classnames": "^2.2.6",
         "css-loader": "^2.1.0",
         "electron": "^5.0.1",
-        "electron-packager": "^13.1.1",
+        "electron-builder": "^20.40.2",
         "electron-rebuild": "^1.8.4",
         "env-cmd": "^8.0.2",
         "fs-extra": "^7.0.0",
@@ -72,6 +80,7 @@
         "mini-css-extract-plugin": "^0.4.0",
         "node-sass": "^4.12.0",
         "normalize.css": "^8.0.0",
+        "npm-run-all": "^4.1.5",
         "postcss": "^7.0.0",
         "postcss-loader": "^3.0.0",
         "react": "~16.8.2",
