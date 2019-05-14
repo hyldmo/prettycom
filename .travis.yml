@@ -7,12 +7,18 @@ os:
 cache: yarn
 
 script:
-  - yarn dist
-
-notifications:
-  email: false
+  - yarn build
+  - yarn package --executable-name=prettycom-$TRAVIS_OS_NAME-x64
 
 before_install:
   - yarn --frozen-lockfile
 
-sudo: required
+deploy:
+  provider: releases
+  api_key: $GITHUB_OAUTH_TOKEN
+  file: prettycom-$TRAVIS_OS_NAME-x64
+  skip_cleanup: true
+  draft: true
+
+notifications:
+  email: false
