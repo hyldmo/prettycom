@@ -13,6 +13,22 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "type": "npm",
+            "script": "webpack:dev",
+            "group": "build",
+            "isBackground": true,
+            "problemMatcher": {
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "^.*｢wd[ms]｣: ((Compiling\\.\\.\\.)|(Project is running at))",
+                    "endsPattern": "^.*｢wdm｣: Compiled successfully\\."
+                }
+            },
+            "dependsOn": [
+                "npm: electron:build"
+            ]
         }
     ]
 }

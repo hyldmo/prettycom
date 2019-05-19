@@ -18,7 +18,7 @@
             ],
             "envFile": "${workspaceFolder}/.env",
             "outputCapture": "std",
-            "preLaunchTask": "npm: electron:build"
+            "preLaunchTask": "npm: webpack:dev"
         },
         {
             "type": "node",
