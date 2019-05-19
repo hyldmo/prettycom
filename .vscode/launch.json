@@ -5,7 +5,23 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug Main Process",
+            "name": "Debug Electron",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
+            "windows": {
+                "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"
+            },
+            "args": [
+                "."
+            ],
+            "envFile": "${workspaceFolder}/.env",
+            "outputCapture": "std",
+            "preLaunchTask": "npm: electron:build"
+        },
+        {
+            "name": "Debug Electron (and run webpack)",
             "type": "node",
             "request": "launch",
             "cwd": "${workspaceRoot}",
@@ -20,33 +36,5 @@
             "outputCapture": "std",
             "preLaunchTask": "npm: webpack:dev"
         },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Run Program",
-            "program": "${workspaceFolder}\\dist\\index.js",
-            "args": [
-                "__tests__/testfiles/website"
-            ],
-            "preLaunchTask": "build"
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Run Tests",
-            "program": "${workspaceRoot}/node_modules/jest/bin/jest.js",
-            "args": [
-                "--config",
-                "package.json",
-                "--runInBand"
-            ],
-            "runtimeArgs": [
-                "--nolazy"
-            ],
-            "console": "internalConsole",
-            "env": {
-                "NODE_ENV": "test"
-            }
-        }
     ]
 }

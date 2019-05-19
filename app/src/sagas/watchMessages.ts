@@ -1,6 +1,7 @@
 import { Action, Actions } from 'actions'
 import { END, eventChannel } from 'redux-saga'
 import { call, put, take } from 'redux-saga/effects'
+import { Direction } from 'types'
 
 export function* watchMessages (socket: WebSocket, device: string) {
 	const msgChannel = yield call(socketChannel, socket)
@@ -14,7 +15,8 @@ export function* watchMessages (socket: WebSocket, device: string) {
 				if (message.length > 0)
 					yield put(Actions.dataReceived({
 						timestamp: new Date(),
-						content: message
+						content: message,
+						direction: Direction.Received
 					}, device))
 			}
 			msg = ''

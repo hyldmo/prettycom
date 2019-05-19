@@ -1,5 +1,5 @@
 import { Action } from 'actions'
-import { SerialDevice } from 'types'
+import { Direction, SerialDevice } from 'types'
 
 export type DevicesState = SerialDevice[]
 
@@ -33,7 +33,12 @@ export function device (state: SerialDevice, action: Action): SerialDevice {
 		case 'DEVICE_MSG':
 			return {
 				...state,
-				history: state.history.reduce((a, b) => a.includes(b) ? a : [...a, b], [action.payload])
+				history: state.history.reduce((a, b) => a.includes(b) ? a : [...a, b], [action.payload]),
+				messages: state.messages.concat({
+					content: action.payload,
+					timestamp: new Date(),
+					direction: Direction.Sent
+				})
 			}
 
 		case 'DEVICE_DATA_RECEIVED':

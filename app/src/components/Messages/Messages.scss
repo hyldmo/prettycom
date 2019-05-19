@@ -61,6 +61,11 @@ $border-radius: 10px;
 		&:not(:last-child) {
 			border-bottom: 1px solid #474a4f;
 		}
+
+
+		&.sent {
+			opacity: 0.6;
+		}
 	}
 
 	.timestamp {

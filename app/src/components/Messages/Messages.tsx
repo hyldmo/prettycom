@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import React, { KeyboardEventHandler } from 'react'
-import { SerialDevice } from 'types'
+import { Direction, SerialDevice } from 'types'
 
 import './Messages.scss'
 
@@ -17,6 +17,7 @@ type State = {
 	historyIndex: number
 	repeatInterval: number | null
 	repeat: boolean
+	showSent: boolean
 }
 
 export class Messages extends React.Component<Props, State> {
@@ -25,7 +26,8 @@ export class Messages extends React.Component<Props, State> {
 		autoScroll: true,
 		historyIndex: -1,
 		repeatInterval: null,
-		repeat: false
+		repeat: false,
+		showSent: true
 	}
 
 	private messageInterval: ReturnType<Window['setInterval']> | null = null
@@ -118,7 +120,7 @@ export class Messages extends React.Component<Props, State> {
 
 	render () {
 		const { device, onClear, onClose } = this.props
-		const { message, autoScroll, repeatInterval, repeat } = this.state
+		const { message, autoScroll, repeatInterval, repeat, showSent } = this.state
 		return (
 			<div className={cn('session', device.connState.toLowerCase())}>
 				<div className="properties">
@@ -140,6 +142,9 @@ export class Messages extends React.Component<Props, State> {
 						<button className="button is-small is-info is-outlined" title="Clear console" onClick={onClear}>
 							<span className="icon"><i className="fas fa-eraser" /></span>
 						</button>
+						<button className={cn('button is-small is-success', { 'is-outlined': !showSent })} title="Show sent messages" onClick={_ => this.setState({ showSent: !showSent})}>
+							<span className="icon"><i className="fas fa-paper-plane" /></span>
+						</button>
 						<button
 							className={cn('button', 'is-small', 'is-warning', { 'is-outlined': !autoScroll })}
 							title="Scroll to bottom"
@@ -150,8 +155,8 @@ export class Messages extends React.Component<Props, State> {
 					</div>
 				</div>
 				<ul className="messages" ref={this.ulRef}>
-					{device.messages.map((msg, i) =>
-						<li key={i}>
+					{device.messages.filter(msg => showSent || msg.direction !== Direction.Sent).map((msg, i) =>
+						<li key={i} className={msg.direction === Direction.Received ? 'received' : 'sent'}>
 							<span className="timestamp">[{msg.timestamp.toLocaleTimeString()}]:</span>
 							<span className="content">{msg.content}</span>
 						</li>
