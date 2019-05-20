@@ -1,11 +1,13 @@
 {
     "name": "prettycom",
     "repository": "https://github.com/hyldmo/prettycom",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "description": "A serial monitor written in electron.",
     "license": "MIT",
     "author": {
-        "name": "Eivind Hyldmo"
+        "name": "Eivind Hyldmo",
+		"email": "eivind.hyldmo@gmail.com",
+		"url": "https://github.com/hyldmo"
     },
     "keywords": [
         "Electron",
