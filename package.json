@@ -1,7 +1,7 @@
 {
     "name": "prettycom",
     "repository": "https://github.com/hyldmo/prettycom",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "description": "A serial monitor written in electron.",
     "license": "MIT",
     "author": {
@@ -38,7 +38,14 @@
             "output": "Release"
         },
         "npmRebuild": false,
-        "artifactName": "${productName}-${os}-${arch}.${ext}"
+        "artifactName": "${productName}-${os}-${arch}.${ext}",
+        "linux": {
+			"target": [
+				"AppImage",
+				"deb",
+				"snap"
+			]
+		}
     },
     "dependencies": {
         "serialport": "^7.1.5",
