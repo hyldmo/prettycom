@@ -5,6 +5,23 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Debug Electron (and run webpack)",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
+            "windows": {
+                "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"
+            },
+            "args": [
+                "."
+            ],
+            "envFile": "${workspaceFolder}/.env",
+            "outputCapture": "std",
+            "preLaunchTask": "npm: webpack:dev",
+            "postDebugTask": "postdebugKill"
+        },
+        {
             "name": "Debug Electron",
             "type": "node",
             "request": "launch",
@@ -19,22 +36,6 @@
             "envFile": "${workspaceFolder}/.env",
             "outputCapture": "std",
             "preLaunchTask": "npm: electron:build"
-        },
-        {
-            "name": "Debug Electron (and run webpack)",
-            "type": "node",
-            "request": "launch",
-            "cwd": "${workspaceRoot}",
-            "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron",
-            "windows": {
-                "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd"
-            },
-            "args": [
-                "."
-            ],
-            "envFile": "${workspaceFolder}/.env",
-            "outputCapture": "std",
-            "preLaunchTask": "npm: webpack:dev"
-        },
+        }
     ]
 }

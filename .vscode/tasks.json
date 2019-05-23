@@ -22,13 +22,21 @@
             "problemMatcher": {
                 "background": {
                     "activeOnStart": true,
-                    "beginsPattern": "^.*｢wd[ms]｣: ((Compiling\\.\\.\\.)|(Project is running at))",
-                    "endsPattern": "^.*｢wdm｣: Compiled successfully\\."
+                    "beginsPattern": "^.*｢wdm｣: Compiling...*$",
+                    "endsPattern": "^.*wdm.*Compiled successfully.*$"
                 }
             },
             "dependsOn": [
                 "npm: electron:build"
             ]
-        }
+        },
+        {
+            "label": "postdebugKill",
+            "type": "process",
+            "command":[
+               "${command:workbench.action.tasks.terminate}",
+               "${command:workbench.action.acceptSelectedQuickOpenItem}"
+            ],
+        },
     ]
 }

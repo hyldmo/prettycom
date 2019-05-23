@@ -3,14 +3,13 @@ import { setInterval } from 'timers'
 import * as url from 'url'
 import * as WebSocket from 'ws'
 
-const mock: PortInfo & { path: string } = {
-	path: '/dev/tty.usbmodem1421',
+const mock: PortInfo = {
 	comName: 'COM_DEMO',
-	manufacturer: 'Arduino (www.arduino.cc)',
-	serialNumber: '752303138333518011C1',
-	locationId: '14200000',
-	vendorId: '2341',
-	productId: '0043'
+	manufacturer: 'ACME',
+	serialNumber: '1904321930',
+	locationId: '31245',
+	vendorId: '7653',
+	productId: '0321'
 }
 
 function log (level: keyof typeof console, ...args: any[]) {
@@ -72,7 +71,7 @@ export default class Server {
 
 				if (device === mock.comName) {
 					setInterval(async () => {
-						ws.send(`GT ${new Date().getTime()}\n`)
+						ws.send(`Time ${Math.round(new Date().getTime() / 1000)}\n`)
 					}, 1000)
 
 					ws.onmessage = message => {
