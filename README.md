@@ -4,9 +4,9 @@
 A serial monitor written in electron.
 
 ## Installation
-Binaries can be found at (/releases)
+Binaries can be found [here](https://github.com/hyldmo/prettycom/releases).
 
 ## Development
 - Clone repository: `git clone https://github.com/hyldmo/prettycom.git`
 - Run `yarn`
-- Run `yarn dev` or if you're using VSCode, press `F5` 
+- Run `yarn dev`, or if you're using VSCode, press `F5` 
