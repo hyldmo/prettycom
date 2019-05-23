@@ -1,7 +1,7 @@
 {
     "name": "prettycom",
     "repository": "https://github.com/hyldmo/prettycom",
-    "version": "1.2.2",
+    "version": "1.2.3",
     "description": "A serial monitor written in electron.",
     "license": "MIT",
     "author": {
@@ -28,6 +28,7 @@
         "webpack:build": "env-cmd ./.env webpack --config  webpack/webpack.production.config.ts --progress --colors",
         "electron:dev": "env-cmd ./.env electron .",
         "electron:build": "tsc --project tsconfig.electron.json",
+        "native:build": "electron-rebuild --force",
         "lint:ts": "tslint {__tests__,app}/**/*.{ts,tsx} webpack.*.ts --exclude **/*.d.ts",
         "lint:css": "stylelint app/**/*.scss --syntax scss",
         "stats": "env-cmd ./.env webpack --config webpack.production.config.ts --profile --json > compilation-stats.json",
