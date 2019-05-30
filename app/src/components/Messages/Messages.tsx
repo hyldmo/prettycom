@@ -2,6 +2,7 @@ import cn from 'classnames'
 import Button from 'components/Button'
 import React, { KeyboardEventHandler } from 'react'
 import { Direction, SerialDevice } from 'types'
+import { Info } from './Info'
 
 import './Messages.scss'
 
@@ -19,6 +20,7 @@ type State = {
 	repeatInterval: number | null
 	repeat: boolean
 	showSent: boolean
+	showSettings: boolean
 }
 
 export class Messages extends React.Component<Props, State> {
@@ -28,7 +30,8 @@ export class Messages extends React.Component<Props, State> {
 		historyIndex: -1,
 		repeatInterval: null,
 		repeat: false,
-		showSent: true
+		showSent: true,
+		showSettings: false
 	}
 
 	private messageInterval: ReturnType<Window['setInterval']> | null = null
@@ -121,7 +124,7 @@ export class Messages extends React.Component<Props, State> {
 
 	render () {
 		const { device, onClear, onClose } = this.props
-		const { message, autoScroll, repeatInterval, repeat, showSent } = this.state
+		const { message, autoScroll, repeatInterval, repeat, showSent, showSettings } = this.state
 		return (
 			<div className={cn('session', device.connState.toLowerCase())}>
 				<div className="properties">
@@ -138,32 +141,32 @@ export class Messages extends React.Component<Props, State> {
 						<Button title="Close" icon="times" types={['small', 'danger', 'outlined']} onClick={_ => { onClose(); onClear() }} />
 						<Button title="Clear console" types={['small', 'info', 'outlined']} icon="eraser" onClick={onClear} />
 						<Button title="Show sent messages" icon="paper-plane" types={['small', 'success']} solid={showSent} onClick={_ => this.setState({ showSent: !showSent})} />
-						<Button
-							title="Scroll to bottom"
-							types={['small', 'warning']}
-							solid={autoScroll}
-							onClick={_ => this.setState({ autoScroll: !autoScroll })}
-							icon="angle-double-down"
-						/>
+						<Button title="Scroll to bottom" icon="angle-double-down" types={['small', 'warning']} solid={autoScroll} onClick={_ => this.setState({ autoScroll: !autoScroll })} />
+						<Button title="Info" icon="info-circle" types={['small', 'link']} solid={showSettings} onClick={_ => this.setState({ showSettings: !showSettings })} />
 					</div>
 				</div>
-				<ul className="messages" ref={this.ulRef}>
+				{!showSettings ? (<>
+					<ul className="messages" ref={this.ulRef}>
 					{device.messages.filter(msg => showSent || msg.direction !== Direction.Sent).map((msg, i) =>
 						<li key={i} className={msg.direction === Direction.Received ? 'received' : 'sent'}>
 							<span className="timestamp">[{msg.timestamp.toLocaleTimeString()}]:</span>
 							<span className="content">{msg.content}</span>
 						</li>
 					)}
-				</ul>
-				<input
-					type="text"
-					className="chatbox"
-					ref={this.inputRef}
-					value={message}
-					disabled={device.connState !== 'CONNECTED'}
-					onChange={e => this.setState({ message: e.target.value, historyIndex: -1 })}
-					onKeyUp={this.onKey}
-				/>
+					</ul>
+					<input
+						type="text"
+						className="chatbox"
+						ref={this.inputRef}
+						value={message}
+						disabled={device.connState !== 'CONNECTED'}
+						onChange={e => this.setState({ message: e.target.value, historyIndex: -1 })}
+						onKeyUp={this.onKey}
+					/>
+				</>) : (
+					<Info device={device} />
+				)}
+
 			</div>
 		)
 	}
