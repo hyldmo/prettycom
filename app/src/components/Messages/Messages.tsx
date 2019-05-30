@@ -1,4 +1,5 @@
 import cn from 'classnames'
+import Button from 'components/Button'
 import React, { KeyboardEventHandler } from 'react'
 import { Direction, SerialDevice } from 'types'
 
@@ -133,25 +134,17 @@ export class Messages extends React.Component<Props, State> {
 							value={repeatInterval !== null ? repeatInterval : ''}
 							onChange={e => this.onIntervalChanged(Number.parseInt(e.target.value, 10))}
 						/>}
-						<button className={cn('button is-small is-primary', { 'is-outlined': !repeat })} title="Repeat message" onClick={_ => this.onRepeatClick(!repeat)}>
-							<span className="icon"><i className="fas fa-sync" /></span>
-						</button>
-						<button className="button is-small is-danger is-outlined" title="Close" onClick={_ => { onClose(); onClear() }}>
-							<span className="icon"><i className="fas fa-times" /></span>
-						</button>
-						<button className="button is-small is-info is-outlined" title="Clear console" onClick={onClear}>
-							<span className="icon"><i className="fas fa-eraser" /></span>
-						</button>
-						<button className={cn('button is-small is-success', { 'is-outlined': !showSent })} title="Show sent messages" onClick={_ => this.setState({ showSent: !showSent})}>
-							<span className="icon"><i className="fas fa-paper-plane" /></span>
-						</button>
-						<button
-							className={cn('button', 'is-small', 'is-warning', { 'is-outlined': !autoScroll })}
+						<Button title="Repeat message" icon="sync" types={['small', 'primary']} active={repeat} onClick={_ => this.onRepeatClick(!repeat)} />
+						<Button title="Close" icon="times" types={['small', 'danger', 'outlined']} onClick={_ => { onClose(); onClear() }} />
+						<Button title="Clear console" types={['small', 'info', 'outlined']} icon="eraser" onClick={onClear} />
+						<Button title="Show sent messages" icon="paper-plane" types={['small', 'success']} active={showSent} onClick={_ => this.setState({ showSent: !showSent})} />
+						<Button
 							title="Scroll to bottom"
+							types={['small', 'warning']}
+							active={autoScroll}
 							onClick={_ => this.setState({ autoScroll: !autoScroll })}
-						>
-							<span className="icon"><i className="fas fa-angle-double-down" /></span>
-						</button>
+							icon="angle-double-down"
+						/>
 					</div>
 				</div>
 				<ul className="messages" ref={this.ulRef}>

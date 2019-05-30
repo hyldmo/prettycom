@@ -1,4 +1,5 @@
 import { Actions } from 'actions'
+import Button from 'components/Button'
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
@@ -52,20 +53,20 @@ const Navbar: React.StatelessComponent<Props> = ({ location, devices, connectSer
 						/>
 					</li>
 					<li>
-						<button
-							className="button is-small is-success"
+						<Button
+							types={['small', 'success']}
 							disabled={!selected || (selectedDevice && selectedDevice.connState !== 'DISCONNECTED')}
 							onClick={_ => connectSerial({ baud, device: selected })}>
 							Connect{getConnectedText(selectedDevice)}
-						</button>
+						</Button>
 					</li>
 					<li>
-						<button
+						<Button
 							className="button is-small is-warning"
 							disabled={!selected || (selectedDevice && selectedDevice.connState === 'DISCONNECTED')}
 							onClick={_ => disconnect(null, selected)}>
 							Disconnect
-						</button>
+						</Button>
 					</li>
 					<li className="settings">
 						<Link to={isSettingsOpen ? '/' : 'settings'} className="button is-small is-link">
