@@ -15,7 +15,7 @@ type State = {
 }
 
 class Root extends React.Component<{}, State> {
-	state = {
+	state: State = {
 		error: null
 	}
 

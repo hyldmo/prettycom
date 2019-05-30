@@ -21,7 +21,7 @@ const getConnectedText = (device?: SerialDevice): string => {
 	}
 }
 
-const Navbar: React.StatelessComponent<Props> = ({ location, devices, connectSerial, disconnect }) => {
+const Navbar: React.FunctionComponent<Props> = ({ location, devices, connectSerial, disconnect }) => {
 	const [selected, setDevice] = useState('')
 	const [baud, setBaud] = useState(38400)
 
@@ -62,7 +62,7 @@ const Navbar: React.StatelessComponent<Props> = ({ location, devices, connectSer
 					</li>
 					<li>
 						<Button
-							className="button is-small is-warning"
+							types={['small', 'warning']}
 							disabled={!selected || (selectedDevice && selectedDevice.connState === 'DISCONNECTED')}
 							onClick={_ => disconnect(null, selected)}>
 							Disconnect

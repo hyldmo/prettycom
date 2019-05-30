@@ -12,7 +12,7 @@ export type ButtonProps = Props & ({ title: string } | { children: React.ReactNo
 
 const mapTypes = (types: Props['types']) => types && types.filter(t => !!t).map(type => `is-${type}`)
 
-export const Button: React.StatelessComponent<Props> = ({ solid, types, className, children, icon, onClick, ...rest }) => (
+export const Button: React.FunctionComponent<Props> = ({ solid, types, className, children, icon, onClick, ...rest }) => (
 	<button
 		className={cn('button', className, mapTypes(types), { 'is-outlined': !solid })}
 		onClick={e => { if (onClick) onClick(e); e.currentTarget.blur() }}
