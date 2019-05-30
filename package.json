@@ -6,8 +6,8 @@
     "license": "MIT",
     "author": {
         "name": "Eivind Hyldmo",
-		"email": "eivind.hyldmo@gmail.com",
-		"url": "https://github.com/hyldmo"
+        "email": "eivind.hyldmo@gmail.com",
+        "url": "https://github.com/hyldmo"
     },
     "keywords": [
         "Electron",
@@ -43,18 +43,19 @@
         "npmRebuild": false,
         "artifactName": "${productName}-${os}-${arch}.${ext}",
         "linux": {
-			"target": [
-				"AppImage",
-				"deb",
-				"snap"
-			]
-		}
+            "target": [
+                "AppImage",
+                "deb",
+                "snap"
+            ]
+        }
     },
     "dependencies": {
         "serialport": "^7.1.5",
         "ws": "^7.0.0"
     },
     "devDependencies": {
+        "@fortawesome/fontawesome-free": "^5.8.2",
         "@types/classnames": "^2.2.6",
         "@types/fs-extra": "^5.0.4",
         "@types/history": "^4.6.0",

@@ -134,14 +134,14 @@ export class Messages extends React.Component<Props, State> {
 							value={repeatInterval !== null ? repeatInterval : ''}
 							onChange={e => this.onIntervalChanged(Number.parseInt(e.target.value, 10))}
 						/>}
-						<Button title="Repeat message" icon="sync" types={['small', 'primary']} active={repeat} onClick={_ => this.onRepeatClick(!repeat)} />
+						<Button title="Repeat message" icon="sync" types={['small', 'primary']} solid={repeat} onClick={_ => this.onRepeatClick(!repeat)} />
 						<Button title="Close" icon="times" types={['small', 'danger', 'outlined']} onClick={_ => { onClose(); onClear() }} />
 						<Button title="Clear console" types={['small', 'info', 'outlined']} icon="eraser" onClick={onClear} />
-						<Button title="Show sent messages" icon="paper-plane" types={['small', 'success']} active={showSent} onClick={_ => this.setState({ showSent: !showSent})} />
+						<Button title="Show sent messages" icon="paper-plane" types={['small', 'success']} solid={showSent} onClick={_ => this.setState({ showSent: !showSent})} />
 						<Button
 							title="Scroll to bottom"
 							types={['small', 'warning']}
-							active={autoScroll}
+							solid={autoScroll}
 							onClick={_ => this.setState({ autoScroll: !autoScroll })}
 							icon="angle-double-down"
 						/>
