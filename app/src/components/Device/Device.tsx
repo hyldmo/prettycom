@@ -1,13 +1,15 @@
 import cn from 'classnames'
 import Button from 'components/Button'
 import React, { KeyboardEventHandler } from 'react'
-import { Direction, SerialDevice } from 'types'
+import { SerialDevice } from 'types'
 import { Info } from './Info'
+import Messages from './Messages'
 
-import './Messages.scss'
+import './Device.scss'
 
 type Props = {
 	device: SerialDevice
+	filters: RegExp[]
 	onSend: (message: string) => void
 	onClear: () => void
 	onClose: () => void
@@ -21,9 +23,10 @@ type State = {
 	repeat: boolean
 	showSent: boolean
 	showSettings: boolean
+	showFiltered: boolean
 }
 
-export class Messages extends React.Component<Props, State> {
+export class Device extends React.Component<Props, State> {
 	state: State = {
 		message: '',
 		autoScroll: true,
@@ -31,7 +34,8 @@ export class Messages extends React.Component<Props, State> {
 		repeatInterval: null,
 		repeat: false,
 		showSent: true,
-		showSettings: false
+		showSettings: false,
+		showFiltered: false
 	}
 
 	private messageInterval: ReturnType<Window['setInterval']> | null = null
@@ -39,7 +43,7 @@ export class Messages extends React.Component<Props, State> {
 	private ulRef = React.createRef<HTMLUListElement>()
 	private inputRef = React.createRef<HTMLInputElement>()
 
-	componentDidUpdate (prevProps: Props, prevState: State) {
+	componentDidUpdate(prevProps: Props, prevState: State) {
 		const { autoScroll } = this.state
 		const messagesChanged = prevProps.device.messages.length !== this.props.device.messages.length
 		if (autoScroll && (!prevState.autoScroll || messagesChanged)) {
@@ -50,12 +54,12 @@ export class Messages extends React.Component<Props, State> {
 		}
 	}
 
-	componentWillUnmount () {
+	componentWillUnmount() {
 		if (this.messageInterval !== null)
 			clearInterval(this.messageInterval)
 	}
 
-	scrollBottom () {
+	scrollBottom() {
 		const elem = this.ulRef.current
 		if (elem) {
 			elem.scrollTop = elem.scrollHeight
@@ -102,14 +106,14 @@ export class Messages extends React.Component<Props, State> {
 		}
 	}
 
-	onRepeatClick (repeat: boolean) {
+	onRepeatClick(repeat: boolean) {
 		if (!repeat && this.messageInterval !== null)
 			clearInterval(this.messageInterval)
 
 		this.setState({ repeat })
 	}
 
-	onIntervalChanged (interval: number) {
+	onIntervalChanged(interval: number) {
 		const { history } = this.props.device
 		if (this.state.repeat && this.messageInterval !== null && !isNaN(interval)) {
 			clearInterval(this.messageInterval)
@@ -122,9 +126,9 @@ export class Messages extends React.Component<Props, State> {
 		this.setState({ repeatInterval: interval })
 	}
 
-	render () {
-		const { device, onClear, onClose } = this.props
-		const { message, autoScroll, repeatInterval, repeat, showSent, showSettings } = this.state
+	render() {
+		const { device, onClear, onClose, filters } = this.props
+		const { message, autoScroll, repeatInterval, repeat, showSent, showSettings, showFiltered } = this.state
 		return (
 			<div className={cn('session', device.connState.toLowerCase())}>
 				<div className="properties">
@@ -137,23 +141,57 @@ export class Messages extends React.Component<Props, State> {
 							value={repeatInterval !== null ? repeatInterval : ''}
 							onChange={e => this.onIntervalChanged(Number.parseInt(e.target.value, 10))}
 						/>}
-						<Button title="Repeat message" icon="sync" types={['small', 'primary']} solid={repeat} onClick={_ => this.onRepeatClick(!repeat)} />
-						<Button title="Close" icon="times" types={['small', 'danger', 'outlined']} onClick={_ => { onClose(); onClear() }} />
-						<Button title="Clear console" types={['small', 'info', 'outlined']} icon="eraser" onClick={onClear} />
-						<Button title="Show sent messages" icon="paper-plane" types={['small', 'success']} solid={showSent} onClick={_ => this.setState({ showSent: !showSent})} />
-						<Button title="Scroll to bottom" icon="angle-double-down" types={['small', 'warning']} solid={autoScroll} onClick={_ => this.setState({ autoScroll: !autoScroll })} />
-						<Button title="Info" icon="info-circle" types={['small', 'link']} solid={showSettings} onClick={_ => this.setState({ showSettings: !showSettings })} />
+						<Button
+							title="Repeat message"
+							icon="sync"
+							types={['small', 'primary']}
+							solid={repeat}
+							onClick={_ => this.onRepeatClick(!repeat)}
+						/>
+						<Button
+							title="Show filtered messages"
+							icon={showFiltered ? 'eye' : 'eye-slash'}
+							types={['small', 'warning']}
+							solid={showFiltered}
+							onClick={_ => this.setState({ showFiltered: !showFiltered })}
+						/>
+						<Button
+							title="Clear console"
+							types={['small', 'info', 'outlined']}
+							icon="eraser"
+							onClick={onClear}
+						/>
+						<Button
+							title="Show sent messages"
+							icon="paper-plane"
+							types={['small', 'success']}
+							solid={showSent}
+							onClick={_ => this.setState({ showSent: !showSent })}
+						/>
+						<Button
+							title="Scroll to bottom"
+							icon="angle-double-down"
+							types={['small', 'warning']}
+							solid={autoScroll}
+							onClick={_ => this.setState({ autoScroll: !autoScroll })}
+						/>
+						<Button
+							title="Info"
+							icon="info-circle"
+							types={['small', 'link']}
+							solid={showSettings}
+							onClick={_ => this.setState({ showSettings: !showSettings })}
+						/>
+						<Button
+							title="Close"
+							icon="times"
+							types={['small', 'danger', 'outlined']}
+							onClick={_ => { onClose(); onClear() }}
+						/>
 					</div>
 				</div>
 				{!showSettings ? (<>
-					<ul className="messages" ref={this.ulRef}>
-					{device.messages.filter(msg => showSent || msg.direction !== Direction.Sent).map((msg, i) =>
-						<li key={i} className={msg.direction === Direction.Received ? 'received' : 'sent'}>
-							<span className="timestamp">[{msg.timestamp.toLocaleTimeString()}]:</span>
-							<span className="content">{msg.content}</span>
-						</li>
-					)}
-					</ul>
+					<Messages device={device} filters={showFiltered ? [] : filters} showSent={showSent} ref={this.ulRef} />
 					<input
 						type="text"
 						className="chatbox"
@@ -164,8 +202,8 @@ export class Messages extends React.Component<Props, State> {
 						onKeyUp={this.onKey}
 					/>
 				</>) : (
-					<Info device={device} />
-				)}
+						<Info device={device} />
+					)}
 
 			</div>
 		)

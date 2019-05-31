@@ -1,12 +1,12 @@
 import { routerReducer as routing } from 'react-router-redux'
 import { combineReducers } from 'redux'
 import devices from './devices'
-import version from './version'
+import settings from './settings'
 
 const reducers = combineReducers({
 	routing,
 	devices,
-	version
+	settings
 })
 
 export default reducers

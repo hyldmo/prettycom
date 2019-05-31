@@ -1,0 +1,21 @@
+@import "~styles/variables.scss";
+
+.settings {
+	.filters {
+		margin-top: 1rem;
+
+		input {
+			border: 1px solid $border-color;
+			color: #EC7F6E; 
+			background-color: $bg-color-2;
+
+			&:hover {
+				z-index: inherit;
+			}
+		}
+
+		.field:not(:last-child) {
+			margin-bottom: 0.5rem;
+		}
+	}
+}

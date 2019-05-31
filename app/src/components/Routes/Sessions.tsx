@@ -1,5 +1,5 @@
 import { Actions } from 'actions'
-import { Messages } from 'components/Messages'
+import { Device } from 'components/Device'
 import React from 'react'
 import { connect } from 'react-redux'
 import { State } from 'types'
@@ -10,13 +10,14 @@ type Props = ReturnType<typeof mapStateToProps> & typeof dispatchToProps
 
 class Home extends React.Component<Props> {
 	render () {
-		const { devices, sendMessage, clearMessages, disconnect } = this.props
+		const { devices, filters, sendMessage, clearMessages, disconnect } = this.props
 		return (
 			<div className="sessions">
 				{devices.filter(device => device.connState === 'CONNECTED' || device.messages.length > 0).map(device => (
-					<Messages
+					<Device
 						key={device.comName}
 						device={device}
+						filters={filters}
 						onSend={msg => sendMessage(msg, device.comName)}
 						onClear={() => clearMessages(null, device.comName)}
 						onClose={() => disconnect(null, device.comName)}
@@ -28,7 +29,8 @@ class Home extends React.Component<Props> {
 }
 
 const mapStateToProps = (state: State) => ({
-	devices: state.devices
+	devices: state.devices,
+	filters: state.settings.filters
 })
 
 const dispatchToProps = {
