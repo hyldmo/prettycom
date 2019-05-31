@@ -6,12 +6,12 @@ $border-radius: 10px;
 	color: $main-color;
 	.chatbox {
 		border-radius: $border-radius;
-		background-color: #36393f;
+		background-color: $bg-color-2;
 		margin-top: 0.75em;
 		padding: 0.25em 0.5em;
 		color: inherit;
 		outline: none;
-		border: 1px solid #474a4f;
+		border: 1px solid $border-color;
 	}
 
 	.properties {
@@ -45,7 +45,7 @@ $border-radius: 10px;
 	list-style: none;
 	overflow-y: scroll;
 	border-radius: $border-radius;
-	background-color: #36393f;
+	background-color: $bg-color-2;
 	padding: 0.25em 0.5em 0.25em;
 
 	li {
@@ -59,7 +59,7 @@ $border-radius: 10px;
 		}
 
 		&:not(:last-child) {
-			border-bottom: 1px solid #474a4f;
+			border-bottom: 1px solid $border-color;
 		}
 
 		&.sent {
@@ -84,13 +84,13 @@ $border-radius: 10px;
 
 		&-thumb {
 			border-radius: $border-radius;
-			border: 3px solid #36393f;
+			border: 3px solid $bg-color-2;
 			background-color: #202225;
 		}
 
 		&-track {
 			box-shadow: $shadow;
-			border: 3px solid #36393f;
+			border: 3px solid $bg-color-2;
 			border-radius: $border-radius;
 			&:hover {
 				background-color: $background-color;

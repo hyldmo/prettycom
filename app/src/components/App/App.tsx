@@ -6,7 +6,7 @@ import Navbar from './Navbar'
 
 import './App.scss'
 
-const App: React.StatelessComponent = () => (
+const App: React.FunctionComponent = () => (
 	<>
 		<Navbar/>
 		<main>

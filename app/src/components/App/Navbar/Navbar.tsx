@@ -1,4 +1,5 @@
 import { Actions } from 'actions'
+import Button from 'components/Button'
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
@@ -20,7 +21,7 @@ const getConnectedText = (device?: SerialDevice): string => {
 	}
 }
 
-const Navbar: React.StatelessComponent<Props> = ({ location, devices, connectSerial, disconnect }) => {
+const Navbar: React.FunctionComponent<Props> = ({ location, devices, hideUnknown, connectSerial, disconnect }) => {
 	const [selected, setDevice] = useState('')
 	const [baud, setBaud] = useState(38400)
 
@@ -35,7 +36,7 @@ const Navbar: React.StatelessComponent<Props> = ({ location, devices, connectSer
 					<li>
 						<select className="select is-small" value={selected} onChange={e => setDevice(e.target.value)}>
 							<option value="">Select COM</option>
-							{devices.map(device => (
+							{devices.filter(device => !hideUnknown || !device.comName.includes('ttyS')).map(device => (
 								<option key={device.comName} value={device.comName}>
 									({device.comName}) {device.manufacturer} {device.productId}
 								</option>
@@ -52,20 +53,20 @@ const Navbar: React.StatelessComponent<Props> = ({ location, devices, connectSer
 						/>
 					</li>
 					<li>
-						<button
-							className="button is-small is-success"
+						<Button
+							types={['small', 'success']}
 							disabled={!selected || (selectedDevice && selectedDevice.connState !== 'DISCONNECTED')}
 							onClick={_ => connectSerial({ baud, device: selected })}>
 							Connect{getConnectedText(selectedDevice)}
-						</button>
+						</Button>
 					</li>
 					<li>
-						<button
-							className="button is-small is-warning"
+						<Button
+							types={['small', 'warning']}
 							disabled={!selected || (selectedDevice && selectedDevice.connState === 'DISCONNECTED')}
 							onClick={_ => disconnect(null, selected)}>
 							Disconnect
-						</button>
+						</Button>
 					</li>
 					<li className="settings">
 						<Link to={isSettingsOpen ? '/' : 'settings'} className="button is-small is-link">
@@ -80,7 +81,8 @@ const Navbar: React.StatelessComponent<Props> = ({ location, devices, connectSer
 
 const mapStateToProps = (state: State) => ({
 	location: state.routing.location,
-	devices: state.devices
+	devices: state.devices,
+	hideUnknown: state.settings.hideUnknown
 })
 
 const dispatchToProps = {

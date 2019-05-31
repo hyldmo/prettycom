@@ -3,6 +3,8 @@ $max-width: 60rem;
 $grid-columns: auto $max-width auto;
 $main-color: #ddd;
 $background-color: #2f3136;
+$bg-color-2: #36393f;
+$border-color: #474a4f;
 
 $color-main: #108EE9;
 
@@ -15,3 +17,7 @@ $color-main: #108EE9;
 @function shade($brightness, $alpha: 100%) {
 	@return rgba($brightness, $brightness, $brightness, $alpha / 100);
 }
+
+// Bulma overrides
+$text: $main-color;
+$grey-darker: #eee;

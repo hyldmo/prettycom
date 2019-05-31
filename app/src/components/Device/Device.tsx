@@ -1,11 +1,15 @@
 import cn from 'classnames'
+import Button from 'components/Button'
 import React, { KeyboardEventHandler } from 'react'
-import { Direction, SerialDevice } from 'types'
+import { SerialDevice } from 'types'
+import { Info } from './Info'
+import Messages from './Messages'
 
-import './Messages.scss'
+import './Device.scss'
 
 type Props = {
 	device: SerialDevice
+	filters: RegExp[]
 	onSend: (message: string) => void
 	onClear: () => void
 	onClose: () => void
@@ -18,44 +22,28 @@ type State = {
 	repeatInterval: number | null
 	repeat: boolean
 	showSent: boolean
+	showSettings: boolean
+	showFiltered: boolean
 }
 
-export class Messages extends React.Component<Props, State> {
+export class Device extends React.Component<Props, State> {
 	state: State = {
 		message: '',
 		autoScroll: true,
 		historyIndex: -1,
 		repeatInterval: null,
 		repeat: false,
-		showSent: true
+		showSent: true,
+		showSettings: false,
+		showFiltered: false
 	}
 
 	private messageInterval: ReturnType<Window['setInterval']> | null = null
-
-	private ulRef = React.createRef<HTMLUListElement>()
 	private inputRef = React.createRef<HTMLInputElement>()
-
-	componentDidUpdate (prevProps: Props, prevState: State) {
-		const { autoScroll } = this.state
-		const messagesChanged = prevProps.device.messages.length !== this.props.device.messages.length
-		if (autoScroll && (!prevState.autoScroll || messagesChanged)) {
-			const elem = this.ulRef.current
-			if (elem) {
-				elem.scrollTop = elem.scrollHeight
-			}
-		}
-	}
 
 	componentWillUnmount () {
 		if (this.messageInterval !== null)
 			clearInterval(this.messageInterval)
-	}
-
-	scrollBottom () {
-		const elem = this.ulRef.current
-		if (elem) {
-			elem.scrollTop = elem.scrollHeight
-		}
 	}
 
 	onKey: KeyboardEventHandler<HTMLInputElement> = e => {
@@ -119,8 +107,8 @@ export class Messages extends React.Component<Props, State> {
 	}
 
 	render () {
-		const { device, onClear, onClose } = this.props
-		const { message, autoScroll, repeatInterval, repeat, showSent } = this.state
+		const { device, onClear, onClose, filters } = this.props
+		const { message, autoScroll, repeatInterval, repeat, showSent, showSettings, showFiltered } = this.state
 		return (
 			<div className={cn('session', device.connState.toLowerCase())}>
 				<div className="properties">
@@ -133,44 +121,70 @@ export class Messages extends React.Component<Props, State> {
 							value={repeatInterval !== null ? repeatInterval : ''}
 							onChange={e => this.onIntervalChanged(Number.parseInt(e.target.value, 10))}
 						/>}
-						<button className={cn('button is-small is-primary', { 'is-outlined': !repeat })} title="Repeat message" onClick={_ => this.onRepeatClick(!repeat)}>
-							<span className="icon"><i className="fas fa-sync" /></span>
-						</button>
-						<button className="button is-small is-danger is-outlined" title="Close" onClick={_ => { onClose(); onClear() }}>
-							<span className="icon"><i className="fas fa-times" /></span>
-						</button>
-						<button className="button is-small is-info is-outlined" title="Clear console" onClick={onClear}>
-							<span className="icon"><i className="fas fa-eraser" /></span>
-						</button>
-						<button className={cn('button is-small is-success', { 'is-outlined': !showSent })} title="Show sent messages" onClick={_ => this.setState({ showSent: !showSent})}>
-							<span className="icon"><i className="fas fa-paper-plane" /></span>
-						</button>
-						<button
-							className={cn('button', 'is-small', 'is-warning', { 'is-outlined': !autoScroll })}
+						<Button
+							title="Repeat message"
+							icon="sync"
+							types={['small', 'primary']}
+							solid={repeat}
+							onClick={_ => this.onRepeatClick(!repeat)}
+						/>
+						<Button
+							title={`${showFiltered ? 'Hide' : 'Show'} filtered messages`}
+							icon={showFiltered ? 'eye' : 'eye-slash'}
+							types={['small', 'warning']}
+							solid={showFiltered}
+							onClick={_ => this.setState({ showFiltered: !showFiltered })}
+						/>
+						<Button
+							title="Clear console"
+							types={['small', 'info', 'outlined']}
+							icon="eraser"
+							onClick={onClear}
+						/>
+						<Button
+							title={`${showSent ? 'Hide' : 'Show'} sent messages`}
+							icon="paper-plane"
+							types={['small', 'success']}
+							solid={showSent}
+							onClick={_ => this.setState({ showSent: !showSent })}
+						/>
+						<Button
 							title="Scroll to bottom"
+							icon="angle-double-down"
+							types={['small', 'warning']}
+							solid={autoScroll}
 							onClick={_ => this.setState({ autoScroll: !autoScroll })}
-						>
-							<span className="icon"><i className="fas fa-angle-double-down" /></span>
-						</button>
+						/>
+						<Button
+							title="Info"
+							icon="info-circle"
+							types={['small', 'link']}
+							solid={showSettings}
+							onClick={_ => this.setState({ showSettings: !showSettings })}
+						/>
+						<Button
+							title="Close"
+							icon="times"
+							types={['small', 'danger', 'outlined']}
+							onClick={_ => { onClose(); onClear() }}
+						/>
 					</div>
 				</div>
-				<ul className="messages" ref={this.ulRef}>
-					{device.messages.filter(msg => showSent || msg.direction !== Direction.Sent).map((msg, i) =>
-						<li key={i} className={msg.direction === Direction.Received ? 'received' : 'sent'}>
-							<span className="timestamp">[{msg.timestamp.toLocaleTimeString()}]:</span>
-							<span className="content">{msg.content}</span>
-						</li>
+				{!showSettings ? (<>
+					<Messages device={device} filters={showFiltered ? [] : filters} showSent={showSent} autoScroll={autoScroll} />
+					<input
+						type="text"
+						className="chatbox"
+						ref={this.inputRef}
+						value={message}
+						disabled={device.connState !== 'CONNECTED'}
+						onChange={e => this.setState({ message: e.target.value, historyIndex: -1 })}
+						onKeyUp={this.onKey}
+					/>
+				</>) : (
+						<Info device={device} />
 					)}
-				</ul>
-				<input
-					type="text"
-					className="chatbox"
-					ref={this.inputRef}
-					value={message}
-					disabled={device.connState !== 'CONNECTED'}
-					onChange={e => this.setState({ message: e.target.value, historyIndex: -1 })}
-					onKeyUp={this.onKey}
-				/>
+
 			</div>
 		)
 	}

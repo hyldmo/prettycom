@@ -20,7 +20,7 @@ async function createWindow () {
 	// and load the index.html of the app.
 	// Open the DevTools.
 	if (process.env.NODE_ENV === 'development') {
-		await mainWindow.loadURL(`http://localhost:${process.env.PORT}/index.html`)
+		await mainWindow.loadURL(`http://localhost:${process.env.PORT}/#/`)
 		mainWindow.webContents.openDevTools()
 	} else {
 		mainWindow.loadFile(path.resolve(__dirname, 'index.html'))
