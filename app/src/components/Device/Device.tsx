@@ -39,31 +39,11 @@ export class Device extends React.Component<Props, State> {
 	}
 
 	private messageInterval: ReturnType<Window['setInterval']> | null = null
-
-	private ulRef = React.createRef<HTMLUListElement>()
 	private inputRef = React.createRef<HTMLInputElement>()
 
-	componentDidUpdate(prevProps: Props, prevState: State) {
-		const { autoScroll } = this.state
-		const messagesChanged = prevProps.device.messages.length !== this.props.device.messages.length
-		if (autoScroll && (!prevState.autoScroll || messagesChanged)) {
-			const elem = this.ulRef.current
-			if (elem) {
-				elem.scrollTop = elem.scrollHeight
-			}
-		}
-	}
-
-	componentWillUnmount() {
+	componentWillUnmount () {
 		if (this.messageInterval !== null)
 			clearInterval(this.messageInterval)
-	}
-
-	scrollBottom() {
-		const elem = this.ulRef.current
-		if (elem) {
-			elem.scrollTop = elem.scrollHeight
-		}
 	}
 
 	onKey: KeyboardEventHandler<HTMLInputElement> = e => {
@@ -106,14 +86,14 @@ export class Device extends React.Component<Props, State> {
 		}
 	}
 
-	onRepeatClick(repeat: boolean) {
+	onRepeatClick (repeat: boolean) {
 		if (!repeat && this.messageInterval !== null)
 			clearInterval(this.messageInterval)
 
 		this.setState({ repeat })
 	}
 
-	onIntervalChanged(interval: number) {
+	onIntervalChanged (interval: number) {
 		const { history } = this.props.device
 		if (this.state.repeat && this.messageInterval !== null && !isNaN(interval)) {
 			clearInterval(this.messageInterval)
@@ -126,7 +106,7 @@ export class Device extends React.Component<Props, State> {
 		this.setState({ repeatInterval: interval })
 	}
 
-	render() {
+	render () {
 		const { device, onClear, onClose, filters } = this.props
 		const { message, autoScroll, repeatInterval, repeat, showSent, showSettings, showFiltered } = this.state
 		return (
@@ -149,7 +129,7 @@ export class Device extends React.Component<Props, State> {
 							onClick={_ => this.onRepeatClick(!repeat)}
 						/>
 						<Button
-							title="Show filtered messages"
+							title={`${showFiltered ? 'Hide' : 'Show'} filtered messages`}
 							icon={showFiltered ? 'eye' : 'eye-slash'}
 							types={['small', 'warning']}
 							solid={showFiltered}
@@ -162,7 +142,7 @@ export class Device extends React.Component<Props, State> {
 							onClick={onClear}
 						/>
 						<Button
-							title="Show sent messages"
+							title={`${showSent ? 'Hide' : 'Show'} sent messages`}
 							icon="paper-plane"
 							types={['small', 'success']}
 							solid={showSent}
@@ -191,7 +171,7 @@ export class Device extends React.Component<Props, State> {
 					</div>
 				</div>
 				{!showSettings ? (<>
-					<Messages device={device} filters={showFiltered ? [] : filters} showSent={showSent} ref={this.ulRef} />
+					<Messages device={device} filters={showFiltered ? [] : filters} showSent={showSent} autoScroll={autoScroll} />
 					<input
 						type="text"
 						className="chatbox"

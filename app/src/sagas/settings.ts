@@ -1,9 +1,9 @@
 import { Predicate } from '@redux-saga/types'
 import { Action, Actions } from 'actions'
+import { Settings } from 'reducers/settings'
 import { call, put, select, takeLatest  } from 'redux-saga/effects'
 import { State } from 'types'
 import { sleep } from 'utils'
-import { Settings } from 'reducers/settings';
 
 const SAVE_KEY = 'prettycom'
 
