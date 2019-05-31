@@ -1,6 +1,6 @@
-@import "~normalize.css";
 @import "./variables.scss";
-@import "~bulma/css/bulma.css";
+@import "~normalize.css";
+@import "~bulma/bulma.sass";
 @import "~@fortawesome/fontawesome-free/scss/fontawesome.scss";
 
 * {
@@ -38,4 +38,9 @@ main {
 		"left main   right";
 	grid-template-rows: $header-height auto;
 	grid-template-columns: 0 100% 0;
+}
+
+hr {
+	background-color: $bg-color-2;
+	height: 1px;
 }

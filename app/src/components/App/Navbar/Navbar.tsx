@@ -21,7 +21,7 @@ const getConnectedText = (device?: SerialDevice): string => {
 	}
 }
 
-const Navbar: React.FunctionComponent<Props> = ({ location, devices, connectSerial, disconnect }) => {
+const Navbar: React.FunctionComponent<Props> = ({ location, devices, hideUnknown, connectSerial, disconnect }) => {
 	const [selected, setDevice] = useState('')
 	const [baud, setBaud] = useState(38400)
 
@@ -36,7 +36,7 @@ const Navbar: React.FunctionComponent<Props> = ({ location, devices, connectSeri
 					<li>
 						<select className="select is-small" value={selected} onChange={e => setDevice(e.target.value)}>
 							<option value="">Select COM</option>
-							{devices.map(device => (
+							{devices.filter(device => !hideUnknown || !device.comName.includes('ttyS')).map(device => (
 								<option key={device.comName} value={device.comName}>
 									({device.comName}) {device.manufacturer} {device.productId}
 								</option>
@@ -81,7 +81,8 @@ const Navbar: React.FunctionComponent<Props> = ({ location, devices, connectSeri
 
 const mapStateToProps = (state: State) => ({
 	location: state.routing.location,
-	devices: state.devices
+	devices: state.devices,
+	hideUnknown: state.settings.hideUnknown
 })
 
 const dispatchToProps = {

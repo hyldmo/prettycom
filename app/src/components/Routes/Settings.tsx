@@ -8,12 +8,16 @@ import './Settings.scss'
 
 type Props = ReturnType<typeof mapStateToProps> & typeof dispatchToProps
 
-const Settings: React.FunctionComponent<Props> = ({ filters, addFilter, removeFilter }) => {
+const Settings: React.FunctionComponent<Props> = ({ filters, hideUnknown, addFilter, removeFilter, setHideUnknown }) => {
 	const [filter, setFilter] = useState('')
 	return (
 		<div className="settings">
-			<h1>Settings</h1>
-			<h2 title="Messages matching these messages are not displayed in the log">Filters</h2>
+			<h1 className="title is-3">Settings</h1>
+			<label className="checkbox">
+				<input type="checkbox" checked={hideUnknown} onChange={e => setHideUnknown(e.target.checked)}/>
+				Hide uknown devices from list
+			</label>
+			<h2 className="title is-4" title="Messages matching these messages are not displayed in the log">Filters</h2>
 			<form action="javascript:void(0);" onSubmit={_ => addFilter(new RegExp(filter))}>
 				<div className="field has-addons">
 					<div className="control">
@@ -23,6 +27,7 @@ const Settings: React.FunctionComponent<Props> = ({ filters, addFilter, removeFi
 							placeholder="Add regex filter"
 							value={filter}
 							onChange={e => setFilter(e.target.value)}
+							required
 						/>
 					</div>
 					<div className="control">
@@ -43,7 +48,7 @@ const Settings: React.FunctionComponent<Props> = ({ filters, addFilter, removeFi
 				))}
 			</ul>
 			<hr />
-			<h2>Version: {process.env.PACKAGE_VERSION}</h2>
+			<span>Version: {process.env.PACKAGE_VERSION}</span>
 		</div>
 	)
 }
@@ -53,11 +58,13 @@ const mapStateToProps = (state: State) => ({
 })
 
 const dispatchToProps = {
-	addFilter: Actions.addFilter,
-	removeFilter: Actions.removeFilter
+	addFilter:  Actions.addFilter,
+	removeFilter: Actions.removeFilter,
+	setHideUnknown: Actions.setHideUnknown
 }
 
 export default connect(
 	mapStateToProps,
 	dispatchToProps
 )(Settings)
+	

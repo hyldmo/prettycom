@@ -2,10 +2,12 @@ import { Action } from 'actions'
 
 export type Settings = {
 	filters: RegExp[]
+	hideUnknown: boolean
 }
 
 const intialState: Settings = {
-	filters: []
+	filters: [],
+	hideUnknown: true
 }
 
 export default function (state: Settings = intialState, action: Action) {
@@ -23,6 +25,12 @@ export default function (state: Settings = intialState, action: Action) {
 			return {
 				...state,
 				filters: state.filters.filter(filter => filter.source !== action.payload.source)
+			}
+
+		case 'SETTINGS_HIDE_UNKNOWN':
+			return {
+				...state,
+				hideUnknown: action.payload
 			}
 
 		default:

@@ -7,5 +7,6 @@ export default {
 
 	// If settting should be autosaved, set type to SETTINGS_<name>
 	addFilter: createAction<'SETTINGS_FILTER_ADD', RegExp>('SETTINGS_FILTER_ADD'),
-	removeFilter: createAction<'SETTINGS_FILTER_REMOVE', RegExp>('SETTINGS_FILTER_REMOVE')
+	removeFilter: createAction<'SETTINGS_FILTER_REMOVE', RegExp>('SETTINGS_FILTER_REMOVE'),
+	setHideUnknown: createAction<'SETTINGS_HIDE_UNKNOWN', boolean>('SETTINGS_HIDE_UNKNOWN')
 }

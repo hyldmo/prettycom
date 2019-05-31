@@ -17,3 +17,7 @@ $color-main: #108EE9;
 @function shade($brightness, $alpha: 100%) {
 	@return rgba($brightness, $brightness, $brightness, $alpha / 100);
 }
+
+// Bulma overrides
+$text: $main-color;
+$grey-darker: #eee;

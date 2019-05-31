@@ -1,6 +1,18 @@
 @import "~styles/variables.scss";
 
 .settings {
+	h1, h2 {
+		margin-top: 0.75rem;
+		margin-bottom: 0.5rem !important;
+	}
+
+	> label {
+		margin-bottom: .5rem;
+		input {
+			margin-right: 0.25em;
+		}
+	}
+
 	.filters {
 		margin-top: 1rem;
 
