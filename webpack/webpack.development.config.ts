@@ -13,6 +13,14 @@ const config: webpack.Configuration = {
 		filename: '[name].js'
 	},
 
+	resolve: {
+		...baseConfig.resolve,
+		alias: {
+			...baseConfig.resolve.alias,
+			'react-dom': '@hot-loader/react-dom'
+		}
+	},
+
 	devServer: {
 		historyApiFallback: true,
 		port: 1337,
