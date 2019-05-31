@@ -67,4 +67,3 @@ export default connect(
 	mapStateToProps,
 	dispatchToProps
 )(Settings)
-	
