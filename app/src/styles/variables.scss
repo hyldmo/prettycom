@@ -20,4 +20,7 @@ $color-main: #108EE9;
 
 // Bulma overrides
 $text: $main-color;
-$grey-darker: #eee;
+$title-color: $text;
+$input-hover-color: #fff;
+
+$input-color: $background-color;
