@@ -38,7 +38,7 @@ class Messages extends React.PureComponent<Props> {
 				{device.messages
 					.filter(msg =>
 						(showSent || msg.direction !== Direction.Sent) &&
-						!filters.some(filter => filter.test(msg.content))
+						(msg.direction === Direction.Sent || !filters.some(filter => filter.test(msg.content)))
 					)
 					.map((msg, i) =>
 						<li key={i} className={msg.direction === Direction.Received ? 'received' : 'sent'}>

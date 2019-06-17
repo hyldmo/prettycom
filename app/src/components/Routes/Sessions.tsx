@@ -8,7 +8,7 @@ import './Sessions.scss'
 
 type Props = ReturnType<typeof mapStateToProps> & typeof dispatchToProps
 
-class Home extends React.Component<Props> {
+class Home extends React.PureComponent<Props> {
 	render () {
 		const { devices, filters, sendMessage, clearMessages, disconnect } = this.props
 		return (
