@@ -14,7 +14,7 @@ type State = {
 	error: Error | null
 }
 
-class Root extends React.Component<{}, State> {
+class Root extends React.PureComponent<{}, State> {
 	state: State = {
 		error: null
 	}

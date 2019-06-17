@@ -46,13 +46,16 @@ export default class Server {
 
 			if (mode === 'LIST') {
 				const int1 = setInterval(async () => {
-					const devices = await SerialPort.list()
-					devices.forEach(a => {
-						if (!this.devices.find(b => a.comName === b.comName)) {
-							this.devices.push(a)
-							ws.send(`ADD:${JSON.stringify(a)}`)
-						}
-					})
+					const newDevices = await SerialPort.list()
+
+					newDevices
+						.filter(a => !this.devices.find(b => a.comName === b.comName))
+						.forEach(a => ws.send(`ADD:${JSON.stringify(a)}`))
+					this.devices
+						.filter(a => !newDevices.find(b => a.comName === b.comName))
+						.forEach(a => ws.send(`REMOVE:${JSON.stringify(a)}`))
+
+					this.devices = newDevices
 				}, 100)
 				const int2 = setInterval(() => {
 					ws.send(`ADD:${JSON.stringify(mock)}`)
@@ -88,7 +91,7 @@ export default class Server {
 				})
 
 				ws.onmessage = message => {
-					log('info', 'Sending message', message)
+					log('info', 'Sending message', message.data)
 
 					serial.write(message.data.toString())
 				}

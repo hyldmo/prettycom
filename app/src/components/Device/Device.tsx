@@ -26,7 +26,7 @@ type State = {
 	showFiltered: boolean
 }
 
-export class Device extends React.Component<Props, State> {
+export class Device extends React.PureComponent<Props, State> {
 	state: State = {
 		message: '',
 		autoScroll: true,
@@ -40,27 +40,35 @@ export class Device extends React.Component<Props, State> {
 
 	private messageInterval: ReturnType<Window['setInterval']> | null = null
 	private inputRef = React.createRef<HTMLInputElement>()
+	private n = 0
 
 	componentWillUnmount () {
 		if (this.messageInterval !== null)
 			clearInterval(this.messageInterval)
 	}
 
+	evalMessage (msg: string): string {
+		const endchar = '\n' // TODO: Add this to settings
+		const message =  this.state.repeat
+			? msg.replace('{n}', (this.n++).toString(16))
+			: msg
+		return message + endchar
+	}
+
 	onKey: KeyboardEventHandler<HTMLInputElement> = e => {
 		switch (e.keyCode) {
 			case 13: {
-				const { repeatInterval } = this.state
-				const endchar = '\n' // TODO: Add this to settings
+				const { repeat, repeatInterval } = this.state
 				const message = e.currentTarget.value
-				this.props.onSend(message + endchar)
+				this.props.onSend(this.evalMessage(message))
 				this.setState({ message: '', historyIndex: -1 })
 
-				if (this.state.repeat && repeatInterval !== null && !isNaN(repeatInterval)) {
+				if (repeat && repeatInterval !== null && !isNaN(repeatInterval)) {
 					if (this.messageInterval !== null)
-						clearInterval(this.messageInterval)
+						this.clearInterval()
 
 					this.messageInterval = window.setInterval(
-						() => this.props.onSend(message + endchar),
+						() => this.props.onSend(this.evalMessage(message)),
 						repeatInterval
 					)
 				}
@@ -86,9 +94,16 @@ export class Device extends React.Component<Props, State> {
 		}
 	}
 
+	clearInterval () {
+		if (this.messageInterval !== null) {
+			clearInterval(this.messageInterval)
+		}
+		this.n = 0
+	}
+
 	onRepeatClick (repeat: boolean) {
 		if (!repeat && this.messageInterval !== null)
-			clearInterval(this.messageInterval)
+			this.clearInterval()
 
 		this.setState({ repeat })
 	}
@@ -96,14 +111,14 @@ export class Device extends React.Component<Props, State> {
 	onIntervalChanged (interval: number) {
 		const { history } = this.props.device
 		if (this.state.repeat && this.messageInterval !== null && !isNaN(interval)) {
-			clearInterval(this.messageInterval)
+			this.clearInterval()
 
 			this.messageInterval = window.setInterval(
 				() => this.props.onSend(history[0]),
 				interval
 			)
 		}
-		this.setState({ repeatInterval: interval })
+		this.setState({ repeatInterval: isNaN(interval) ? null : interval })
 	}
 
 	render () {
@@ -122,7 +137,7 @@ export class Device extends React.Component<Props, State> {
 							onChange={e => this.onIntervalChanged(Number.parseInt(e.target.value, 10))}
 						/>}
 						<Button
-							title="Repeat message"
+							title="Repeat last sent message"
 							icon="sync"
 							types={['small', 'primary']}
 							solid={repeat}
