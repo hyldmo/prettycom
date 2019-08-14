@@ -1,4 +1,4 @@
-import { NotFound, Sessions, Settings } from 'components/Routes'
+import { Connect, NotFound, Sessions, Settings } from 'components/Routes'
 import React from 'react'
 import { hot } from 'react-hot-loader'
 import { Route, Switch } from 'react-router'
@@ -12,6 +12,7 @@ const App: React.FunctionComponent = () => (
 		<main>
 			<Switch>
 				<Route exact path="/" component={Sessions} />
+				<Route exact path="/connect" component={Connect} />
 				<Route exact path="/settings" component={Settings} />
 				<Route component={NotFound}/>
 			</Switch>
