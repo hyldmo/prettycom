@@ -8,25 +8,20 @@ import './Sessions.scss'
 
 type Props = ReturnType<typeof mapStateToProps> & typeof dispatchToProps
 
-class Home extends React.PureComponent<Props> {
-	render () {
-		const { devices, filters, sendMessage, clearMessages, disconnect } = this.props
-		return (
-			<div className="sessions">
-				{devices.filter(device => device.connState === 'CONNECTED' || device.messages.length > 0).map(device => (
-					<Device
-						key={device.comName}
-						device={device}
-						filters={filters}
-						onSend={msg => sendMessage(msg, device.comName)}
-						onClear={() => clearMessages(null, device.comName)}
-						onClose={() => disconnect(null, device.comName)}
-					/>
-				))}
-			</div>
-		)
-	}
-}
+const Sessions: React.FunctionComponent<Props> = ({ devices, filters, sendMessage, clearMessages, disconnect }) => (
+	<div className="sessions">
+		{devices.filter(device => device.connState === 'CONNECTED' || device.messages.length > 0).map(device => (
+			<Device
+				key={device.comName}
+				device={device}
+				filters={filters}
+				onSend={msg => sendMessage(msg, device.comName)}
+				onClear={() => clearMessages(null, device.comName)}
+				onClose={() => disconnect(null, device.comName)}
+			/>
+		))}
+	</div>
+)
 
 const mapStateToProps = (state: State) => ({
 	devices: state.devices,
@@ -40,4 +35,4 @@ const dispatchToProps = {
 	clearMessages: Actions.clearConsole
 }
 
-export default connect(mapStateToProps, dispatchToProps)(Home)
+export default connect(mapStateToProps, dispatchToProps)(Sessions)
