@@ -14,13 +14,13 @@ const Navbar: React.FunctionComponent<Props> = ({ location }) => {
 		<header>
 			<nav>
 				<ul>
-					<li>
+					{isHome && <li>
 						<Button
 							element={<Link to="/connect"/>}
 							types={['small', 'success']}>
 							Connect
 						</Button>
-					</li>
+					</li>}
 					<li className="settings">
 						<Link to={!isHome ? '/' : 'settings'} className="button is-small is-link">
 							{!isHome ? 'Close' : 'Settings'}

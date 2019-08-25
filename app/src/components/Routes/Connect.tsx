@@ -1,5 +1,6 @@
 import { Actions } from 'actions'
 import Button from 'components/Button'
+import { push } from 'connected-react-router'
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { SerialDevice, State } from 'types'
@@ -20,34 +21,77 @@ const getConnectedText = (device?: SerialDevice): string => {
 type Props = ReturnType<typeof mapStateToProps> & typeof dispatchToProps
 
 const Connect: React.FunctionComponent<Props> = ({ devices, settings, connectSerial }) => {
-	const [selected, setDevice] = useState('')
-	const [baud, setBaud] = useState(38400)
+	const [selected, setDevice] = useState(devices[0].comName)
+	const [baud, setBaud] = useState('38400')
+	const [customBaud, setCustomBaud] = useState<string | null>(null)
 
 	const selectedDevice = devices.find(dev => dev.comName === selected)
-
 	return (
 		<div className="connect">
-			<select className="select is-small" value={selected} onChange={e => setDevice(e.target.value)}>
-				<option value="">Select COM</option>
-				{devices.filter(device => !settings.hideUnknown || !device.comName.includes('ttyS')).map(device => (
-					<option key={device.comName} value={device.comName}>
-						({device.comName}) {device.manufacturer} {device.productId}
-					</option>
-				))}
-			</select>
-			<input
-				className="input is-small"
-				type="number"
-				placeholder="Enter baud rate"
-				value={baud}
-				onChange={e => setBaud(Number.parseInt(e.target.value, 10))}
-			/>
-			<Button
-				types={['small', 'success']}
-				disabled={!selected || (selectedDevice && selectedDevice.connState !== 'DISCONNECTED')}
-				onClick={_ => connectSerial({ baud, device: selected })}>
-				Connect{getConnectedText(selectedDevice)}
-			</Button>
+			<div className="field is-horizontal">
+				<div className="field-label">
+					<label className="label">Select COM Device(s)</label>
+				</div>
+				<div className="field-body">
+					<div className="control">
+						<div className="select">
+							<select value={selected} onChange={e => setDevice(e.target.value)}>
+								{devices.filter(device => !settings.hideUnknown || !device.comName.includes('ttyS')).map(device => (
+									<option key={device.comName} value={device.comName}>
+										({device.comName}) {device.manufacturer} {device.productId}
+									</option>
+								))}
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div className="field is-horizontal">
+				<div className="field-label">
+					<label className="label">Choose baud rate</label>
+				</div>
+				<div className="field-body">
+					<div className="field is-grouped">
+						<div className="control">
+							<div className="select">
+								<select
+									placeholder="Enter baud rate"
+									value={baud}
+									onChange={e => setBaud(e.target.value)}
+								>
+									{['115200', '57600', '38400', '19200', '4800', '2400', '1200', 'Custom'].map(opt => (
+										<option key={opt}>{opt}</option>
+									))}
+								</select>
+							</div>
+						</div>
+						{baud === 'Custom' && (
+							<div className="control">
+								<input
+									className="input"
+									type="number"
+									placeholder="Enter baud rate"
+									value={customBaud || ''}
+									onChange={e => setCustomBaud(e.target.value)}
+								/>
+							</div>
+						)}
+					</div>
+
+				</div>
+			</div>
+			<div className="field is-horizontal">
+				<div className="field-label" />
+				<div className="field-body">
+					<Button
+						types={['small', 'success']}
+						disabled={!selected || (selectedDevice && selectedDevice.connState !== 'DISCONNECTED')}
+						onClick={_ => connectSerial({ baud: Number.parseInt(customBaud || baud, 10), device: selected })}>
+						Connect{getConnectedText(selectedDevice)}
+					</Button>
+				</div>
+			</div>
 		</div>
 	)
 }
@@ -61,7 +105,8 @@ const dispatchToProps = {
 	connectSerial: Actions.connect,
 	sendMessage: Actions.sendMessage,
 	disconnect: Actions.disconnect,
-	clearMessages: Actions.clearConsole
+	clearMessages: Actions.clearConsole,
+	push
 }
 
 export default connect(mapStateToProps, dispatchToProps)(Connect)
