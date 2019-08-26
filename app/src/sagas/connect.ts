@@ -1,3 +1,4 @@
+import { push } from 'connected-react-router'
 import { call, put, race, spawn, take, takeEvery, takeLatest  } from 'redux-saga/effects'
 import { PortInfo } from 'serialport'
 import { sleep } from 'utils'
@@ -52,6 +53,8 @@ function* connectToServer (action: typeof Actions.connect, retries = 5): any {
 		yield put(Actions.connecting(null, device))
 		yield call(waitForOpen, socket)
 		yield put(Actions.connected(null, device))
+		if (location.hash.includes('connect'))
+			yield put(push('/'))
 		retries++
 
 		yield race([

@@ -42,7 +42,7 @@ class Messages extends React.PureComponent<Props> {
 					)
 					.map((msg, i) =>
 						<li key={i} className={msg.direction === Direction.Received ? 'received' : 'sent'}>
-							<span className="timestamp">[{msg.timestamp.toLocaleTimeString()}]:</span>
+							<span className="timestamp">[{msg.timestamp.toLocaleTimeString('nb-NO')}]:</span>
 							<span className="content">{msg.content}</span>
 						</li>
 					)

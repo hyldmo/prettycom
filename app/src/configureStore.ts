@@ -1,6 +1,6 @@
 import { Action } from 'actions'
+import { routerMiddleware } from 'connected-react-router'
 import { createHashHistory } from 'history'
-import { routerMiddleware } from 'react-router-redux'
 import { applyMiddleware, compose, createStore } from 'redux'
 import { createLogger } from 'redux-logger'
 import createSagaMiddleware from 'redux-saga'
@@ -26,7 +26,7 @@ const composeEnhancers: typeof compose = (window as any).__REDUX_DEVTOOLS_EXTENS
 
 export default function configureStore (initialState?: Partial<State>) {
 	const store = createStore(
-		rootReducer,
+		rootReducer(history),
 		initialState || {},
 		composeEnhancers(
 			applyMiddleware(...middlewares)
