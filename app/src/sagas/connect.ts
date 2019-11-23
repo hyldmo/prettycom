@@ -34,7 +34,7 @@ function* watchDeviceList (socket: WebSocket) {
 
 function* listDevices () {
 	try {
-		const URI = `ws://localhost:31130?mode=LIST`
+		const URI = 'ws://localhost:31130?mode=LIST'
 		const socket = new WebSocket(URI)
 		const channel = yield call(socketChannel, socket)
 

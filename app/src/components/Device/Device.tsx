@@ -141,14 +141,14 @@ export class Device extends React.PureComponent<Props, State> {
 							icon="sync"
 							types={['small', 'primary']}
 							solid={repeat}
-							onClick={_ => this.onRepeatClick(!repeat)}
+							onClick={() => this.onRepeatClick(!repeat)}
 						/>
 						<Button
 							title={`${showFiltered ? 'Hide' : 'Show'} filtered messages`}
 							icon={showFiltered ? 'eye' : 'eye-slash'}
 							types={['small', 'warning']}
 							solid={showFiltered}
-							onClick={_ => this.setState({ showFiltered: !showFiltered })}
+							onClick={() => this.setState({ showFiltered: !showFiltered })}
 						/>
 						<Button
 							title="Clear console"
@@ -161,27 +161,27 @@ export class Device extends React.PureComponent<Props, State> {
 							icon="paper-plane"
 							types={['small', 'success']}
 							solid={showSent}
-							onClick={_ => this.setState({ showSent: !showSent })}
+							onClick={() => this.setState({ showSent: !showSent })}
 						/>
 						<Button
 							title="Scroll to bottom"
 							icon="angle-double-down"
 							types={['small', 'warning']}
 							solid={autoScroll}
-							onClick={_ => this.setState({ autoScroll: !autoScroll })}
+							onClick={() => this.setState({ autoScroll: !autoScroll })}
 						/>
 						<Button
 							title="Info"
 							icon="info-circle"
 							types={['small', 'link']}
 							solid={showSettings}
-							onClick={_ => this.setState({ showSettings: !showSettings })}
+							onClick={() => this.setState({ showSettings: !showSettings })}
 						/>
 						<Button
 							title="Close"
 							icon="times"
 							types={['small', 'danger', 'outlined']}
-							onClick={_ => { onClose(); onClear() }}
+							onClick={() => { onClose(); onClear() }}
 						/>
 					</div>
 				</div>

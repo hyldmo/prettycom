@@ -1,7 +1,7 @@
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import path from 'path'
 import webpack from 'webpack'
-import { getFolders } from '../app/src/utils/webpack'
+import { getFolders } from './utils'
 import packageJSON from '../package.json'
 import tsConfig from '../tsconfig.json'
 

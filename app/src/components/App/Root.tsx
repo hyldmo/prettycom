@@ -19,14 +19,13 @@ class Root extends React.PureComponent<{}, State> {
 		error: null
 	}
 
-	componentWillReceiveProps () {
-		this.setState({ error: null })
+	static getDerivedStateFromError (error: Error) {
+		return { error }
 	}
 
 	componentDidCatch (error: Error, info: React.ErrorInfo) {
 		// tslint:disable-next-line:no-console
 		console.warn(info)
-		this.setState({ error })
 	}
 
 	render () {
