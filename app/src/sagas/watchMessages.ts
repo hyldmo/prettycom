@@ -12,12 +12,12 @@ export function* watchMessages (socket: WebSocket, device: string) {
 		msg = msg.concat(data)
 		if (['\0', '\r', '\n'].some(c => data.includes(c))) {
 			for (const message of msg.split('\n')) {
-				if (message.length > 0)
-					yield put(Actions.dataReceived({
-						timestamp: new Date(),
-						content: message,
-						direction: Direction.Received
-					}, device))
+					if (message.length > 0)
+						yield put(Actions.dataReceived({
+							timestamp: new Date(),
+							content: message,
+							direction: Direction.Received
+						}, device))
 			}
 			msg = ''
 		}
@@ -26,9 +26,7 @@ export function* watchMessages (socket: WebSocket, device: string) {
 
 export function* watchUserSentMessages (socket: WebSocket, device: string) {
 	while (true) {
-		const { payload } = yield take<any>((action: Action) => {
-			return action.type === 'DEVICE_MSG' && action.meta === device
-		})
+		const { payload } = yield take<any>((action: Action) => action.type === 'DEVICE_MSG' && action.meta === device)
 		socket.send(payload)
 	}
 }
@@ -41,7 +39,7 @@ export function waitForOpen (socket: WebSocket) {
 	})
 }
 
-export function* socketChannel (socket: WebSocket) {
+export function socketChannel (socket: WebSocket) {
 	return eventChannel(emitter => {
 		const listeners = {
 			message: (event: WebSocketEventMap['message']) => {

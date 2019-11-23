@@ -10,8 +10,8 @@ type Props = {
 export const Info: React.FunctionComponent<Props> = ({ device }) => (
 	<div className="session-settings">
 		<ul className="info">
-			{Object.entries(device).filter(([key, value]) => typeof value === 'string').map(([key, value]) => (
-				<li>
+			{Object.entries(device).filter(([, value]) => typeof value === 'string').map(([key, value]) => (
+				<li key={key}>
 					<span>{key}:&nbsp;</span>
 					<span>{value as any}</span>
 				</li>

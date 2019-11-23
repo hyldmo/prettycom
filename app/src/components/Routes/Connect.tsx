@@ -87,7 +87,7 @@ const Connect: React.FunctionComponent<Props> = ({ devices, settings, connectSer
 					<Button
 						types={['small', 'success']}
 						disabled={!selected || (selectedDevice && selectedDevice.connState !== 'DISCONNECTED')}
-						onClick={_ => connectSerial({ baud: Number.parseInt(customBaud || baud, 10), device: selected })}>
+						onClick={() => connectSerial({ baud: Number.parseInt(customBaud || baud, 10), device: selected })}>
 						Connect{getConnectedText(selectedDevice)}
 					</Button>
 				</div>

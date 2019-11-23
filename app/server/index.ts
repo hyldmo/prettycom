@@ -96,7 +96,7 @@ export default class Server {
 					serial.write(message.data.toString())
 				}
 
-				ws.onclose = event => {
+				ws.onclose = () => {
 					if (serial.isOpen)
 						serial.close()
 				}

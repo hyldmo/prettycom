@@ -18,7 +18,7 @@ const Settings: React.FunctionComponent<Props> = ({ filters, hideUnknown, addFil
 				Hide uknown devices from list
 			</label>
 			<h2 className="title is-4" title="Messages matching these messages are not displayed in the log">Filters</h2>
-			<form action="javascript:void(0);" onSubmit={_ => addFilter(new RegExp(filter))}>
+			<form action="javascript:void(0);" onSubmit={() => addFilter(new RegExp(filter))}>
 				<div className="field has-addons">
 					<div className="control">
 						<input
@@ -42,7 +42,7 @@ const Settings: React.FunctionComponent<Props> = ({ filters, hideUnknown, addFil
 							<input className="input is-small" readOnly value={regex.source.replace(/(^\\\/)|(\\\/$)/g, '/')} />
 						</div>
 						<div className="control">
-						<Button title="remove" types={['small', 'danger']} icon="times" onClick={_ => removeFilter(regex)} />
+						<Button title="remove" types={['small', 'danger']} icon="times" onClick={() => removeFilter(regex)} />
 						</div>
 					</li>
 				))}
