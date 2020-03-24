@@ -3,23 +3,29 @@ import { END, eventChannel } from 'redux-saga'
 import { call, put, take } from 'redux-saga/effects'
 import { Direction } from 'types'
 
+const EOM = /[\0\r\n]/g // End Of Message
+
 export function* watchMessages (socket: WebSocket, device: string) {
 	const msgChannel = yield call(socketChannel, socket)
-	let msg = ''
+	let buffer = ''
 
 	while (true) {
-		const data: string = yield take(msgChannel)
-		msg = msg.concat(data)
-		if (['\0', '\r', '\n'].some(c => data.includes(c))) {
-			for (const message of msg.split('\n')) {
-					if (message.length > 0)
-						yield put(Actions.dataReceived({
-							timestamp: new Date(),
-							content: message,
-							direction: Direction.Received
-						}, device))
+		const msg: string = yield take(msgChannel)
+		buffer = buffer.concat(msg)
+		if (msg.match(EOM)) {
+			const messages = buffer.split(EOM).filter(str => str.length > 0)
+			const remainder = messages.length > 1 // Extract last part of transmission as it may not be finished yet
+				? messages.pop() as string
+				: ''
+
+			for (const message of messages) {
+				yield put(Actions.dataReceived({
+					timestamp: new Date(),
+					content: message,
+					direction: Direction.Received
+				}, device))
 			}
-			msg = ''
+			buffer = remainder
 		}
 	}
 }
