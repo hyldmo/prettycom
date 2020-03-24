@@ -10,6 +10,7 @@ import './Device.scss'
 type Props = {
 	device: SerialDevice
 	filters: RegExp[]
+	messageLimit: number
 	onSend: (message: string) => void
 	onClear: () => void
 	onClose: () => void
@@ -122,7 +123,7 @@ export class Device extends React.PureComponent<Props, State> {
 	}
 
 	render () {
-		const { device, onClear, onClose, filters } = this.props
+		const { device, onClear, onClose, filters, messageLimit } = this.props
 		const { message, autoScroll, repeatInterval, repeat, showSent, showSettings, showFiltered } = this.state
 		return (
 			<div className={cn('session', device.connState.toLowerCase())}>
@@ -164,7 +165,7 @@ export class Device extends React.PureComponent<Props, State> {
 							onClick={() => this.setState({ showSent: !showSent })}
 						/>
 						<Button
-							title="Scroll to bottom"
+							title="Automatically scroll to bottom"
 							icon="angle-double-down"
 							types={['small', 'warning']}
 							solid={autoScroll}
@@ -186,7 +187,7 @@ export class Device extends React.PureComponent<Props, State> {
 					</div>
 				</div>
 				{!showSettings ? (<>
-					<Messages device={device} filters={showFiltered ? [] : filters} showSent={showSent} autoScroll={autoScroll} />
+					<Messages device={device} filters={showFiltered ? [] : filters} showSent={showSent} autoScroll={autoScroll} messageLimit={messageLimit} />
 					<input
 						type="text"
 						className="chatbox"

@@ -8,7 +8,7 @@ import './Sessions.scss'
 
 type Props = ReturnType<typeof mapStateToProps> & typeof dispatchToProps
 
-const Sessions: React.FunctionComponent<Props> = ({ devices, filters, sendMessage, clearMessages, disconnect }) => {
+const Sessions: React.FunctionComponent<Props> = ({ devices, settings, sendMessage, clearMessages, disconnect }) => {
 	const activeDevices = devices.filter(device => device.connState === 'CONNECTED' || device.messages.length > 0)
 	return (
 		<div className="sessions">
@@ -19,7 +19,8 @@ const Sessions: React.FunctionComponent<Props> = ({ devices, filters, sendMessag
 				<Device
 					key={device.comName}
 					device={device}
-					filters={filters}
+					filters={settings.filters}
+					messageLimit={settings.messageLimit}
 					onSend={msg => sendMessage(msg, device.comName)}
 					onClear={() => clearMessages(null, device.comName)}
 					onClose={() => disconnect(null, device.comName)}
@@ -31,7 +32,7 @@ const Sessions: React.FunctionComponent<Props> = ({ devices, filters, sendMessag
 
 const mapStateToProps = (state: State) => ({
 	devices: state.devices,
-	filters: state.settings.filters
+	settings: state.settings
 })
 
 const dispatchToProps = {

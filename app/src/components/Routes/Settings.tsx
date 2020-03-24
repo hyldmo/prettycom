@@ -8,17 +8,23 @@ import './Settings.scss'
 
 type Props = ReturnType<typeof mapStateToProps> & typeof dispatchToProps
 
-const Settings: React.FunctionComponent<Props> = ({ filters, hideUnknown, addFilter, removeFilter, setHideUnknown }) => {
+const Settings: React.FunctionComponent<Props> = (props) => {
+	const { messageLimit, filters, hideUnknown, addFilter, removeFilter, setHideUnknown, setMessageLimit } = props
 	const [filter, setFilter] = useState('')
 	return (
 		<div className="settings">
 			<h1 className="title is-3">Settings</h1>
 			<label className="checkbox">
 				<input type="checkbox" checked={hideUnknown} onChange={e => setHideUnknown(e.target.checked)}/>
-				Hide uknown devices from list
+				<span>Hide uknown devices from list</span>
 			</label>
-			<h2 className="title is-4" title="Messages matching these messages are not displayed in the log">Filters</h2>
-			<form action="javascript:void(0);" onSubmit={() => addFilter(new RegExp(filter))}>
+			<label>
+				<input type="number" className="input is-small" value={messageLimit} onChange={e => setMessageLimit(Number.parseInt(e.target.value, 10))}/>
+				<span>Message limit</span>
+			</label>
+			<h2 className="title is-4" title="Messages matching these regex filters are not displayed">Filters</h2>
+			<p className="subtitle">Messages matching these messages are not displayed in the log</p>
+			<form action="javascript:void(0);" onSubmit={_ => addFilter(new RegExp(filter))}>
 				<div className="field has-addons">
 					<div className="control">
 						<input
@@ -60,7 +66,8 @@ const mapStateToProps = (state: State) => ({
 const dispatchToProps = {
 	addFilter:  Actions.addFilter,
 	removeFilter: Actions.removeFilter,
-	setHideUnknown: Actions.setHideUnknown
+	setHideUnknown: Actions.setHideUnknown,
+	setMessageLimit: Actions.setMessageLimit
 }
 
 export default connect(

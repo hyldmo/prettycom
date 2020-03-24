@@ -2,14 +2,26 @@
 
 .settings {
 	h1, h2 {
-		margin-top: 0.75rem;
-		margin-bottom: 0.5rem !important;
+		margin-top: 0.5em;
+
+		&:not(:last-child) {
+			margin-bottom: 0.25em;
+		}
+
+		& + .subtitle {
+			font-size: 0.8em;
+			margin-top: -0.25rem !important;
+			margin-bottom: 1rem;
+		}
 	}
 
 	> label {
 		margin-bottom: .5rem;
+		display: flex;
+		align-items: baseline;
 		input {
-			margin-right: 0.25em;
+			margin-right: 0.25rem;
+			width: auto;
 		}
 	}
 

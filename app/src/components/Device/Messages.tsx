@@ -7,6 +7,7 @@ type Props = {
 	filters: Settings['filters']
 	showSent?: boolean
 	autoScroll?: boolean
+	messageLimit: number
 }
 
 class Messages extends React.PureComponent<Props> {
@@ -15,6 +16,7 @@ class Messages extends React.PureComponent<Props> {
 	componentDidMount () {
 		if (this.props.autoScroll)
 			this.scrollBottom()
+
 	}
 
 	componentDidUpdate (prevProps: Props) {
@@ -32,7 +34,7 @@ class Messages extends React.PureComponent<Props> {
 	}
 
 	render () {
-		const { device, filters, showSent } = this.props
+		const { device, filters, showSent, messageLimit } = this.props
 		return (
 			<ul className="messages" ref={this.ulRef}>
 				{device.messages
@@ -40,6 +42,7 @@ class Messages extends React.PureComponent<Props> {
 						(showSent || msg.direction !== Direction.Sent) &&
 						(msg.direction === Direction.Sent || !filters.some(filter => filter.test(msg.content)))
 					)
+					.slice(-messageLimit)
 					.map((msg, i) =>
 						<li key={i} className={msg.direction === Direction.Received ? 'received' : 'sent'}>
 							<span className="timestamp">[{msg.timestamp.toLocaleTimeString('nb-NO')}]:</span>

@@ -2,15 +2,7 @@ import SerialPort, { PortInfo } from 'serialport'
 import { setInterval } from 'timers'
 import * as url from 'url'
 import * as WebSocket from 'ws'
-
-const mock: PortInfo = {
-	comName: 'COM_DEMO',
-	manufacturer: 'ACME',
-	serialNumber: '1904321930',
-	locationId: '31245',
-	vendorId: '7653',
-	productId: '0321'
-}
+import { COM_MOCK } from './constants'
 
 function log (level: keyof typeof console, ...args: any[]) {
 	console[level]('Server: ', ...args)
@@ -48,6 +40,8 @@ export default class Server {
 				const int1 = setInterval(async () => {
 					const newDevices = await SerialPort.list()
 
+					/* TODO: Consider just sending the full list altogether,
+					 * instead of adding and removing individual devices */
 					newDevices
 						.filter(a => !this.devices.find(b => a.comName === b.comName))
 						.forEach(a => ws.send(`ADD:${JSON.stringify(a)}`))
@@ -58,7 +52,7 @@ export default class Server {
 					this.devices = newDevices
 				}, 100)
 				const int2 = setInterval(() => {
-					ws.send(`ADD:${JSON.stringify(mock)}`)
+					ws.send(`ADD:${JSON.stringify(COM_MOCK)}`)
 				}, 100)
 
 				ws.onclose = () => {
@@ -72,10 +66,10 @@ export default class Server {
 					return
 				}
 
-				if (device === mock.comName) {
+				if (device === COM_MOCK.comName) {
 					setInterval(async () => {
 						ws.send(`Time ${Math.round(new Date().getTime() / 1000)}\n`)
-					}, 1000)
+					}, 100)
 
 					ws.onmessage = message => {
 						ws.send(`Received: ${message.data.toString()}`)

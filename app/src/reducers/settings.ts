@@ -3,11 +3,13 @@ import { Action } from 'actions'
 export type Settings = {
 	filters: RegExp[]
 	hideUnknown: boolean
+	messageLimit: number
 }
 
 const intialState: Settings = {
 	filters: [],
-	hideUnknown: true
+	hideUnknown: true,
+	messageLimit: 1000
 }
 
 export default function (state: Settings = intialState, action: Action) {
@@ -31,6 +33,12 @@ export default function (state: Settings = intialState, action: Action) {
 			return {
 				...state,
 				hideUnknown: action.payload
+			}
+
+		case 'SETTINGS_MESSSAGE_LIMIT_CHANGED':
+			return {
+				...state,
+				messageLimit: action.payload
 			}
 
 		default:
