@@ -60,7 +60,7 @@ const Connect: React.FunctionComponent<Props> = ({ devices, settings, connectSer
 									value={baud}
 									onChange={e => setBaud(e.target.value)}
 								>
-									{['115200', '57600', '38400', '19200', '4800', '2400', '1200', 'Custom'].map(opt => (
+									{['115200', '57600', '38400', '19200', '9600', '4800', '2400', '1200', 'Custom'].map(opt => (
 										<option key={opt}>{opt}</option>
 									))}
 								</select>
