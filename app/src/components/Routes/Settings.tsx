@@ -24,7 +24,7 @@ const Settings: React.FunctionComponent<Props> = (props) => {
 			</label>
 			<h2 className="title is-4" title="Messages matching these regex filters are not displayed">Filters</h2>
 			<p className="subtitle">Messages matching these messages are not displayed in the log</p>
-			<form action="javascript:void(0);" onSubmit={_ => addFilter(new RegExp(filter))}>
+			<form action="javascript:void(0);" onSubmit={() => addFilter(new RegExp(filter))}>
 				<div className="field has-addons">
 					<div className="control">
 						<input
