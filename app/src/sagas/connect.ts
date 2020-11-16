@@ -1,5 +1,5 @@
 import { push } from 'connected-react-router'
-import { call, put, race, spawn, take, takeEvery, takeLatest  } from 'redux-saga/effects'
+import { call, put, race, spawn, take, takeEvery, takeLatest } from 'redux-saga/effects'
 import { PortInfo } from 'serialport'
 import { sleep } from 'utils'
 import { Action, Actions } from '../actions'
@@ -20,13 +20,18 @@ function* watchDeviceList (socket: WebSocket) {
 			const device: PortInfo = JSON.parse(data)
 			switch (type) {
 				case 'ADD':
-					yield put(Actions.addDevice(device, device.comName))
+					yield put(Actions.addDevice(device, device.path))
 					break
 				case 'REMOVE':
-					yield put(Actions.removeDevice(device, device.comName))
+					yield put(Actions.removeDevice(device, device.path))
+					break
+				default: 
+					console.warn(`Unknown wss message type ${type}`)
 					break
 			}
 		}
+	} catch (e) {
+		console.error(e)
 	} finally {
 		console.log(`Stopped watching for devices from ${socket.url}`)
 	}

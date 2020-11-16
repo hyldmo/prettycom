@@ -24,12 +24,10 @@ const config: webpack.Configuration = {
 			},
 			{
 				test: /\.scss$/,
-				use: [
-					...['css-loader', 'postcss-loader', 'sass-loader'].map(loader => ({
-						loader,
-						options: { sourceMap: true }
-					}))
-				]
+				use: ['css-loader', 'postcss-loader', 'sass-loader'].map(loader => ({
+					loader,
+					options: { sourceMap: true }
+				}))
 			}
 		]
 	},

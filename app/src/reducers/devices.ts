@@ -6,7 +6,7 @@ export type DevicesState = SerialDevice[]
 const initialState: DevicesState = []
 
 export function device (state: SerialDevice, action: Action): SerialDevice {
-	if (state.comName !== action.meta)
+	if (state.path !== action.meta)
 		return state
 
 	switch (action.type) {
@@ -61,7 +61,7 @@ export function device (state: SerialDevice, action: Action): SerialDevice {
 export default function (state: DevicesState = initialState, action: Action): DevicesState {
 	switch (action.type) {
 		case 'DEVICE_ADD':
-			if (state.some(s => s.comName === action.payload.comName))
+			if (state.some(s => s.path === action.payload.path))
 				return state.map(d => device(d, action))
 			else
 				return [

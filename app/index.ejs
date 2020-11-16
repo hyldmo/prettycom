@@ -11,7 +11,7 @@
 		<script>
 			if (process.env.NODE_ENV === 'development') {
 				const path = require('path')
-				require(path.resolve('app','renderer.js'))
+				require(path.resolve('dist','renderer.js'))
 			} else {
 				require('./renderer.js')
 			}

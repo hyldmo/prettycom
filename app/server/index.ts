@@ -43,10 +43,10 @@ export default class Server {
 					/* TODO: Consider just sending the full list altogether,
 					 * instead of adding and removing individual devices */
 					newDevices
-						.filter(a => !this.devices.find(b => a.comName === b.comName))
+						.filter(a => !this.devices.find(b => a.path === b.path))
 						.forEach(a => ws.send(`ADD:${JSON.stringify(a)}`))
 					this.devices
-						.filter(a => !newDevices.find(b => a.comName === b.comName))
+						.filter(a => !newDevices.find(b => a.path === b.path))
 						.forEach(a => ws.send(`REMOVE:${JSON.stringify(a)}`))
 
 					this.devices = newDevices
@@ -66,7 +66,7 @@ export default class Server {
 					return
 				}
 
-				if (device === COM_MOCK.comName) {
+				if (device === COM_MOCK.path) {
 					setInterval(async () => {
 						ws.send(`Time ${Math.round(new Date().getTime() / 1000)}\n`)
 					}, 100)

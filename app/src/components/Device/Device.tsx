@@ -128,7 +128,7 @@ export class Device extends React.PureComponent<Props, State> {
 		return (
 			<div className={cn('session', device.connState.toLowerCase())}>
 				<div className="properties">
-					<span className="device-name">{device.comName}</span>
+					<span className="device-name">{device.path}</span>
 					<div className="field is-grouped">
 						{repeat && <input
 							className="input is-small"

@@ -8,6 +8,9 @@ import path from 'path'
 let mainWindow: BrowserWindow | null
 
 async function createWindow () {
+	// See https://github.com/serialport/node-serialport/issues/2051#issuecomment-643608168
+	app.allowRendererProcessReuse = false
+
 	// Create the browser window.
 	mainWindow = new BrowserWindow({
 		width: 1200,

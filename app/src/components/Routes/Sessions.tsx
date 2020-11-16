@@ -17,13 +17,13 @@ const Sessions: React.FunctionComponent<Props> = ({ devices, settings, sendMessa
 			) :
 			(activeDevices.map(device => (
 				<Device
-					key={device.comName}
+					key={device.path}
 					device={device}
 					filters={settings.filters}
 					messageLimit={settings.messageLimit}
-					onSend={msg => sendMessage(msg, device.comName)}
-					onClear={() => clearMessages(null, device.comName)}
-					onClose={() => disconnect(null, device.comName)}
+					onSend={msg => sendMessage(msg, device.path)}
+					onClear={() => clearMessages(null, device.path)}
+					onClose={() => disconnect(null, device.path)}
 				/>
 			)))}
 		</div>

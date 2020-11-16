@@ -21,11 +21,13 @@ const getConnectedText = (device?: SerialDevice): string => {
 type Props = ReturnType<typeof mapStateToProps> & typeof dispatchToProps
 
 const Connect: React.FunctionComponent<Props> = ({ devices, settings, connectSerial }) => {
-	const [selected, setDevice] = useState(devices[0].comName)
+	const [selected, setDevice] = useState(devices[0]?.path)
 	const [baud, setBaud] = useState('38400')
 	const [customBaud, setCustomBaud] = useState<string | null>(null)
 
-	const selectedDevice = devices.find(dev => dev.comName === selected)
+	console.log('devices', devices)
+
+	const selectedDevice = devices.find(dev => dev.path === selected)
 	return (
 		<div className="connect">
 			<div className="field is-horizontal">
@@ -36,11 +38,17 @@ const Connect: React.FunctionComponent<Props> = ({ devices, settings, connectSer
 					<div className="control">
 						<div className="select">
 							<select value={selected} onChange={e => setDevice(e.target.value)}>
-								{devices.filter(device => !settings.hideUnknown || !device.comName.includes('ttyS')).map(device => (
-									<option key={device.comName} value={device.comName}>
-										({device.comName}) {device.manufacturer} {device.productId}
+								{devices.length > 0 ? (
+									devices.filter(device => !settings.hideUnknown || !device.path.includes('ttyS')).map(device => (
+										<option key={device.path} value={device.path}>
+											({device.path}) {device.manufacturer} {device.productId}
+										</option>
+									))
+								) : (
+									<option disabled selected>
+										No devices found.
 									</option>
-								))}
+								)}
 							</select>
 						</div>
 					</div>

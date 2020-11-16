@@ -9,17 +9,17 @@ const config: webpack.Configuration = {
 	...baseConfig,
 
 	output: {
-		path: path.resolve(baseConfig.context, 'app'),
+		path: path.join(baseConfig.context, 'dist'),
 		filename: '[name]-[contenthash].js',
-		chunkFilename: '[name]-[contenthash].js'
+		chunkFilename: '[name]-[contenthash].chunk.js'
 	},
 
 	mode: 'production',
 	devtool: 'source-map',
 	plugins: [
 		new MiniCssExtractPlugin({
-			filename: '[name].css',
-			chunkFilename: '[name].css'
+			filename: '[contenthash].css',
+			chunkFilename: '[contenthash].css'
 		}),
 		...baseConfig.plugins
 	]

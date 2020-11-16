@@ -1,7 +1,7 @@
 import { PortInfo } from 'serialport'
 
 export const COM_MOCK: PortInfo = {
-	comName: 'COM_DEMO',
+	path: 'COM_DEMO',
 	manufacturer: 'ACME',
 	serialNumber: '1904321930',
 	locationId: '31245',
