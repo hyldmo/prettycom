@@ -21,4 +21,6 @@ export type SerialDevice = PortInfo & {
 	connState: 'CONNECTED'|'CONNECTING'|'DISCONNECTED'
 	messages: Message[]
 	history: string[]
+	logging: boolean
+	logname: string
 }

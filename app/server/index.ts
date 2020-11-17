@@ -3,10 +3,8 @@ import { setInterval } from 'timers'
 import * as url from 'url'
 import * as WebSocket from 'ws'
 import { COM_MOCK } from './constants'
-
-function log (level: keyof typeof console, ...args: any[]) {
-	console[level]('Server: ', ...args)
-}
+import { DeviceLogger } from './DeviceLogger'
+import log from './log'
 
 export default class Server {
 	public wss: WebSocket.Server
@@ -28,9 +26,7 @@ export default class Server {
 
 		this.wss.on('connection', (ws, req) => {
 			// const send = (message: object) => ws.send(JSON.stringify(message), err => err && console.error(err))
-			const { mode, baud, device } = url.parse(req.url || '', true).query
-			const baudrate = Number.parseInt(baud as any, 10)
-
+			const { mode } = url.parse(req.url || '', true).query
 			const ping = setInterval(ws.ping, 10 * 1000)
 			ws.on('close', () => clearInterval(ping))
 
@@ -61,6 +57,8 @@ export default class Server {
 				}
 
 			} else if (mode === 'CONNECT')  {
+				const { baud, device } = url.parse(req.url || '', true).query
+				const baudrate = Number.parseInt(baud as any, 10)
 				if (typeof device !== 'string' || isNaN(baudrate)) {
 					ws.close(1007, 'Invalid parameters')
 					return
@@ -106,6 +104,14 @@ export default class Server {
 					if (serial.isOpen)
 						serial.close()
 				})
+			} else if (mode === 'LOG') {
+				const { filename } = url.parse(req.url || '', true).query
+				const logger = new DeviceLogger(typeof filename === 'string' ? filename : filename[0])
+
+				ws.onmessage = msg => logger.write(msg.data)
+				logger.onClose = () => ws.close()
+				this.wss.on('error', logger.close)
+				ws.onclose = () => logger.close()
 			} else {
 				ws.close(1007, 'Invalid mode')
 			}

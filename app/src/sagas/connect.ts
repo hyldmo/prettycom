@@ -1,6 +1,7 @@
 import { push } from 'connected-react-router'
-import { call, put, race, spawn, take, takeEvery, takeLatest } from 'redux-saga/effects'
+import { call, put, race, select, spawn, take, takeEvery, takeLatest } from 'redux-saga/effects'
 import { PortInfo } from 'serialport'
+import { SerialDevice, State } from 'types'
 import { sleep } from 'utils'
 import { Action, Actions } from '../actions'
 import { socketChannel, waitForOpen, watchMessages, watchUserSentMessages } from './watchMessages'
@@ -8,6 +9,7 @@ import { socketChannel, waitForOpen, watchMessages, watchUserSentMessages } from
 export default function* watchConnects () {
 	yield takeEvery('CONNECT', connectToServer)
 	yield takeLatest('DEVICE_LIST', listDevices)
+	yield takeLatest(Actions.enableLog.type, enableLog)
 }
 
 function* watchDeviceList (socket: WebSocket) {
@@ -25,7 +27,7 @@ function* watchDeviceList (socket: WebSocket) {
 				case 'REMOVE':
 					yield put(Actions.removeDevice(device, device.path))
 					break
-				default: 
+				default:
 					console.warn(`Unknown wss message type ${type}`)
 					break
 			}
@@ -85,5 +87,48 @@ function* connectToServer (action: typeof Actions.connect, retries = 5): any {
 
 		console.log(`Disconnected from ${device}`)
 		yield put(Actions.disconnected(null, device))
+	}
+}
+
+function* enableLog (action: typeof Actions.enableLog, retries = 5): any {
+	const { payload, meta } = action
+	const device: SerialDevice | undefined = yield select((s: State) => s.devices.find(d => d.path === meta))
+	if (!device || !payload)
+		return
+
+	const URI = `ws://localhost:31130?mode=LOG&filename=${device.logname}`
+	const socket = new WebSocket(URI)
+	try {
+		yield call(waitForOpen, socket)
+		retries++
+
+		yield race([
+			call(watchLog, socket, device.path),
+			take<any>((a: Action) =>  a.type === 'DISCONNECT' && a.meta === device.path)
+		])
+	} catch (err) {
+		console.error(err)
+		const message: string | undefined = err.message
+		if (message) {
+			const code = Number.parseInt(message.split(':')[0], 10)
+			if (code === 1006 && retries > 0) {  // Check if error was disconnection
+				yield call(sleep, 400)
+				return yield spawn(enableLog, action, --retries)
+			} else {
+				alert(err.message)
+			}
+		}
+	} finally {
+		if (socket.readyState === socket.OPEN)
+			socket.close()
+
+		console.log(`Stopped logging from ${device.path}`)
+	}
+}
+
+export function* watchLog (socket: WebSocket, device: string) {
+	while (true) {
+		const { payload }: typeof Actions.dataReceived = yield take<any>((action: Action) => action.type === 'DEVICE_DATA_RECEIVED' && action.meta === device)
+		socket.send(`${payload.timestamp.toISOString()}; ${payload.content}\n`)
 	}
 }

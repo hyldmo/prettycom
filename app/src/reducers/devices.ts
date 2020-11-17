@@ -38,7 +38,7 @@ export function device (state: SerialDevice, action: Action): SerialDevice {
 					content: action.payload,
 					timestamp: new Date(),
 					direction: Direction.Sent
-				})
+				}).slice(1000)
 			}
 
 		case 'DEVICE_DATA_RECEIVED':
@@ -51,6 +51,23 @@ export function device (state: SerialDevice, action: Action): SerialDevice {
 			return {
 				...state,
 				messages: []
+			}
+
+		case 'LOGGING_UPDATE':
+			return {
+				...state,
+				logname: action.payload
+			}
+		case 'LOGGING_ENABLE':
+			return {
+				...state,
+				logging: action.payload
+			}
+
+		case 'DISCONNECT':
+			return {
+				...state,
+				logging: false
 			}
 
 		default:
@@ -71,17 +88,22 @@ export default function (state: DevicesState = initialState, action: Action): De
 						available: true,
 						connState: 'DISCONNECTED',
 						messages: [],
-						history: []
+						history: [],
+						logging: false,
+						logname: `${action.payload.path.split('/').join('_')}.log`
 					}
 				]
 
 		case 'DEVICE_MSG':
 		case 'CONNECTED':
 		case 'CONNECTING':
+		case 'DISCONNECT':
 		case 'DISCONNECTED':
 		case 'DEVICE_REMOVE':
 		case 'DEVICE_DATA_RECEIVED':
 		case 'DEVICE_CLEAR_MESSAGES':
+		case 'LOGGING_UPDATE':
+		case 'LOGGING_ENABLE':
 			return state.map(d => device(d, action))
 		default:
 			return state

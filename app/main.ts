@@ -16,12 +16,11 @@ async function createWindow () {
 		width: 1200,
 		height: 800,
 		webPreferences: {
-			nodeIntegration: true
+			nodeIntegration: true,
+			enableRemoteModule: true // Enable renderer to access app object
 		}
 	})
 
-	// and load the index.html of the app.
-	// Open the DevTools.
 	if (process.env.NODE_ENV === 'development') {
 		await mainWindow.loadURL(`http://localhost:${process.env.PORT}/#/`)
 		mainWindow.webContents.openDevTools()

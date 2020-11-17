@@ -70,7 +70,8 @@ $border-radius: 10px;
 	.timestamp {
 		font-family: 'Consolas', monospace;
 		font-size: 0.8em;
-		color: shade(245, 40%);
+		color: #ddd;
+		opacity: 0.6;
 		margin-right: 0.5em;
 	}
 

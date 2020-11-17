@@ -25,8 +25,6 @@ const Connect: React.FunctionComponent<Props> = ({ devices, settings, connectSer
 	const [baud, setBaud] = useState('38400')
 	const [customBaud, setCustomBaud] = useState<string | null>(null)
 
-	console.log('devices', devices)
-
 	const selectedDevice = devices.find(dev => dev.path === selected)
 	return (
 		<div className="connect">
