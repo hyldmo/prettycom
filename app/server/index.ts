@@ -97,6 +97,8 @@ export default class Server {
 					log('error', data)
 					ws.send(data.toString())
 					ws.close(1008, data.toString())
+					if (serial.isOpen)
+						serial.close()
 				})
 
 				this.wss.on('error', error => {

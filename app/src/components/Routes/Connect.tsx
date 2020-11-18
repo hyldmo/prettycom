@@ -20,9 +20,11 @@ const getConnectedText = (device?: SerialDevice): string => {
 
 type Props = ReturnType<typeof mapStateToProps> & typeof dispatchToProps
 
+const canConnect = (d: SerialDevice) => d.available && d.connState == 'DISCONNECTED'
+
 const Connect: React.FunctionComponent<Props> = ({ devices, settings, connectSerial }) => {
 	const [selected, setDevice] = useState(devices[0]?.path)
-	const [baud, setBaud] = useState('38400')
+	const [baud, setBaud] = useState('9600')
 	const [customBaud, setCustomBaud] = useState<string | null>(null)
 
 	const selectedDevice = devices.find(dev => dev.path === selected)
@@ -37,11 +39,18 @@ const Connect: React.FunctionComponent<Props> = ({ devices, settings, connectSer
 						<div className="select">
 							<select value={selected} onChange={e => setDevice(e.target.value)}>
 								{devices.length > 0 ? (
-									devices.filter(device => !settings.hideUnknown || !device.path.includes('ttyS')).map(device => (
-										<option key={device.path} value={device.path}>
-											({device.path}) {device.manufacturer} {device.productId}
-										</option>
-									))
+									devices
+										.filter(device => !settings.hideUnknown || !device.path.includes('ttyS'))
+										.sort((a, b) => Number(canConnect(b)) - Number(canConnect(a)))
+										.map(device => (
+											<option key={device.path}
+												value={device.path}
+												disabled={!canConnect(device)}
+												title={device.available ? 'Arleady connected' : 'Device unavailable'}
+											>
+												({device.path}) {device.manufacturer} {device.productId}
+											</option>
+										))
 								) : (
 									<option disabled selected>
 										No devices found.

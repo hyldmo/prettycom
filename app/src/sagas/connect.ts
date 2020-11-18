@@ -47,8 +47,11 @@ function* listDevices () {
 
 		yield take(channel)
 		yield call(watchDeviceList, socket)
+	} catch (e) {
+		console.error(e)
 	} finally {
-		console.log('Disconnected from device listing')
+		console.log('Disconnected from device listing, retrying')
+		yield put(Actions.listDevices())
 	}
 }
 
