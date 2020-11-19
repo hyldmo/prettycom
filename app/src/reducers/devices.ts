@@ -38,13 +38,13 @@ export function device (state: SerialDevice, action: Action): SerialDevice {
 					content: action.payload,
 					timestamp: new Date(),
 					direction: Direction.Sent
-				}).slice(1000)
+				})
 			}
 
 		case 'DEVICE_DATA_RECEIVED':
 			return {
 				...state,
-				messages: state.messages.concat(action.payload)
+				messages: state.messages.concat(action.payload).slice(-10000)
 			}
 
 		case 'DEVICE_CLEAR_MESSAGES':

@@ -12,7 +12,7 @@ export class DeviceLogger {
 		this.path = path.join(folder, filename)
 
 		fs.mkdirp(folder)
-		fs.open(this.path, 'w', (err, fd) => {
+		fs.open(this.path, 'a', (err, fd) => {
 			if (err) {
 				log('error', err)
 				this.onClose()

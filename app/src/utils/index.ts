@@ -1,3 +1,6 @@
+import { Settings } from 'reducers/settings'
+import { Direction, Message } from 'types'
+
 export * from './actionCreator'
 
 /**
@@ -20,3 +23,9 @@ export function range (start: number, end?: number): number[] {
 }
 
 export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
+export function showMessage (msg: Message, filters: Settings['filters'], showSent?: boolean): boolean {
+	if (msg.direction === Direction.Sent)
+		return !!showSent
+	return !filters.some(filter => filter.test(msg.content))
+}

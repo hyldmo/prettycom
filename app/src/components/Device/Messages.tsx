@@ -1,6 +1,7 @@
 import React from 'react'
 import { Settings } from 'reducers/settings'
 import { Direction, SerialDevice } from 'types'
+import { showMessage } from 'utils'
 
 type Props = {
 	device: SerialDevice
@@ -38,10 +39,7 @@ class Messages extends React.PureComponent<Props> {
 		return (
 			<ul className="messages" ref={this.ulRef}>
 				{device.messages
-					.filter(msg =>
-						(showSent || msg.direction !== Direction.Sent) &&
-						(msg.direction === Direction.Sent || !filters.some(filter => filter.test(msg.content)))
-					)
+					.filter(msg => showMessage(msg, filters, showSent))
 					.slice(-messageLimit)
 					.map((msg, i) =>
 						<li key={i} className={msg.direction === Direction.Received ? 'received' : 'sent'}>
