@@ -18,6 +18,7 @@ export type Message = {
 }
 
 export type SerialDevice = PortInfo & {
+	name: string
 	available: boolean
 	connState: 'CONNECTED'|'CONNECTING'|'DISCONNECTED'
 	messages: Message[]

@@ -13,5 +13,6 @@ export default {
 	removeDevice: createAction<'DEVICE_REMOVE', PortInfo, SerialDevice['path']>('DEVICE_REMOVE'),
 	sendMessage: createAction<'DEVICE_MSG', string, SerialDevice['path']>('DEVICE_MSG'),
 	dataReceived: createAction<'DEVICE_DATA_RECEIVED', Message, string>('DEVICE_DATA_RECEIVED'),
-	clearConsole: createAction<'DEVICE_CLEAR_MESSAGES', null, SerialDevice['path']>('DEVICE_CLEAR_MESSAGES')
+	clearConsole: createAction<'DEVICE_CLEAR_MESSAGES', null, SerialDevice['path']>('DEVICE_CLEAR_MESSAGES'),
+	updateName: createAction<'DEVICE_UPDATE_NAME', string, SerialDevice['path']>('DEVICE_UPDATE_NAME')
 }

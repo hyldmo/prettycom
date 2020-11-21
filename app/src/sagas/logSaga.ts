@@ -2,7 +2,7 @@ import { Action, Actions } from 'actions'
 import { DEFAULT_PORT } from 'consts'
 import { call, cancelled, race, select, spawn, take, takeLatest } from 'redux-saga/effects'
 import { SerialDevice, State } from 'types'
-import { sleep } from 'utils'
+import { logName, sleep } from 'utils'
 import { waitForOpen } from './watchMessages'
 
 export default function* () {
@@ -18,7 +18,7 @@ function* enableLog (action: typeof Actions.enableLog, retries = maxRetries): an
 	if (!device || !payload)
 		return
 
-	const URI = `ws://localhost:${port || DEFAULT_PORT}?mode=LOG&filename=${device.logname}`
+	const URI = `ws://localhost:${port || DEFAULT_PORT}?mode=LOG&filename=${logName(device)}`
 	const socket = new WebSocket(URI)
 	try {
 		yield call(waitForOpen, socket)

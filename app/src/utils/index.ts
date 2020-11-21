@@ -1,5 +1,5 @@
 import { initialState, Settings } from 'reducers/settings'
-import { Direction, Message } from 'types'
+import { Direction, Message, SerialDevice } from 'types'
 
 export * from './actionCreator'
 
@@ -32,4 +32,9 @@ export function showMessage (msg: Message, filters: Settings['filters'], showSen
 
 export function selectHost (settings: Settings) {
 	return settings.host || (settings.remotePort ? `localhost:${settings.remotePort}` : initialState.host)
+}
+
+export function logName (device: SerialDevice) {
+	const name = (device.logname || device.name || device.path).split('/').join('_')
+	return name.includes('.') ? name : `${name}.log`
 }

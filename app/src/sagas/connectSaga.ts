@@ -77,7 +77,7 @@ function* listDevices () {
 	} catch (e) {
 		console.error(e)
 	} finally {
-		yield call(sleep, 1000)
+		yield call(sleep, 500)
 		console.log('Disconnected from device listing, retrying')
 		yield put(Actions.listDevices())
 	}
