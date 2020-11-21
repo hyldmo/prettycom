@@ -1,6 +1,6 @@
 import { Action, Actions } from 'actions'
 import { DEFAULT_PORT } from 'consts'
-import { call, race, select, spawn, take, takeLatest } from 'redux-saga/effects'
+import { call, cancelled, race, select, spawn, take, takeLatest } from 'redux-saga/effects'
 import { SerialDevice, State } from 'types'
 import { sleep } from 'utils'
 import { waitForOpen } from './watchMessages'
@@ -9,7 +9,9 @@ export default function* () {
 	yield takeLatest(Actions.enableLog.type, enableLog)
 }
 
-function* enableLog (action: typeof Actions.enableLog, retries = 5): any {
+const maxRetries = 10
+
+function* enableLog (action: typeof Actions.enableLog, retries = maxRetries): any {
 	const { payload, meta } = action
 	const port = yield select((s: State) => s.settings.remotePort)
 	const device: SerialDevice | undefined = yield select((s: State) => s.devices.find(d => d.path === meta))
@@ -20,7 +22,7 @@ function* enableLog (action: typeof Actions.enableLog, retries = 5): any {
 	const socket = new WebSocket(URI)
 	try {
 		yield call(waitForOpen, socket)
-		retries++
+		retries = 10
 
 		yield race([
 			call(watchLog, socket, device.path),
@@ -31,9 +33,11 @@ function* enableLog (action: typeof Actions.enableLog, retries = 5): any {
 		const message: string | undefined = err.message
 		if (message) {
 			const code = Number.parseInt(message.split(':')[0], 10)
-			if (code === 1006 && retries > 0) {  // Check if error was disconnection
-				yield call(sleep, 400)
-				return yield spawn(enableLog, action, --retries)
+			if (code === 1006 && retries-- > 0) {
+				if (!(yield cancelled())) {
+					yield call(sleep, 1000 * Math.pow(2, maxRetries - retries))
+					return yield spawn(enableLog, action, --retries)
+				}
 			} else {
 				alert(err.message)
 			}
