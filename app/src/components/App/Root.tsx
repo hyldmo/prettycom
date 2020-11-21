@@ -8,7 +8,6 @@ import App from './App'
 
 const store = configureStore()
 store.dispatch(Actions.loadSave())
-store.dispatch(Actions.listDevices())
 
 type State = {
 	error: Error | null

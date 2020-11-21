@@ -1,18 +1,23 @@
 import { Action } from 'actions'
+import { DEFAULT_PORT } from 'consts'
 
 export type Settings = {
 	filters: RegExp[]
 	hideUnknown: boolean
 	messageLimit: number
+	host: string
+	remotePort: null | string
 }
 
-const intialState: Settings = {
+export const initialState: Readonly<Settings> = {
 	filters: [],
 	hideUnknown: true,
-	messageLimit: 1000
+	messageLimit: 1000,
+	host: `localhost:${DEFAULT_PORT}`,
+	remotePort: null
 }
 
-export default function (state: Settings = intialState, action: Action) {
+export default function (state: Settings = initialState, action: Action) {
 	switch (action.type) {
 		case 'SAVE_LOADED':
 			return action.payload
@@ -39,6 +44,18 @@ export default function (state: Settings = intialState, action: Action) {
 			return {
 				...state,
 				messageLimit: action.payload
+			}
+
+		case 'SETTINGS_REMOTE_SET':
+			return {
+				...state,
+				remotePort: action.payload
+			}
+
+		case 'SETTINGS_SERVER_SET':
+			return {
+				...state,
+				host: action.payload
 			}
 
 		default:

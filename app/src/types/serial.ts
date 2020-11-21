@@ -3,6 +3,7 @@ import {PortInfo} from 'serialport'
 export type SerialOptions = {
 	baud: number
 	device: string
+	url: string
 }
 
 export enum Direction {

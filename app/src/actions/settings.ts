@@ -13,5 +13,9 @@ export default {
 	setMessageLimit: createAction<'SETTINGS_MESSSAGE_LIMIT_CHANGED', number>('SETTINGS_MESSSAGE_LIMIT_CHANGED'),
 
 	updateLogName: createAction<'LOGGING_UPDATE', string, SerialDevice['path']>('LOGGING_UPDATE'),
-	enableLog: createAction<'LOGGING_ENABLE', boolean, SerialDevice['path']>('LOGGING_ENABLE')
+	enableLog: createAction<'LOGGING_ENABLE', boolean, SerialDevice['path']>('LOGGING_ENABLE'),
+
+	setServer: createAction<'SETTINGS_SERVER_SET', string>('SETTINGS_SERVER_SET'),
+
+	setRemote: createAction<'SETTINGS_REMOTE_SET', Settings['remotePort']>('SETTINGS_REMOTE_SET')
 }

@@ -9,6 +9,11 @@
 
 a {
 	color: $main-color;
+
+	&:hover {
+		color: $main-color;
+		opacity: .8;
+	}
 }
 
 html, body {

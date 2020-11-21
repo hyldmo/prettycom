@@ -11,7 +11,7 @@ export function getFolders (path: string): Record<string, string> {
 	return readdirSync(path)
 		.reduce((a: ReturnType<typeof getFolders>, b) => {
 			b = join(path, b)
-			if (lstatSync(b).isDirectory()) {
+			if (lstatSync(b)) {
 				const p = parse(b)
 				a[p.name] = b
 			}

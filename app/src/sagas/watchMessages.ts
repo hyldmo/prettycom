@@ -65,7 +65,7 @@ export function socketChannel (socket: WebSocket) {
 			},
 			error: (event: WebSocketEventMap['error']) => {
 				console.error(event)
-				emitter(new Error('Unkown error'))
+				emitter(event)
 				emitter(END)
 			}
 		}

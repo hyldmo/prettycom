@@ -42,4 +42,13 @@
 			margin-bottom: 0.5rem;
 		}
 	}
+
+	.gh {
+		text-decoration: underline;
+		float: right;
+	}
+
+	hr + * {
+		margin-right: 0.5em;
+	}
 }

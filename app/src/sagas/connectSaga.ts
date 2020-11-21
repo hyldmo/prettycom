@@ -1,15 +1,21 @@
 import { push } from 'connected-react-router'
-import { call, put, race, select, spawn, take, takeEvery, takeLatest } from 'redux-saga/effects'
+import { DEFAULT_PORT } from 'consts'
+import { call, cancelled, put, race, select, spawn, take, takeEvery, takeLatest } from 'redux-saga/effects'
 import { PortInfo } from 'serialport'
-import { SerialDevice, State } from 'types'
-import { sleep } from 'utils'
+import { State } from 'types'
+import { selectHost, sleep } from 'utils'
 import { Action, Actions } from '../actions'
 import { socketChannel, waitForOpen, watchMessages, watchUserSentMessages } from './watchMessages'
 
 export default function* watchConnects () {
 	yield takeEvery('CONNECT', connectToServer)
+	yield takeLatest('SETTINGS_REMOTE_SET', updateRemoteServer)
 	yield takeLatest('DEVICE_LIST', listDevices)
-	yield takeLatest(Actions.enableLog.type, enableLog)
+	yield takeLatest('SETTINGS_SERVER_SET', serverUpdated)
+	yield takeLatest(Actions.saveLoaded.type, onReady)
+}
+function* onReady (action: typeof Actions.saveLoaded) {
+	yield call(updateRemoteServer, Actions.setRemote(action.payload.remotePort))
 }
 
 function* watchDeviceList (socket: WebSocket) {
@@ -39,9 +45,30 @@ function* watchDeviceList (socket: WebSocket) {
 	}
 }
 
+function* updateRemoteServer (action: ReturnType<typeof Actions.setRemote>) {
+	yield call(sleep, 1000)
+	const cancel = yield cancelled()
+	if (cancel)
+		return
+	const options = action.payload
+		? { port: Number.parseInt(action.payload, 10), host: '0.0.0.0' }
+		: { port: DEFAULT_PORT }
+	window.reloadServer(options)
+	yield put(Actions.listDevices())
+}
+
+function* serverUpdated () {
+	yield call(sleep, 2000)
+	if (yield cancelled())
+		return
+	yield put(Actions.listDevices())
+}
+
 function* listDevices () {
 	try {
-		const URI = 'ws://localhost:31130?mode=LIST'
+		const settings: State['settings'] = yield select((s: State) => s.settings)
+		const host = selectHost(settings)
+		const URI = `ws://${host}?mode=LIST`
 		const socket = new WebSocket(URI)
 		const channel = yield call(socketChannel, socket)
 
@@ -50,14 +77,17 @@ function* listDevices () {
 	} catch (e) {
 		console.error(e)
 	} finally {
+		yield call(sleep, 1000)
 		console.log('Disconnected from device listing, retrying')
 		yield put(Actions.listDevices())
 	}
 }
 
-function* connectToServer (action: typeof Actions.connect, retries = 5): any {
-	const { baud, device } = action.payload
-	const URI = `ws://localhost:31130?mode=CONNECT&baud=${baud}&device=${encodeURIComponent(device)}`
+const maxRetries = 10
+
+function* connectToServer (action: typeof Actions.connect, retries = maxRetries): any {
+	const { baud, device, url } = action.payload
+	const URI = `ws://${url}?mode=CONNECT&baud=${baud}&device=${encodeURIComponent(device)}`
 	const socket = new WebSocket(URI)
 	try {
 		yield put(Actions.connecting(null, device))
@@ -65,7 +95,7 @@ function* connectToServer (action: typeof Actions.connect, retries = 5): any {
 		yield put(Actions.connected(null, device))
 		if (location.hash.includes('connect'))
 			yield put(push('/'))
-		retries++
+		retries = maxRetries
 
 		yield race([
 			call(watchUserSentMessages, socket, device),
@@ -77,9 +107,11 @@ function* connectToServer (action: typeof Actions.connect, retries = 5): any {
 		const message: string | undefined = err.message
 		if (message) {
 			const code = Number.parseInt(message.split(':')[0], 10)
-			if (code === 1006 && retries > 0) {
-				yield call(sleep, 400)
-				return yield spawn(connectToServer, action, --retries)
+			if (code === 1006 && retries-- > 0) {
+				if (!(yield cancelled())) {
+					yield call(sleep, 1000 * Math.pow(2, maxRetries - retries))
+					yield spawn(connectToServer, action, retries)
+				}
 			} else {
 				alert(err.message)
 			}
@@ -87,51 +119,10 @@ function* connectToServer (action: typeof Actions.connect, retries = 5): any {
 	} finally {
 		if (socket.readyState === socket.OPEN)
 			socket.close()
-
-		console.log(`Disconnected from ${device}`)
+		else {
+			console.log(`Disconnected from ${device}`)
+		}
 		yield put(Actions.disconnected(null, device))
 	}
 }
 
-function* enableLog (action: typeof Actions.enableLog, retries = 5): any {
-	const { payload, meta } = action
-	const device: SerialDevice | undefined = yield select((s: State) => s.devices.find(d => d.path === meta))
-	if (!device || !payload)
-		return
-
-	const URI = `ws://localhost:31130?mode=LOG&filename=${device.logname}`
-	const socket = new WebSocket(URI)
-	try {
-		yield call(waitForOpen, socket)
-		retries++
-
-		yield race([
-			call(watchLog, socket, device.path),
-			take<any>((a: Action) =>  a.type === 'DISCONNECT' && a.meta === device.path)
-		])
-	} catch (err) {
-		console.error(err)
-		const message: string | undefined = err.message
-		if (message) {
-			const code = Number.parseInt(message.split(':')[0], 10)
-			if (code === 1006 && retries > 0) {  // Check if error was disconnection
-				yield call(sleep, 400)
-				return yield spawn(enableLog, action, --retries)
-			} else {
-				alert(err.message)
-			}
-		}
-	} finally {
-		if (socket.readyState === socket.OPEN)
-			socket.close()
-
-		console.log(`Stopped logging from ${device.path}`)
-	}
-}
-
-export function* watchLog (socket: WebSocket, device: string) {
-	while (true) {
-		const { payload }: typeof Actions.dataReceived = yield take<any>((action: Action) => action.type === 'DEVICE_DATA_RECEIVED' && action.meta === device)
-		socket.send(`${payload.timestamp.toISOString()}; ${payload.content}\n`)
-	}
-}

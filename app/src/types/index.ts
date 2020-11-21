@@ -1,5 +1,7 @@
+export { State } from 'reducers'
+
 export * from './tracker'
 export * from './serial'
-export { State } from 'reducers'
+export * from './globals'
 
 export type Omit<T, K> = Pick<T, Exclude<keyof T, K>>

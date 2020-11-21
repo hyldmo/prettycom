@@ -6,31 +6,26 @@ import { COM_MOCK } from './constants'
 import { DeviceLogger } from './DeviceLogger'
 import log from './log'
 
-export default class Server {
-	public wss: WebSocket.Server
-	public on: WebSocket.Server['on']
-	public close: WebSocket.Server['close']
-
-	private devices: PortInfo[] = []
+export default class Server extends WebSocket.Server {
 	private connected: SerialPort[] = []
 
 	constructor (options: WebSocket.ServerOptions) {
-		this.wss = new WebSocket.Server(options)
-		this.on = this.wss.on
-		this.close = (cb?: (err?: Error) => void) => {
+		super(options)
+		this.on('close', () => {
 			this.connected.forEach(serial => serial.close())
-			return this.wss.close(cb)
-		}
+			this.connected = []
+		})
 
 		log('info', `Listening for websocket connections on port ${options.port}`)
 
-		this.wss.on('connection', (ws, req) => {
+		this.on('connection', (ws, req) => {
 			// const send = (message: object) => ws.send(JSON.stringify(message), err => err && console.error(err))
+			let devices: PortInfo[] = []
 			const { mode } = url.parse(req.url || '', true).query
 			const ping = setInterval(ws.ping, 10 * 1000)
 			ws.on('close', () => clearInterval(ping))
 
-			this.wss.on('error', ws.close)
+			this.on('error', ws.close)
 
 			if (mode === 'LIST') {
 				const int1 = setInterval(async () => {
@@ -39,19 +34,20 @@ export default class Server {
 					/* TODO: Consider just sending the full list altogether,
 					 * instead of adding and removing individual devices */
 					newDevices
-						.filter(a => !this.devices.find(b => a.path === b.path))
+						.filter(a => !devices.find(b => a.path === b.path))
 						.forEach(a => ws.send(`ADD:${JSON.stringify(a)}`))
-					this.devices
+					devices
 						.filter(a => !newDevices.find(b => a.path === b.path))
 						.forEach(a => ws.send(`REMOVE:${JSON.stringify(a)}`))
 
-					this.devices = newDevices
+					devices = newDevices
 				}, 100)
 				const int2 = setInterval(() => {
 					ws.send(`ADD:${JSON.stringify(COM_MOCK)}`)
 				}, 100)
 
 				ws.onclose = () => {
+					devices = []
 					clearInterval(int1)
 					clearInterval(int2)
 				}
@@ -75,44 +71,46 @@ export default class Server {
 					return
 				}
 
-				const serial = new SerialPort(device, { baudRate: baudrate })
+				const existing = this.connected.find(d => d.path == device)
+				const serial = existing || new SerialPort(device, { baudRate: baudrate })
 				log('info', `Device ${device} opened`)
 
 				serial.on('data', (data: Blob) => {
 					ws.send(data.toString())
 				})
-
 				ws.onmessage = message => {
 					log('info', 'Sending message', message.data)
-
 					serial.write(message.data.toString())
 				}
 
-				ws.onclose = () => {
-					if (serial.isOpen)
-						serial.close()
+				if (!existing) {
+					this.connected.push(serial)
+
+					serial.on('close', () => {
+						this.connected = this.connected.filter(d => d.path !== serial.path)
+					})
+
+					serial.on('error', (data: object) => {
+						log('error', data)
+						ws.send(data.toString())
+						ws.close(1008, data.toString())
+						if (serial.isOpen)
+							serial.close()
+					})
+
+					this.on('error', error => {
+						log('error', error)
+						if (serial.isOpen)
+							serial.close()
+					})
 				}
-
-				serial.on('error', (data: object) => {
-					log('error', data)
-					ws.send(data.toString())
-					ws.close(1008, data.toString())
-					if (serial.isOpen)
-						serial.close()
-				})
-
-				this.wss.on('error', error => {
-					log('error', error)
-					if (serial.isOpen)
-						serial.close()
-				})
 			} else if (mode === 'LOG') {
 				const { filename } = url.parse(req.url || '', true).query
 				const logger = new DeviceLogger(typeof filename === 'string' ? filename : filename[0])
 
 				ws.onmessage = msg => logger.write(msg.data)
 				logger.onClose = () => ws.close()
-				this.wss.on('error', logger.close)
+				this.on('error', logger.close)
 				ws.onclose = () => logger.close()
 			} else {
 				ws.close(1007, 'Invalid mode')

@@ -1,7 +1,7 @@
 {
     "name": "prettycom",
     "repository": "https://github.com/hyldmo/prettycom",
-    "version": "1.6.3",
+    "version": "1.7.0",
     "description": "A serial monitor written in electron.",
     "license": "MIT",
     "author": {
@@ -55,6 +55,7 @@
     },
     "dependencies": {
         "fs-extra": "^7.0.0",
+        "open": "^7.3.0",
         "serialport": "^9.0.2",
         "ws": "^7.4.0"
     },

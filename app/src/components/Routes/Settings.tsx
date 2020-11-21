@@ -1,15 +1,17 @@
 import { Actions } from 'actions'
 import Button from 'components/Button'
+import { Anchor } from 'components/Anchor'
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { State } from 'types'
 
 import './Settings.scss'
+import { DEFAULT_PORT } from 'consts'
 
 type Props = ReturnType<typeof mapStateToProps> & typeof dispatchToProps
 
 const Settings: React.FunctionComponent<Props> = (props) => {
-	const { messageLimit, filters, hideUnknown, addFilter, removeFilter, setHideUnknown, setMessageLimit } = props
+	const { messageLimit, filters, hideUnknown, addFilter, removeFilter, setHideUnknown, setMessageLimit, setRemote } = props
 	const [filter, setFilter] = useState('')
 	return (
 		<div className="settings">
@@ -24,7 +26,7 @@ const Settings: React.FunctionComponent<Props> = (props) => {
 			</label>
 			<h2 className="title is-4" title="Messages matching these regex filters are not displayed">Filters</h2>
 			<p className="subtitle">Messages matching these messages are not displayed in the log</p>
-			<form action="javascript:void(0);" onSubmit={() => addFilter(new RegExp(filter))}>
+			<form onSubmit={e => {e.preventDefault(); addFilter(new RegExp(filter))}}>
 				<div className="field has-addons">
 					<div className="control">
 						<input
@@ -53,8 +55,21 @@ const Settings: React.FunctionComponent<Props> = (props) => {
 					</li>
 				))}
 			</ul>
+
+			<h2 className="title is-4">Misc</h2>
+			<label className="checkbox is-large">
+				<input type="checkbox" checked={props.remotePort !== null} onChange={() => setRemote(props.remotePort === null ? '' : null)} />
+				<span>Allow remote connections</span>
+			</label>
+			{props.remotePort !== null && (<label>
+				<input type="number" className="input is-small" placeholder={DEFAULT_PORT.toString()}
+					min={1024} value={props.remotePort || ''} onChange={e => setRemote(e.target.value)}
+				/>
+				<span>Port</span>
+			</label>)}
 			<hr />
 			<span>Version: {process.env.PACKAGE_VERSION}</span>
+			<Anchor className="gh" href={`${process.env.PACKAGE_REPO}`}>Github</Anchor>
 		</div>
 	)
 }
@@ -67,7 +82,8 @@ const dispatchToProps = {
 	addFilter:  Actions.addFilter,
 	removeFilter: Actions.removeFilter,
 	setHideUnknown: Actions.setHideUnknown,
-	setMessageLimit: Actions.setMessageLimit
+	setMessageLimit: Actions.setMessageLimit,
+	setRemote: Actions.setRemote
 }
 
 export default connect(

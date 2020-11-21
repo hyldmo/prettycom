@@ -1,4 +1,4 @@
-import { Settings } from 'reducers/settings'
+import { initialState, Settings } from 'reducers/settings'
 import { Direction, Message } from 'types'
 
 export * from './actionCreator'
@@ -28,4 +28,8 @@ export function showMessage (msg: Message, filters: Settings['filters'], showSen
 	if (msg.direction === Direction.Sent)
 		return !!showSent
 	return !filters.some(filter => filter.test(msg.content))
+}
+
+export function selectHost (settings: Settings) {
+	return settings.host || (settings.remotePort ? `localhost:${settings.remotePort}` : initialState.host)
 }
