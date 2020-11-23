@@ -1,7 +1,8 @@
 # Prettycom
-[![Build Status](https://travis-ci.com/hyldmo/prettycom.svg?branch=master)](https://travis-ci.com/hyldmo/prettycom)
 ----
-A serial monitor written in electron.
+Inspired cutecom, Prettycom is a cross-platform serial monitor written in electron.
+
+![Screenshot](./screenshot.png)
 
 ## Installation
 Binaries can be found [here](https://github.com/hyldmo/prettycom/releases).
