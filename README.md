@@ -1,6 +1,6 @@
 # Prettycom
 ----
-Inspired cutecom, Prettycom is a cross-platform serial monitor written in electron.
+Inspired by [CuteCom](https://gitlab.com/cutecom/cutecom/), Prettycom is a cross-platform serial monitor written in electron.
 
 ![Screenshot](./screenshot.png)
 
