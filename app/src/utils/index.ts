@@ -38,3 +38,8 @@ export function logName (device: SerialDevice) {
 	const name = (device.logname || device.name || device.path).split('/').join('_')
 	return name.includes('.') ? name : `${name}.log`
 }
+
+export function deviceName (device: SerialDevice) {
+	return (device.name || device.path)
+}
+

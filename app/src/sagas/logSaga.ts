@@ -1,12 +1,12 @@
 import { Action, Actions } from 'actions'
 import { DEFAULT_PORT } from 'consts'
-import { call, cancelled, race, select, spawn, take, takeLatest } from 'redux-saga/effects'
+import { call, cancelled, race, select, spawn, take, takeEvery } from 'redux-saga/effects'
 import { SerialDevice, State } from 'types'
 import { logName, sleep } from 'utils'
 import { waitForOpen } from './watchMessages'
 
 export default function* () {
-	yield takeLatest(Actions.enableLog.type, enableLog)
+	yield takeEvery(Actions.enableLog.type, enableLog)
 }
 
 const maxRetries = 10
@@ -18,16 +18,20 @@ function* enableLog (action: typeof Actions.enableLog, retries = maxRetries): an
 	if (!device || !payload)
 		return
 
-	const URI = `ws://localhost:${port || DEFAULT_PORT}?mode=LOG&filename=${logName(device)}`
+	const name = device.name ? `${device.name} (${device.path})` : device.path
+	const filename = logName(device)
+	const URI = `ws://localhost:${port || DEFAULT_PORT}?mode=LOG&filename=${filename}`
 	const socket = new WebSocket(URI)
 	try {
 		yield call(waitForOpen, socket)
+		console.info(`<${name}> Started logging to ${filename}`)
 		retries = 10
 
-		yield race([
+		const test = yield race([
 			call(watchLog, socket, device.path),
-			take<any>((a: Action) =>  a.type === 'DISCONNECT' && a.meta === device.path)
+			take<any>((a: Action) => a.type === 'DISCONNECT' && a.meta === device.path)
 		])
+		console.warn('test', test)
 	} catch (err) {
 		console.error(err)
 		const message: string | undefined = err.message
@@ -46,7 +50,7 @@ function* enableLog (action: typeof Actions.enableLog, retries = maxRetries): an
 		if (socket.readyState === socket.OPEN)
 			socket.close()
 
-		console.log(`Stopped logging from ${device.path}`)
+			console.info(`<${name}> Stopped logging to ${filename}`)
 	}
 }
 

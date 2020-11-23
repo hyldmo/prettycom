@@ -50,10 +50,9 @@ function* updateRemoteServer (action: ReturnType<typeof Actions.setRemote>) {
 	const cancel = yield cancelled()
 	if (cancel)
 		return
-	const options = action.payload
-		? { port: Number.parseInt(action.payload, 10), host: '0.0.0.0' }
-		: { port: DEFAULT_PORT }
-	window.reloadServer(options)
+	const port = action.payload ? Number.parseInt(action.payload, 10) : DEFAULT_PORT
+	const host = action.payload !== null ? '0.0.0.0' : undefined
+	window.reloadServer({ port, host })
 	yield put(Actions.listDevices())
 }
 
@@ -64,7 +63,7 @@ function* serverUpdated () {
 	yield put(Actions.listDevices())
 }
 
-function* listDevices () {
+function* listDevices (): any {
 	try {
 		const settings: State['settings'] = yield select((s: State) => s.settings)
 		const host = selectHost(settings)
@@ -76,11 +75,10 @@ function* listDevices () {
 		yield call(watchDeviceList, socket)
 	} catch (e) {
 		console.error(e)
-	} finally {
-		yield call(sleep, 500)
-		console.log('Disconnected from device listing, retrying')
-		yield put(Actions.listDevices())
 	}
+	console.log('Disconnected from device listing, retrying')
+	yield call(sleep, Math.random() * 1500 + 500)
+	yield call(listDevices)
 }
 
 const maxRetries = 10
