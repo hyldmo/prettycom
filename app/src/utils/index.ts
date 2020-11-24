@@ -1,8 +1,6 @@
 import { initialState, Settings } from 'reducers/settings'
 import { Direction, Message, SerialDevice } from 'types'
 
-export * from './actionCreator'
-
 /**
  * Converts strings from snake case to camel case
  */

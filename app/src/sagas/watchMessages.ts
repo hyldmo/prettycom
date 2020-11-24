@@ -32,7 +32,7 @@ export function* watchMessages (socket: WebSocket, device: string) {
 
 export function* watchUserSentMessages (socket: WebSocket, device: string) {
 	while (true) {
-		const { payload } = yield take<any>((action: Action) => action.type === 'DEVICE_MSG' && action.meta === device)
+		const { payload } = yield take((action: Action) => action.type === 'DEVICE_MSG' && action.meta === device)
 		socket.send(payload)
 	}
 }

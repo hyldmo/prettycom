@@ -6,12 +6,12 @@ import { logName, sleep } from 'utils'
 import { waitForOpen } from './watchMessages'
 
 export default function* () {
-	yield takeEvery(Actions.enableLog.type, enableLog)
+	yield takeEvery('LOGGING_ENABLE', enableLog)
 }
 
 const maxRetries = 10
 
-function* enableLog (action: typeof Actions.enableLog, retries = maxRetries): any {
+function* enableLog (action: Action<'LOGGING_ENABLE'>, retries = maxRetries): any {
 	const { payload, meta } = action
 	const port = yield select((s: State) => s.settings.remotePort)
 	const device: SerialDevice | undefined = yield select((s: State) => s.devices.find(d => d.path === meta))
@@ -25,13 +25,13 @@ function* enableLog (action: typeof Actions.enableLog, retries = maxRetries): an
 	try {
 		yield call(waitForOpen, socket)
 		console.info(`<${name}> Started logging to ${filename}`)
-		retries = 10
+		retries = maxRetries
 
-		const test = yield race([
+		yield race([
 			call(watchLog, socket, device.path),
-			take<any>((a: Action) => a.type === 'DISCONNECT' && a.meta === device.path)
+			take((a: Action) => a.type === 'LOGGING_ENABLE' && a.meta === device.path),
+			take((a: Action) => a.type === 'DISCONNECT' && a.meta === device.path)
 		])
-		console.warn('test', test)
 	} catch (err) {
 		console.error(err)
 		const message: string | undefined = err.message
@@ -50,13 +50,13 @@ function* enableLog (action: typeof Actions.enableLog, retries = maxRetries): an
 		if (socket.readyState === socket.OPEN)
 			socket.close()
 
-			console.info(`<${name}> Stopped logging to ${filename}`)
+		console.info(`<${name}> Stopped logging to ${filename}`)
 	}
 }
 
 export function* watchLog (socket: WebSocket, device: string) {
 	while (true) {
-		const { payload }: typeof Actions.dataReceived = yield take<any>((action: Action) => action.type === 'DEVICE_DATA_RECEIVED' && action.meta === device)
+		const { payload }: Action<'DEVICE_DATA_RECEIVED'> = yield take((action: Action) => action.type === 'DEVICE_DATA_RECEIVED' && action.meta === device)
 		socket.send(`${payload.timestamp.toISOString()}; ${payload.content}\n`)
 	}
 }

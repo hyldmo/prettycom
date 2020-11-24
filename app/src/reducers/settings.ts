@@ -7,6 +7,7 @@ export type Settings = {
 	messageLimit: number
 	host: string
 	remotePort: null | string
+	logDefault: boolean
 }
 
 export const initialState: Readonly<Settings> = {
@@ -14,7 +15,8 @@ export const initialState: Readonly<Settings> = {
 	hideUnknown: true,
 	messageLimit: 1000,
 	host: `localhost:${DEFAULT_PORT}`,
-	remotePort: null
+	remotePort: null,
+	logDefault: false
 }
 
 export default function (state: Settings = initialState, action: Action) {
@@ -56,6 +58,12 @@ export default function (state: Settings = initialState, action: Action) {
 			return {
 				...state,
 				host: action.payload
+			}
+
+		case 'SETTINGS_LOG_DEFAULT':
+			return {
+				...state,
+				logDefault: action.payload
 			}
 
 		default:

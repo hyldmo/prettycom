@@ -12,9 +12,9 @@ export default function* watchConnects () {
 	yield takeLatest('SETTINGS_REMOTE_SET', updateRemoteServer)
 	yield takeLatest('DEVICE_LIST', listDevices)
 	yield takeLatest('SETTINGS_SERVER_SET', serverUpdated)
-	yield takeLatest(Actions.saveLoaded.type, onReady)
+	yield takeLatest('SAVE_LOADED', onReady)
 }
-function* onReady (action: typeof Actions.saveLoaded) {
+function* onReady (action: Action<'SAVE_LOADED'>) {
 	yield call(updateRemoteServer, Actions.setRemote(action.payload.remotePort))
 }
 
@@ -45,7 +45,7 @@ function* watchDeviceList (socket: WebSocket) {
 	}
 }
 
-function* updateRemoteServer (action: ReturnType<typeof Actions.setRemote>) {
+function* updateRemoteServer (action: Action<'SETTINGS_REMOTE_SET'>) {
 	yield call(sleep, 1000)
 	const cancel = yield cancelled()
 	if (cancel)
@@ -83,7 +83,7 @@ function* listDevices (): any {
 
 const maxRetries = 10
 
-function* connectToServer (action: typeof Actions.connect, retries = maxRetries): any {
+function* connectToServer (action: Action<'CONNECT'>, retries = maxRetries): any {
 	const { baud, device, url } = action.payload
 	const URI = `ws://${url}?mode=CONNECT&baud=${baud}&device=${encodeURIComponent(device)}`
 	const socket = new WebSocket(URI)
@@ -98,7 +98,7 @@ function* connectToServer (action: typeof Actions.connect, retries = maxRetries)
 		yield race([
 			call(watchUserSentMessages, socket, device),
 			call(watchMessages, socket, device),
-			take<any>((a: Action) =>  a.type === 'DISCONNECT' && a.meta === device)
+			take((a: Action) =>  a.type === 'DISCONNECT' && a.meta === device)
 		])
 	} catch (err) {
 		console.error(err)

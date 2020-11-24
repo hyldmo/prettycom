@@ -1,11 +1,11 @@
-import { Action } from 'actions'
+import { Action, MetaAction } from 'actions'
 import { Direction, SerialDevice } from 'types'
 
 export type DevicesState = SerialDevice[]
 
 const initialState: DevicesState = []
 
-export function device (state: SerialDevice, action: Action): SerialDevice {
+export function device (state: SerialDevice, action: MetaAction): SerialDevice {
 	if (state.path !== action.meta)
 		return state
 
