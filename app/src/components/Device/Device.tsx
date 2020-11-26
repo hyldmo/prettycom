@@ -6,6 +6,7 @@ import { Info } from './Info'
 import Messages from './Messages'
 
 import './Device.scss'
+import { deviceName } from 'utils'
 
 type Props = {
 	device: SerialDevice
@@ -128,7 +129,7 @@ export class Device extends React.PureComponent<Props, State> {
 		return (
 			<div className={cn('session', device.connState.toLowerCase())}>
 				<div className="properties">
-					<span className="device-name">{device.path}</span>
+					<span className="device-name">{deviceName(device)}</span>
 					<div className="field is-grouped">
 						{repeat && <input
 							className="input is-small"

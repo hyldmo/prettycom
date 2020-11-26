@@ -15,8 +15,8 @@ export const Info: React.FunctionComponent<Props> = ({ device }) => {
 
 	return (
 		<div className="session-settings">
-			<div className="field is-horizontal">
-				<div className="field-label">Name </div>
+			<div className="field">
+				<div className="field-label">Name</div>
 				<div className="field-body">
 					<input type="text" className="input" value={device.name} onChange={e => dispatch(Actions.updateName(e.target.value, device.path))} />
 				</div>
