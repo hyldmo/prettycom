@@ -40,7 +40,7 @@ function* enableLog (action: Action<'LOGGING_ENABLE'>, retries = maxRetries): an
 			if (code === 1006 && retries-- > 0) {
 				if (!(yield cancelled())) {
 					yield call(sleep, 1000 * Math.pow(2, maxRetries - retries))
-					return yield spawn(enableLog, action, --retries)
+					yield spawn(enableLog, action, --retries)
 				}
 			} else {
 				alert(err.message)

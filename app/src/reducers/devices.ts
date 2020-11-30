@@ -41,6 +41,12 @@ export function device (state: SerialDevice, action: MetaAction): SerialDevice {
 				})
 			}
 
+		case 'DEVICE_TOGGLE_FILTERS':
+			return   {
+				...state,
+				useFilters: action.payload
+			}
+
 		case 'DEVICE_DATA_RECEIVED':
 			return {
 				...state,
@@ -97,7 +103,8 @@ export default function (state: DevicesState = initialState, action: Action): De
 						messages: [],
 						history: [],
 						logging: false,
-						logname: ''
+						logname: '',
+						useFilters: true
 					}
 				]
 
@@ -107,6 +114,7 @@ export default function (state: DevicesState = initialState, action: Action): De
 		case 'DISCONNECT':
 		case 'DISCONNECTED':
 		case 'DEVICE_REMOVE':
+		case 'DEVICE_TOGGLE_FILTERS':
 		case 'DEVICE_DATA_RECEIVED':
 		case 'DEVICE_CLEAR_MESSAGES':
 		case 'DEVICE_UPDATE_NAME':

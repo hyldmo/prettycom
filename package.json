@@ -1,7 +1,7 @@
 {
     "name": "prettycom",
     "repository": "https://github.com/hyldmo/prettycom",
-    "version": "1.8.3",
+    "version": "1.8.4",
     "description": "A serial monitor written in electron.",
     "license": "MIT",
     "author": {
@@ -69,7 +69,7 @@
         "@types/pngjs": "^3.3.2",
         "@types/react": "*",
         "@types/react-dom": "^16.8.2",
-        "@types/react-redux": "^7.1.1",
+        "@types/react-redux": "^7.1.11",
         "@types/react-router": "^4.0.18",
         "@types/react-router-dom": "^4.2.2",
         "@types/react-test-renderer": "^16.8.1",

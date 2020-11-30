@@ -1,7 +1,9 @@
 import { Action, Actions } from 'actions'
+import { Settings } from 'reducers/settings'
 import { END, eventChannel } from 'redux-saga'
-import { call, put, take } from 'redux-saga/effects'
-import { Direction } from 'types'
+import { call, put, select, take } from 'redux-saga/effects'
+import { Direction, State } from 'types'
+import { showMessage } from 'utils'
 
 const EOM = /[\0\r\n]/g // End Of Message
 
@@ -18,12 +20,14 @@ export function* watchMessages (socket: WebSocket, device: string) {
 				? messages.pop() as string
 				: ''
 
+			const useFilters = yield select((s: State) => s.devices.find(d => d.path == device)?.useFilters)
+			const filters: Settings['filters'] = yield select((s: State) => s.settings.filters)
+
 			for (const message of messages) {
-				yield put(Actions.dataReceived({
-					timestamp: new Date(),
-					content: message,
-					direction: Direction.Received
-				}, device))
+				const data = { timestamp: new Date(), content: message, direction: Direction.Received }
+				if (useFilters && !showMessage(data, filters))
+					continue
+				yield put(Actions.dataReceived(data, device))
 			}
 			buffer = remainder
 		}

@@ -4,9 +4,10 @@ import React, { KeyboardEventHandler } from 'react'
 import { SerialDevice } from 'types'
 import { Info } from './Info'
 import Messages from './Messages'
+import { deviceName } from 'utils'
+import { Actions } from 'actions'
 
 import './Device.scss'
-import { deviceName } from 'utils'
 
 type Props = {
 	device: SerialDevice
@@ -15,6 +16,7 @@ type Props = {
 	onSend: (message: string) => void
 	onClear: () => void
 	onClose: () => void
+	onToggleFilters: (enable: boolean) => void
 }
 
 type State = {
@@ -124,8 +126,10 @@ export class Device extends React.PureComponent<Props, State> {
 	}
 
 	render () {
-		const { device, onClear, onClose, filters, messageLimit } = this.props
-		const { message, autoScroll, repeatInterval, repeat, showSent, showSettings, showFiltered } = this.state
+		const { device, onClear, onClose, onToggleFilters, filters, messageLimit } = this.props
+		const { message, autoScroll, repeatInterval, repeat, showSent, showSettings } = this.state
+		const useFilters = device.useFilters
+
 		return (
 			<div className={cn('session', device.connState.toLowerCase())}>
 				<div className="properties">
@@ -146,11 +150,11 @@ export class Device extends React.PureComponent<Props, State> {
 							onClick={() => this.onRepeatClick(!repeat)}
 						/>
 						<Button
-							title={`${showFiltered ? 'Hide' : 'Show'} filtered messages`}
-							icon={showFiltered ? 'eye' : 'eye-slash'}
+							title={`${useFilters ? 'Show' : 'Hide'} filtered messages`}
+							icon={useFilters ? 'eye-slash' : 'eye'}
 							types={['small', 'warning']}
-							solid={showFiltered}
-							onClick={() => this.setState({ showFiltered: !showFiltered })}
+							solid={!useFilters}
+							onClick={() => onToggleFilters(!useFilters)}
 						/>
 						<Button
 							title="Clear console"
@@ -188,7 +192,7 @@ export class Device extends React.PureComponent<Props, State> {
 					</div>
 				</div>
 				{!showSettings ? (<>
-					<Messages device={device} filters={showFiltered ? [] : filters} showSent={showSent} autoScroll={autoScroll} messageLimit={messageLimit} />
+					<Messages device={device} filters={useFilters ? filters : []} showSent={showSent} autoScroll={autoScroll} messageLimit={messageLimit} />
 					<input
 						type="text"
 						className="chatbox"
