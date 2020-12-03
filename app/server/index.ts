@@ -76,7 +76,7 @@ export default class Server extends WebSocket.Server {
 				log('info', `Device ${device} opened`)
 
 				serial.on('data', (data: Blob) => {
-					ws.send(data.toString())
+					ws.send(data)
 				})
 				ws.onmessage = message => {
 					log('info', 'Sending message', message.data)

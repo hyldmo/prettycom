@@ -28,6 +28,8 @@
         "webpack:build": "env-cmd ./.env webpack --config  webpack/webpack.production.config.ts",
         "electron:dev": "env-cmd ./.env electron .",
         "electron:build": "tsc --project tsconfig.electron.json",
+        "server:build": "tsc --project server",
+        "server:run": "npm run server:build && node server/index.js 0.0.0.0",
         "lint:ts": "eslint app webpack --ext .ts,.tsx",
         "lint:css": "stylelint app/**/*.scss --syntax scss",
         "stats": "env-cmd ./.env webpack --config webpack.production.config.ts --profile --json > compilation-stats.json",
