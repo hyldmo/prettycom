@@ -20,6 +20,7 @@ function* onReady (action: Action<'SAVE_LOADED'>) {
 
 function* watchDeviceList (socket: WebSocket) {
 	const msgChannel = yield call(socketChannel, socket)
+	yield put(Actions.listDevicesConnected())
 	try {
 		while (true) {
 			const message: string = yield take(msgChannel)
@@ -39,6 +40,7 @@ function* watchDeviceList (socket: WebSocket) {
 			}
 		}
 	} catch (e) {
+		yield put(Actions.listDevicesError())
 		console.error(e)
 	} finally {
 		console.log(`Stopped watching for devices from ${socket.url}`)
@@ -78,7 +80,7 @@ function* listDevices (): any {
 	}
 	console.log('Disconnected from device listing, retrying')
 	yield call(sleep, Math.random() * 1500 + 500)
-	yield call(listDevices)
+	yield put(Actions.listDevices())
 }
 
 const maxRetries = 10

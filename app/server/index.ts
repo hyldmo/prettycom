@@ -6,7 +6,7 @@ import { COM_MOCK } from './constants'
 import { DeviceLogger } from './DeviceLogger'
 import log from './log'
 
-export default class Server extends WebSocket.Server {
+export class Server extends WebSocket.Server {
 	private connected: SerialPort[] = []
 
 	constructor (options: WebSocket.ServerOptions) {

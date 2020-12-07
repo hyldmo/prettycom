@@ -9,6 +9,8 @@ export default {
 	disconnect: actionCreator<'DISCONNECT', null, PortInfo['path']>('DISCONNECT'),
 	disconnected: actionCreator<'DISCONNECTED', null, PortInfo['path']>('DISCONNECTED'),
 	listDevices: actionCreator<'DEVICE_LIST'>('DEVICE_LIST'),
+	listDevicesConnected: actionCreator<'DEVICE_LIST_SUCCESS'>('DEVICE_LIST_SUCCESS'),
+	listDevicesError: actionCreator<'DEVICE_LIST_ERROR'>('DEVICE_LIST_ERROR'),
 	addDevice: actionCreator<'DEVICE_ADD', PortInfo, PortInfo['path']>('DEVICE_ADD'),
 	removeDevice: actionCreator<'DEVICE_REMOVE', PortInfo, SerialDevice['path']>('DEVICE_REMOVE'),
 	sendMessage: actionCreator<'DEVICE_MSG', string, SerialDevice['path']>('DEVICE_MSG'),

@@ -108,6 +108,9 @@ export default function (state: DevicesState = initialState, action: Action): De
 					}
 				]
 
+		case 'DEVICE_LIST_ERROR':
+			return []
+
 		case 'DEVICE_MSG':
 		case 'CONNECTED':
 		case 'CONNECTING':

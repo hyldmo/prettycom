@@ -5,7 +5,6 @@ import { SerialDevice } from 'types'
 import { Info } from './Info'
 import Messages from './Messages'
 import { deviceName } from 'utils'
-import { Actions } from 'actions'
 
 import './Device.scss'
 

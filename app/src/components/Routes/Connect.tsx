@@ -1,8 +1,10 @@
 import { Actions } from 'actions'
+import cn from 'classnames'
 import Button from 'components/Button'
 import { push } from 'connected-react-router'
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
+import { ConnState } from 'reducers/connection'
 import { SerialDevice, State } from 'types'
 import { selectHost } from 'utils'
 import './Connect.scss'
@@ -19,11 +21,24 @@ const getConnectedText = (device?: SerialDevice): string => {
 	}
 }
 
+const getIcon = (state: ConnState) => {
+	switch (state) {
+		case ConnState.CONNECTED:
+			return 'fa-check'
+
+		case ConnState.CONNECTING:
+			return 'fa-sync-alt fa-spin'
+
+		case ConnState.DISCONNECTED:
+			return 'fa-exclamation-circle'
+	}
+}
+
 type Props = ReturnType<typeof mapStateToProps> & typeof dispatchToProps
 
 const canConnect = (d: SerialDevice) => d.available && d.connState == 'DISCONNECTED'
 
-const Connect: React.FunctionComponent<Props> = ({ devices, settings, connectSerial, setServer }) => {
+const Connect: React.FunctionComponent<Props> = ({ devices, settings, connectSerial, setServer, connState }) => {
 	const [selected, setDevice] = useState(devices[0]?.path)
 	const [baud, setBaud] = useState('9600')
 	const [customBaud, setCustomBaud] = useState<string | null>(null)
@@ -37,7 +52,7 @@ const Connect: React.FunctionComponent<Props> = ({ devices, settings, connectSer
 				</div>
 				<div className="field-body">
 					<div className="field has-addons">
-						<div className="control">
+						<div className="control has-icons-right">
 							<input
 								className="input"
 								type="text"
@@ -45,6 +60,10 @@ const Connect: React.FunctionComponent<Props> = ({ devices, settings, connectSer
 								value={settings.host}
 								onChange={e => setServer(e.target.value)}
 							/>
+							<span className="icon is-small is-right">
+
+								<i className={cn('fas', getIcon(connState))}></i>
+							</span>
 						</div>
 						<div className="control">
 							<Button
@@ -139,6 +158,7 @@ const Connect: React.FunctionComponent<Props> = ({ devices, settings, connectSer
 
 const mapStateToProps = (state: State) => ({
 	devices: state.devices,
+	connState: state.connection,
 	settings: state.settings
 })
 

@@ -1,5 +1,5 @@
 import { ServerOptions } from 'ws'
-import Server from './server'
+import { Server } from './server'
 import open from 'open'
 
 import './src/types/globals'

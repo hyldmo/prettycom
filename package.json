@@ -1,7 +1,7 @@
 {
     "name": "prettycom",
     "repository": "https://github.com/hyldmo/prettycom",
-    "version": "1.8.4",
+    "version": "1.8.5",
     "description": "A serial monitor written in electron.",
     "license": "MIT",
     "author": {
@@ -18,22 +18,23 @@
     ],
     "main": "./dist/main.js",
     "scripts": {
-        "dev": "npm-run-all --parallel electron:build webpack:dev webpack:wait",
+        "dev": "npm-run-all --parallel clean electron:build webpack:dev webpack:wait",
         "build": "npm-run-all --parallel lint:* *:build",
         "package": "env-cmd ./.env electron-builder",
         "release": "npm-run-all clean build package",
         "clean": "rimraf app/**/*.js app/**/*.map app/*/**.css dist **/*.tsbuildinfo",
+        "deps:build": "electron-builder install-app-deps",
         "webpack:dev": "env-cmd ./.env webpack serve --config webpack/webpack.development.config.ts --progress --hot",
         "webpack:wait": "wait-on http://localhost:1337 && yarn electron:dev",
         "webpack:build": "env-cmd ./.env webpack --config  webpack/webpack.production.config.ts",
         "electron:dev": "env-cmd ./.env electron .",
         "electron:build": "tsc --project tsconfig.electron.json",
         "server:build": "tsc --project server",
-        "server:run": "npm run server:build && node server/index.js 0.0.0.0",
-        "lint:ts": "eslint app webpack --ext .ts,.tsx",
+        "server:run": "npm run server:build && node server/dist/index.js 0.0.0.0",
+        "lint:ts": "eslint app webpack server --ext .ts,.tsx",
         "lint:css": "stylelint app/**/*.scss --syntax scss",
         "stats": "env-cmd ./.env webpack --config webpack.production.config.ts --profile --json > compilation-stats.json",
-        "postinstall": "electron-builder install-app-deps"
+        "postinstall": "npm rebuild"
     },
     "build": {
         "appId": "hyldmo.prettycom.app",

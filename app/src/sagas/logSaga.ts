@@ -1,4 +1,4 @@
-import { Action, Actions } from 'actions'
+import { Action } from 'actions'
 import { DEFAULT_PORT } from 'consts'
 import { call, cancelled, race, select, spawn, take, takeEvery } from 'redux-saga/effects'
 import { SerialDevice, State } from 'types'

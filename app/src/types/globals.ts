@@ -1,5 +1,5 @@
 import { ServerOptions } from 'ws'
-import Server from '../../server'
+import { Server } from '../../server'
 
 declare global {
 	interface Window {

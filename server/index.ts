@@ -1,12 +1,12 @@
-import Server from '../app/server'
+import { Server } from '../app/server'
 
 const args = process.argv[2]?.split(':')
-const [host, port] = args || [];
+const [host, port] = args || []
 
 const options = {
 	host: host || 'localhost',
-	port: Number.parseInt(port) || 31130
+	port: Number.parseInt(port, 10) || 31130
 }
 
-console.log(`Server starting on ${host}:${port}`)
-const server = new Server(options)
+console.log(`Server starting on ${options.host}:${options.port}`)
+new Server(options)
