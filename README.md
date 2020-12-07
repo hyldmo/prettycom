@@ -1,4 +1,4 @@
-# Prettycom
+# Prettycom ![Node.js CI](https://github.com/hyldmo/prettycom/workflows/Node.js%20CI/badge.svg)
 ----
 Inspired by [CuteCom](https://gitlab.com/cutecom/cutecom/), Prettycom is a cross-platform serial monitor written in electron.
 
