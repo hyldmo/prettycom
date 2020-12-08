@@ -12,7 +12,8 @@ export function* watchMessages (socket: WebSocket, device: string) {
 	let buffer = ''
 
 	while (true) {
-		const msg: string = yield take(msgChannel)
+		const blob: Blob = yield take(msgChannel)
+		const msg = blob.toString()
 		buffer = buffer.concat(msg)
 		if (msg.match(EOM)) {
 			const messages = buffer.split(EOM).filter(str => str.length > 0)
