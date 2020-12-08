@@ -54,8 +54,13 @@ function* updateRemoteServer (action: Action<'SETTINGS_REMOTE_SET'>) {
 		return
 	const port = action.payload ? Number.parseInt(action.payload, 10) : DEFAULT_PORT
 	const host = action.payload !== null ? '0.0.0.0' : undefined
-	window.reloadServer({ port, host })
-	yield put(Actions.listDevices())
+	try  {
+		window.reloadServer({ port, host })
+	} catch (e) {
+		console.error(e)
+	} finally {
+		yield put(Actions.listDevices())
+	}
 }
 
 function* serverUpdated () {
