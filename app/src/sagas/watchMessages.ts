@@ -5,19 +5,21 @@ import { call, put, select, take } from 'redux-saga/effects'
 import { Direction, State } from 'types'
 import { showMessage } from 'utils'
 
-const EOM = /[\0\r\n]/g // End Of Message
+// eslint-disable-next-line no-control-regex
+const EOM = '\n' // End Of Message
 
 export function* watchMessages (socket: WebSocket, device: string) {
 	const msgChannel = yield call(socketChannel, socket)
 	let buffer = ''
 
 	while (true) {
-		const blob: Blob = yield take(msgChannel)
-		const msg = blob.toString()
+		const event: WebSocketEventMap['message'] = yield take(msgChannel)
+		const msg: string = event.data
+
 		buffer = buffer.concat(msg)
-		if (msg.match(EOM)) {
+		if (msg.lastIndexOf(EOM) == msg.length - 1) {
 			const messages = buffer.split(EOM).filter(str => str.length > 0)
-			const remainder = messages.length > 1 // Extract last part of transmission as it may not be finished yet
+			buffer = messages.length > 1 // Extract last part of transmission as it may not be finished yet
 				? messages.pop() as string
 				: ''
 
@@ -30,7 +32,6 @@ export function* watchMessages (socket: WebSocket, device: string) {
 					continue
 				yield put(Actions.dataReceived(data, device))
 			}
-			buffer = remainder
 		}
 	}
 }
@@ -53,9 +54,7 @@ export function waitForOpen (socket: WebSocket) {
 export function socketChannel (socket: WebSocket) {
 	return eventChannel(emitter => {
 		const listeners = {
-			message: (event: WebSocketEventMap['message']) => {
-				emitter(event.data)
-			},
+			message: emitter,
 			close: (event: WebSocketEventMap['close']) => {
 				switch (event.code) {
 					case 1000:

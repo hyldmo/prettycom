@@ -23,7 +23,7 @@ function* watchDeviceList (socket: WebSocket) {
 	yield put(Actions.listDevicesConnected())
 	try {
 		while (true) {
-			const message: string = yield take(msgChannel)
+			const { data: message }: WebSocketEventMap['message']  = yield take(msgChannel)
 			const type = message.substr(0, message.indexOf(':'))
 			const data = message.substr(message.indexOf(':') + 1)
 			const device: PortInfo = JSON.parse(data)

@@ -86,18 +86,22 @@ const Connect: React.FunctionComponent<Props> = ({ devices, settings, connectSer
 						<div className="select">
 							<select value={devices.length > 0 ? selected : 'none'} onChange={e => setDevice(e.target.value)}>
 								{devices.length > 0 ? (
-									devices
-										.filter(device => !settings.hideUnknown || !device.path?.includes('ttyS'))
-										.sort((a, b) => Number(canConnect(b)) - Number(canConnect(a)))
-										.map(device => (
-											<option key={device.path}
-												value={device.path}
-												disabled={!canConnect(device)}
-												title={device.available ? 'Arleady connected' : 'Device unavailable'}
-											>
-												({device.path}) {device.manufacturer} {device.productId}
-											</option>
-										))
+									<>
+										<option value="none" disabled>Please select a device</option>
+										{devices
+											.filter(device => !settings.hideUnknown || !device.path?.includes('ttyS'))
+											.sort((a, b) => Number(canConnect(b)) - Number(canConnect(a)))
+											.map(device => (
+												<option key={device.path}
+													value={device.path}
+													disabled={!canConnect(device)}
+													title={device.available ? 'Arleady connected' : 'Device unavailable'}
+												>
+													({device.path}) {device.manufacturer} {device.productId}
+												</option>
+											))
+										}
+									</>
 								) : (
 									<option disabled value="none">No devices found.</option>
 								)}
