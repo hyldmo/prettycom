@@ -1,8 +1,8 @@
-import { Action } from 'actions'
+import { Action, Actions } from 'actions'
 import { DEFAULT_PORT } from 'consts'
-import { call, cancelled, race, select, spawn, take, takeEvery } from 'redux-saga/effects'
+import { call, cancelled, put, race, select, spawn, take, takeEvery } from 'redux-saga/effects'
 import { SerialDevice, State } from 'types'
-import { logName, sleep } from 'utils'
+import { deviceName, logName, sleep } from 'utils'
 import { waitForOpen } from './watchMessages'
 
 export default function* () {
@@ -13,13 +13,13 @@ const maxRetries = 10
 
 function* enableLog (action: Action<'LOGGING_ENABLE'>, retries = maxRetries): any {
 	const { payload, meta } = action
-	const port = yield select((s: State) => s.settings.remotePort)
+	const { remotePort: port, deviceNames }: State['settings'] = yield select((s: State) => s.settings)
 	const device: SerialDevice | undefined = yield select((s: State) => s.devices.find(d => d.path === meta))
 	if (!device || !payload)
 		return
 
-	const name = device.name ? `${device.name} (${device.path})` : device.path
-	const filename = logName(device)
+	const name = deviceName(device, deviceNames)
+	const filename = logName(device, deviceNames)
 	const URI = `ws://localhost:${port || DEFAULT_PORT}?mode=LOG&filename=${filename}`
 	const socket = new WebSocket(URI)
 	try {
@@ -27,11 +27,14 @@ function* enableLog (action: Action<'LOGGING_ENABLE'>, retries = maxRetries): an
 		console.info(`<${name}> Started logging to ${filename}`)
 		retries = maxRetries
 
-		yield race([
+		const [, event]: [undefined, Action<'LOGGING_UPDATE'> | undefined] = yield race([
 			call(watchLog, socket, device.path),
+			take((a: Action) => a.type === 'LOGGING_UPDATE' && a.meta === device.path),
 			take((a: Action) => a.type === 'LOGGING_ENABLE' && a.meta === device.path),
 			take((a: Action) => a.type === 'DISCONNECT' && a.meta === device.path)
 		])
+		if (event?.type === 'LOGGING_UPDATE')
+			yield put(Actions.enableLog(action.payload, event.meta))
 	} catch (err) {
 		console.error(err)
 		const message: string | undefined = err.message

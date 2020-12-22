@@ -32,12 +32,13 @@ export function selectHost (settings: Settings) {
 	return settings.host || (settings.remotePort ? `localhost:${settings.remotePort}` : initialState.host)
 }
 
-export function logName (device: SerialDevice) {
-	const name = (device.logname || device.name || device.path).split('/').join('_')
+export function logName (device: SerialDevice, names?: Settings['deviceNames']) {
+	const name = (device.logname || names?.[device.path] || device.path).split('/').join('_')
 	return name.includes('.') ? name : `${name}.log`
 }
 
-export function deviceName (device: SerialDevice) {
-	return (device.name || device.path)
+export function deviceName (device: SerialDevice, names?: Settings['deviceNames']) {
+	const name = names?.[device.path]
+	return name ? `${name} (${device.path})` : device.path
 }
 

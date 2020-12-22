@@ -8,21 +8,26 @@ export type Settings = {
 	host: string
 	remotePort: null | string
 	logDefault: boolean
+	deviceNames: Record<string, string>
 }
 
 export const initialState: Readonly<Settings> = {
 	filters: [],
 	hideUnknown: true,
-	messageLimit: 1000,
+	messageLimit: 5000,
 	host: `localhost:${DEFAULT_PORT}`,
 	remotePort: null,
-	logDefault: false
+	logDefault: false,
+	deviceNames: {}
 }
 
 export default function (state: Settings = initialState, action: Action) {
 	switch (action.type) {
 		case 'SAVE_LOADED':
-			return action.payload
+			return {
+				...state,
+				...action.payload
+			}
 
 		case 'SETTINGS_FILTER_ADD':
 			return {
@@ -46,6 +51,15 @@ export default function (state: Settings = initialState, action: Action) {
 			return {
 				...state,
 				messageLimit: action.payload
+			}
+
+		case 'SETTINGS_DEVICE_UPDATE_NAME':
+			return {
+				...state,
+				deviceNames: {
+					...state.deviceNames,
+					[action.meta]: action.payload
+				}
 			}
 
 		case 'SETTINGS_REMOTE_SET':

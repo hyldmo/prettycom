@@ -1,7 +1,7 @@
 import { Actions } from 'actions'
 import React from 'react'
-import { useDispatch } from 'react-redux'
-import { SerialDevice } from 'types'
+import { useDispatch, useSelector } from 'react-redux'
+import { SerialDevice, State } from 'types'
 import { logName } from 'utils'
 
 import './Info.scss'
@@ -12,13 +12,15 @@ type Props = {
 
 export const Info: React.FunctionComponent<Props> = ({ device }) => {
 	const dispatch = useDispatch()
+	const deviceNames = useSelector((state: State) => state.settings.deviceNames)
+	const name = deviceNames[device.path] || ''
 
 	return (
 		<div className="session-settings">
 			<div className="field">
 				<div className="field-label">Name</div>
 				<div className="field-body">
-					<input type="text" className="input" value={device.name} onChange={e => dispatch(Actions.updateName(e.target.value, device.path))} />
+					<input type="text" className="input" value={name} onChange={e => dispatch(Actions.updateName(e.target.value, device.path))} />
 				</div>
 			</div>
 			<ul className="info">
@@ -38,7 +40,11 @@ export const Info: React.FunctionComponent<Props> = ({ device }) => {
 				</label>
 				<fieldset>
 					<label>Filename: </label>
-					<input type="text" placeholder={logName(device)} value={device.logname} onChange={e => dispatch(Actions.updateLogName(e.target.value, device.path))}/>
+					<input type="text"
+						placeholder={logName(device, deviceNames)}
+						value={device.logname}
+						onChange={e => dispatch(Actions.updateLogName(e.target.value, device.path))}
+					/>
 				</fieldset>
 			</div>
 		</div>

@@ -22,6 +22,7 @@ module.exports = {
 			"default": "array-simple"
 		}],
 		"@typescript-eslint/explicit-function-return-type": "off",
+		"@typescript-eslint/explicit-module-boundary-types": "off",
 		"@typescript-eslint/member-delimiter-style": [enabled, {
 			"multiline": {
 				"delimiter": "none",
@@ -100,9 +101,6 @@ module.exports = {
 		"no-redeclare": enabled,
 		"no-return-await": enabled,
 		"no-sequences": enabled,
-		"no-shadow": [enabled, {
-			"hoist": "all"
-		}],
 		"no-sparse-arrays": enabled,
 		"no-template-curly-in-string": enabled,
 		"no-throw-literal": enabled,

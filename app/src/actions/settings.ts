@@ -11,6 +11,7 @@ export default {
 	removeFilter: actionCreator<'SETTINGS_FILTER_REMOVE', RegExp>('SETTINGS_FILTER_REMOVE'),
 	setHideUnknown: actionCreator<'SETTINGS_HIDE_UNKNOWN', boolean>('SETTINGS_HIDE_UNKNOWN'),
 	setMessageLimit: actionCreator<'SETTINGS_MESSSAGE_LIMIT_CHANGED', number>('SETTINGS_MESSSAGE_LIMIT_CHANGED'),
+	updateName: actionCreator<'SETTINGS_DEVICE_UPDATE_NAME', string, SerialDevice['path']>('SETTINGS_DEVICE_UPDATE_NAME'),
 
 	updateLogName: actionCreator<'LOGGING_UPDATE', string, SerialDevice['path']>('LOGGING_UPDATE'),
 	enableLog: actionCreator<'LOGGING_ENABLE', boolean, SerialDevice['path']>('LOGGING_ENABLE'),

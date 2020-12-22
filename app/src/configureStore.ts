@@ -39,11 +39,13 @@ export default function configureStore (initialState?: Partial<State>) {
 	if (__DEV__ && module.hot) {
 		// Hot reload reducers (requires Webpack or Browserify HMR to be enabled)
 		module.hot.accept('./reducers', () =>
+			// eslint-disable-next-line @typescript-eslint/no-var-requires
 			store.replaceReducer(require('./reducers').default)
 		)
 
 		module.hot.accept('./sagas/SagaManager', () => {
 			SagaManager.cancelSagas(store)
+			// eslint-disable-next-line @typescript-eslint/no-var-requires
 			require('./sagas/SagaManager').default.startSagas(sagaMiddleware)
 		})
 	}

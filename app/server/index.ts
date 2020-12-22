@@ -90,7 +90,7 @@ export class Server extends WebSocket.Server {
 							this.connected = this.connected.filter(d => d.path !== serial.path)
 						})
 
-						serial.on('error', (data: object) => {
+						serial.on('error', (data: any) => {
 							log('error', data)
 							ws.send(data.toString())
 							ws.close(1008, data.toString())

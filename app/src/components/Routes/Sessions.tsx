@@ -18,6 +18,7 @@ const Sessions: React.FunctionComponent<Props> = ({ devices, settings, sendMessa
 			(activeDevices.map(device => (
 				<Device
 					key={device.path}
+					name={settings.deviceNames[device.path]}
 					device={device}
 					filters={settings.filters}
 					messageLimit={settings.messageLimit}

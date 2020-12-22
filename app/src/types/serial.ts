@@ -1,4 +1,4 @@
-import {PortInfo} from 'serialport'
+import { PortInfo } from 'serialport'
 
 export type SerialOptions = {
 	baud: number
@@ -18,7 +18,6 @@ export type Message = {
 }
 
 export type SerialDevice = PortInfo & {
-	name: string
 	available: boolean
 	connState: 'CONNECTED'|'CONNECTING'|'DISCONNECTED'
 	messages: Message[]

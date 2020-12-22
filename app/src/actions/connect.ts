@@ -16,6 +16,5 @@ export default {
 	sendMessage: actionCreator<'DEVICE_MSG', string, SerialDevice['path']>('DEVICE_MSG'),
 	dataReceived: actionCreator<'DEVICE_DATA_RECEIVED', Message, string>('DEVICE_DATA_RECEIVED'),
 	clearConsole: actionCreator<'DEVICE_CLEAR_MESSAGES', null, SerialDevice['path']>('DEVICE_CLEAR_MESSAGES'),
-	updateName: actionCreator<'DEVICE_UPDATE_NAME', string, SerialDevice['path']>('DEVICE_UPDATE_NAME'),
 	toggleFilters: actionCreator<'DEVICE_TOGGLE_FILTERS', boolean, SerialDevice['path']>('DEVICE_TOGGLE_FILTERS')
 }

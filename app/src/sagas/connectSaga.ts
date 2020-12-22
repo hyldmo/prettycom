@@ -98,6 +98,9 @@ function* connectToServer (action: Action<'CONNECT'>, retries = maxRetries): any
 		yield put(Actions.connecting(null, device))
 		yield call(waitForOpen, socket)
 		yield put(Actions.connected(null, device))
+		const enableLog = yield select((s: State) => s.settings.logDefault)
+		if (enableLog)
+			yield put(Actions.enableLog(true, device))
 		if (location.hash.includes('connect'))
 			yield put(push('/'))
 		retries = maxRetries

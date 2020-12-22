@@ -59,12 +59,6 @@ export function device (state: SerialDevice, action: MetaAction): SerialDevice {
 				messages: []
 			}
 
-		case 'DEVICE_UPDATE_NAME':
-			return {
-				...state,
-				name: action.payload
-			}
-
 		case 'LOGGING_UPDATE':
 			return {
 				...state,
@@ -97,7 +91,6 @@ export default function (state: DevicesState = initialState, action: Action): De
 					...state,
 					{
 						...action.payload,
-						name: action.payload.path,
 						available: true,
 						connState: 'DISCONNECTED',
 						messages: [],
@@ -120,7 +113,6 @@ export default function (state: DevicesState = initialState, action: Action): De
 		case 'DEVICE_TOGGLE_FILTERS':
 		case 'DEVICE_DATA_RECEIVED':
 		case 'DEVICE_CLEAR_MESSAGES':
-		case 'DEVICE_UPDATE_NAME':
 		case 'LOGGING_UPDATE':
 		case 'LOGGING_ENABLE':
 			return state.map(d => device(d, action))

@@ -7,6 +7,7 @@ export class DeviceLogger {
 	private fd = 0
 
 	constructor (filename: string) {
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		const app = require('electron').remote.app
 		const folder = path.join(app.getPath('home'), 'prettycom')
 		this.path = path.join(folder, filename)

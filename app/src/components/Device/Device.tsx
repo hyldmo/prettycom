@@ -4,11 +4,11 @@ import React, { KeyboardEventHandler } from 'react'
 import { SerialDevice } from 'types'
 import { Info } from './Info'
 import Messages from './Messages'
-import { deviceName } from 'utils'
 
 import './Device.scss'
 
 type Props = {
+	name: string
 	device: SerialDevice
 	filters: RegExp[]
 	messageLimit: number
@@ -125,14 +125,14 @@ export class Device extends React.PureComponent<Props, State> {
 	}
 
 	render () {
-		const { device, onClear, onClose, onToggleFilters, filters, messageLimit } = this.props
+		const { name, device, onClear, onClose, onToggleFilters, filters, messageLimit } = this.props
 		const { message, autoScroll, repeatInterval, repeat, showSent, showSettings } = this.state
 		const useFilters = device.useFilters
 
 		return (
 			<div className={cn('session', device.connState.toLowerCase())}>
 				<div className="properties">
-					<span className="device-name">{deviceName(device)}</span>
+					<span className="device-name">{name ? `${name} (${device.path})` : device.path}</span>
 					<div className="field is-grouped">
 						{repeat && <input
 							className="input is-small"
