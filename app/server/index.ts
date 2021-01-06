@@ -22,7 +22,7 @@ export class Server extends WebSocket.Server {
 			// const send = (message: object) => ws.send(JSON.stringify(message), err => err && console.error(err))
 			let devices: PortInfo[] = []
 			const { mode } = url.parse(req.url || '', true).query
-			const ping = setInterval(ws.ping, 10 * 1000)
+			const ping = setInterval(() => ws.ping(), 10 * 1000)
 			ws.on('close', () => clearInterval(ping))
 
 			this.on('error', ws.close)
@@ -70,6 +70,7 @@ export class Server extends WebSocket.Server {
 					ws.on('message', message => {
 						ws.send(`Received: ${message.toString()}`)
 					})
+
 				} else {
 					const existing = this.connected.find(d => d.path == device)
 					const serial = existing || new SerialPort(device, { baudRate: baudrate })
@@ -87,6 +88,7 @@ export class Server extends WebSocket.Server {
 						this.connected.push(serial)
 
 						serial.on('close', () => {
+							log('info', `Serial port at <${serial.path}> closed.`)
 							this.connected = this.connected.filter(d => d.path !== serial.path)
 						})
 

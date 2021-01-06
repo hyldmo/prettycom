@@ -97,7 +97,7 @@ function* connectToServer (action: Action<'CONNECT'>, retries = maxRetries): any
 	try {
 		yield put(Actions.connecting(null, device))
 		yield call(waitForOpen, socket)
-		yield put(Actions.connected(null, device))
+		yield put(Actions.connected(action.payload, device))
 		const enableLog = yield select((s: State) => s.settings.logDefault)
 		if (enableLog)
 			yield put(Actions.enableLog(true, device))
@@ -108,7 +108,8 @@ function* connectToServer (action: Action<'CONNECT'>, retries = maxRetries): any
 		yield race([
 			call(watchUserSentMessages, socket, device),
 			call(watchMessages, socket, device),
-			take((a: Action) =>  a.type === 'DISCONNECT' && a.meta === device)
+			take((a: Action) => a.type === 'DISCONNECT' && a.meta === device),
+			take((a: Action) => a.type === 'CONNECT' && a.payload.device === device)
 		])
 	} catch (err) {
 		console.error(err)

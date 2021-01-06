@@ -25,4 +25,5 @@ export type SerialDevice = PortInfo & {
 	logging: boolean
 	logname: string
 	useFilters: boolean
+	options: SerialOptions | null
 }

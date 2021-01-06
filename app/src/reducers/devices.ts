@@ -19,10 +19,17 @@ export function device (state: SerialDevice, action: MetaAction): SerialDevice {
 		case 'DEVICE_REMOVE':
 			return {
 				...state,
-				available: false
+				available: false,
+				connState: 'DISCONNECTED'
 			}
 
 		case 'CONNECTED':
+			return {
+				...state,
+				options: action.payload,
+				connState: action.type
+			}
+
 		case 'CONNECTING':
 		case 'DISCONNECTED':
 			return {
@@ -97,7 +104,8 @@ export default function (state: DevicesState = initialState, action: Action): De
 						history: [],
 						logging: false,
 						logname: '',
-						useFilters: true
+						useFilters: true,
+						options: null
 					}
 				]
 

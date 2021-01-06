@@ -24,12 +24,17 @@ export const Info: React.FunctionComponent<Props> = ({ device }) => {
 				</div>
 			</div>
 			<ul className="info">
-				{Object.entries(device).filter(([key, value]) => typeof value === 'string' && key !== 'name').map(([key, value]) => (
-					<li key={key}>
-						<span>{key}:&nbsp;</span>
-						<span>{value as any}</span>
-					</li>
-				))}
+				{Object
+					.entries(device)
+					.filter(([key]) => !['name', 'messages'].includes(key))
+					.map(([key, value]) => typeof value == 'object' ? [key, Object.entries(value).map(childEntry => [`${key}.${childEntry[0]}`, childEntry[1]])] : [key, value])
+					.reduce((a, b) =>  Array.isArray(b[1]) ? [...a, ...b[1]] : [...a, b], []) // Flatten array
+					.map(([key, value]) => (
+						<li key={key.toString()}>
+							<span>{key}:&nbsp;</span>
+							<span>{value.toString()}</span>
+						</li>
+					))}
 			</ul>
 
 			<div className="logging">
