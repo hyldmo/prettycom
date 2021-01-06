@@ -97,7 +97,7 @@ function* connectToServer (action: Action<'CONNECT'>, retries = maxRetries): any
 	try {
 		yield put(Actions.connecting(null, device))
 		yield call(waitForOpen, socket)
-		yield put(Actions.connected(null, device))
+		yield put(Actions.connected(action.payload, device))
 		const enableLog = yield select((s: State) => s.settings.logDefault)
 		if (enableLog)
 			yield put(Actions.enableLog(true, device))

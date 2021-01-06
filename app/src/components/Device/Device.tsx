@@ -16,6 +16,7 @@ type Props = {
 	onClear: () => void
 	onClose: () => void
 	onToggleFilters: (enable: boolean) => void
+	onTitleClick: () => void
 }
 
 type State = {
@@ -125,7 +126,7 @@ export class Device extends React.PureComponent<Props, State> {
 	}
 
 	render () {
-		const { name, device, onClear, onClose, onToggleFilters, filters, messageLimit } = this.props
+		const { name, device, onTitleClick, onClear, onClose, onToggleFilters, filters, messageLimit } = this.props
 		const { message, autoScroll, repeatInterval, repeat, showSent, showSettings } = this.state
 		const useFilters = device.useFilters
 
@@ -181,6 +182,12 @@ export class Device extends React.PureComponent<Props, State> {
 							types={['small', 'link']}
 							solid={showSettings}
 							onClick={() => this.setState({ showSettings: !showSettings })}
+						/>
+						<Button
+							title="Reconnect"
+							icon="redo"
+							types={['small', 'warning', 'outlined']}
+							onClick={onTitleClick}
 						/>
 						<Button
 							title="Close"

@@ -5,7 +5,7 @@ import { actionCreator } from './actionCreator'
 export default {
 	connect: actionCreator<'CONNECT', SerialOptions>('CONNECT'),
 	connecting: actionCreator<'CONNECTING', null, PortInfo['path']>('CONNECTING'),
-	connected: actionCreator<'CONNECTED', null, PortInfo['path']>('CONNECTED'),
+	connected: actionCreator<'CONNECTED', SerialOptions, PortInfo['path']>('CONNECTED'),
 	disconnect: actionCreator<'DISCONNECT', null, PortInfo['path']>('DISCONNECT'),
 	disconnected: actionCreator<'DISCONNECTED', null, PortInfo['path']>('DISCONNECTED'),
 	listDevices: actionCreator<'DEVICE_LIST'>('DEVICE_LIST'),
