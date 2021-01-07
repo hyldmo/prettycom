@@ -11,10 +11,18 @@ const App: React.FunctionComponent = () => (
 		<Navbar/>
 		<main>
 			<Switch>
-				<Route exact path="/" component={Sessions} />
-				<Route exact path="/connect" component={Connect} />
-				<Route exact path="/settings" component={Settings} />
-				<Route component={NotFound}/>
+				<Route exact path="/">
+					<Sessions />
+				</Route>
+				<Route exact path="/connect">
+					<Connect />
+				</Route>
+				<Route exact path="/settings">
+					<Settings />
+				</Route>
+				<Route>
+					<NotFound />
+				</Route>
 			</Switch>
 		</main>
 	</>

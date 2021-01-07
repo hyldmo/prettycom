@@ -49,3 +49,9 @@ hr {
 	background-color: $bg-color-2;
 	height: 1px;
 }
+
+input.is-tiny {
+	@extend .is-small;
+	height: 2em;
+	padding: 0.25em;
+}

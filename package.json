@@ -1,7 +1,7 @@
 {
     "name": "prettycom",
     "repository": "https://github.com/hyldmo/prettycom",
-    "version": "1.8.10",
+    "version": "1.9.0",
     "description": "A serial monitor written in electron.",
     "license": "MIT",
     "author": {
@@ -45,7 +45,7 @@
             "output": "Release"
         },
         "npmRebuild": false,
-        "artifactName": "${productName}-${os}-${arch}.${ext}",
+        "artifactName": "${productName}-${os}-${arch}-${version}.${ext}",
         "linux": {
             "category": "Utility",
             "target": [
@@ -58,7 +58,7 @@
     "dependencies": {
         "fs-extra": "^7.0.0",
         "open": "^7.3.0",
-        "serialport": "^9.0.2",
+        "serialport": "^9.0.4",
         "ws": "^7.4.0"
     },
     "devDependencies": {
@@ -72,8 +72,8 @@
         "@types/react": "*",
         "@types/react-dom": "^16.8.2",
         "@types/react-redux": "^7.1.11",
-        "@types/react-router": "^4.0.18",
-        "@types/react-router-dom": "^4.2.2",
+        "@types/react-router": "^5.1.4",
+        "@types/react-router-dom": "^5.1.7",
         "@types/react-test-renderer": "^16.8.1",
         "@types/redux-actions": "^2.2.3",
         "@types/redux-logger": "^3.0.7",
@@ -102,8 +102,8 @@
         "react-dom": "~16.8.2",
         "react-hot-loader": "^4.8.4",
         "react-redux": "^7.1.0",
-        "react-router": "^4.2.0",
-        "react-router-dom": "^4.2.2",
+        "react-router": "^5.2.0",
+        "react-router-dom": "^5.2.0",
         "react-test-renderer": "^16.8.2",
         "redbox-react": "^1.5.0",
         "redux": "^4.0.0",

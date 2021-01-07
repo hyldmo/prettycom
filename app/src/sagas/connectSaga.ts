@@ -116,7 +116,7 @@ function* connectToServer (action: Action<'CONNECT'>, retries = maxRetries): any
 		const message: string | undefined = err.message
 		if (message) {
 			const code = Number.parseInt(message.split(':')[0], 10)
-			if (code === 1006 && retries-- > 0) {
+			if ([1014, 1006, 4502].includes(code) && retries-- > 0) {
 				if (!(yield cancelled())) {
 					yield call(sleep, 1000 * Math.pow(2, maxRetries - retries))
 					yield spawn(connectToServer, action, retries)

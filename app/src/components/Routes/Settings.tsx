@@ -11,7 +11,11 @@ import { DEFAULT_PORT } from 'consts'
 type Props = ReturnType<typeof mapStateToProps> & typeof dispatchToProps
 
 const Settings: React.FunctionComponent<Props> = (props) => {
-	const { messageLimit, filters, hideUnknown, logDefault, addFilter, removeFilter, setHideUnknown, setMessageLimit, setRemote, setDefaultLog } = props
+	const {
+		messageLimit, filters, hideUnknown, logDefault, reconnectDelay,
+		addFilter, removeFilter, setHideUnknown, setMessageLimit, setRemote, setDefaultLog, setAutoReconnect
+	} = props
+
 	const [filter, setFilter] = useState('')
 	return (
 		<div className="settings">
@@ -22,11 +26,20 @@ const Settings: React.FunctionComponent<Props> = (props) => {
 			</label>
 			<label className="checkbox">
 				<input type="checkbox" checked={hideUnknown} onChange={e => setHideUnknown(e.target.checked)}/>
-				<span>Hide uknown devices from list</span>
+				<span>Hide unknown devices from list</span>
 			</label>
 			<label>
-				<input type="number" className="input is-small" value={messageLimit} onChange={e => setMessageLimit(Number.parseInt(e.target.value, 10))}/>
+				<input type="number" className="input is-small" value={messageLimit || ''} onChange={e => setMessageLimit(Number.parseInt(e.target.value, 10))}/>
 				<span>Message limit</span>
+			</label>
+			<label>
+				<span>Reconnect if no message received after &nbsp;</span>
+				<input type="number" className="input is-tiny"
+					style={{ width: '5em'}}
+					value={reconnectDelay}
+					onChange={e => setAutoReconnect(Number.parseInt(e.target.value, 10))}
+				/>
+				<span>seconds</span>
 			</label>
 
 			<h2 className="title is-4">Filters</h2>
@@ -60,6 +73,7 @@ const Settings: React.FunctionComponent<Props> = (props) => {
 					</li>
 				))}
 			</ul>
+
 			<h2 className="title is-4">Remote</h2>
 			<label className="checkbox is-large">
 				<input type="checkbox" checked={props.remotePort !== null} onChange={() => setRemote(props.remotePort === null ? '' : null)} />
@@ -88,7 +102,8 @@ const dispatchToProps = {
 	setHideUnknown: Actions.setHideUnknown,
 	setMessageLimit: Actions.setMessageLimit,
 	setRemote: Actions.setRemote,
-	setDefaultLog: Actions.setDefaultLog
+	setDefaultLog: Actions.setDefaultLog,
+	setAutoReconnect: Actions.setAutoReconnect
 }
 
 export default connect(

@@ -9,6 +9,7 @@ export type Settings = {
 	remotePort: null | string
 	logDefault: boolean
 	deviceNames: Record<string, string>
+	reconnectDelay: number
 }
 
 export const initialState: Readonly<Settings> = {
@@ -18,7 +19,8 @@ export const initialState: Readonly<Settings> = {
 	host: `localhost:${DEFAULT_PORT}`,
 	remotePort: null,
 	logDefault: false,
-	deviceNames: {}
+	deviceNames: {},
+	reconnectDelay: NaN
 }
 
 export default function (state: Settings = initialState, action: Action) {
@@ -29,11 +31,13 @@ export default function (state: Settings = initialState, action: Action) {
 				...action.payload
 			}
 
-		case 'SETTINGS_FILTER_ADD':
+		case 'SETTINGS_FILTER_ADD': {
+			const filters = new Set([...state.filters, action.payload].map(f => f.source))
 			return {
 				...state,
-				filters: [...state.filters, action.payload]
+				filters: Array.from(filters).map(f => new RegExp(f))
 			}
+		}
 
 		case 'SETTINGS_FILTER_REMOVE':
 			return {
@@ -51,6 +55,12 @@ export default function (state: Settings = initialState, action: Action) {
 			return {
 				...state,
 				messageLimit: action.payload
+			}
+
+		case 'SETTINGS_SET_RECONNECT':
+			return {
+				...state,
+				reconnectDelay: action.payload
 			}
 
 		case 'SETTINGS_DEVICE_UPDATE_NAME':

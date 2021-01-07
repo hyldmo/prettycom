@@ -1,9 +1,9 @@
 import { Action, Actions } from 'actions'
 import { Settings } from 'reducers/settings'
 import { END, eventChannel } from 'redux-saga'
-import { call, put, select, take } from 'redux-saga/effects'
+import { call, put, race, select, take } from 'redux-saga/effects'
 import { Direction, State } from 'types'
-import { showMessage } from 'utils'
+import { showMessage, sleep } from 'utils'
 
 // eslint-disable-next-line no-control-regex
 const EOM = '\n' // End Of Message
@@ -12,8 +12,15 @@ export function* watchMessages (socket: WebSocket, device: string) {
 	const msgChannel = yield call(socketChannel, socket)
 	let buffer = ''
 
+	const timeout = yield select((s: State) => s.settings.reconnectDelay * 1000)
+
 	while (true) {
-		const event: WebSocketEventMap['message'] = yield take(msgChannel)
+		const [event]: [WebSocketEventMap['message']] = yield race([
+			take(msgChannel),
+			call(sleep, timeout || 9999999999999)
+		])
+		if (!event)
+			throw new Error('4502: No message received within timeout threshold.')
 		const msg: string = event.data
 
 		buffer = buffer.concat(msg)

@@ -20,5 +20,7 @@ export default {
 
 	setRemote: actionCreator<'SETTINGS_REMOTE_SET', Settings['remotePort']>('SETTINGS_REMOTE_SET'),
 
-	setDefaultLog: actionCreator<'SETTINGS_LOG_DEFAULT', Settings['logDefault']>('SETTINGS_LOG_DEFAULT')
+	setDefaultLog: actionCreator<'SETTINGS_LOG_DEFAULT', Settings['logDefault']>('SETTINGS_LOG_DEFAULT'),
+
+	setAutoReconnect: actionCreator<'SETTINGS_SET_RECONNECT', number>('SETTINGS_SET_RECONNECT')
 }

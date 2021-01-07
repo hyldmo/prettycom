@@ -22,10 +22,13 @@ export class Server extends WebSocket.Server {
 			// const send = (message: object) => ws.send(JSON.stringify(message), err => err && console.error(err))
 			let devices: PortInfo[] = []
 			const { mode } = url.parse(req.url || '', true).query
-			const ping = setInterval(() => ws.ping(), 10 * 1000)
+			const ping = setInterval(() => ws.ping(), 5 * 1000)
 			ws.on('close', () => clearInterval(ping))
 
-			this.on('error', ws.close)
+			this.on('error', err => {
+				log('error', err)
+				ws.close(1011, err.toString())
+			})
 
 			if (mode === 'LIST') {
 				const int1 = setInterval(async () => {
@@ -87,21 +90,22 @@ export class Server extends WebSocket.Server {
 					if (!existing) {
 						this.connected.push(serial)
 
-						serial.on('close', () => {
-							log('info', `Serial port at <${serial.path}> closed.`)
+						ws.on('close', () => {
 							this.connected = this.connected.filter(d => d.path !== serial.path)
-						})
-
-						serial.on('error', (data: any) => {
-							log('error', data)
-							ws.send(data.toString())
-							ws.close(1008, data.toString())
 							if (serial.isOpen)
 								serial.close()
 						})
 
-						this.on('error', error => {
-							log('error', error)
+						serial.on('close', data => {
+							log('info', `Serial port at <${serial.path}> closed. Message: ${data?.toString()}`)
+							this.connected = this.connected.filter(d => d.path !== serial.path)
+							if (data)
+								ws.close(1014, data.toString())
+						})
+
+						serial.on('error', data => {
+							log('error', data)
+							ws.close(1014, data?.toString())
 							if (serial.isOpen)
 								serial.close()
 						})
