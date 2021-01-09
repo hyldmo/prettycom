@@ -4,6 +4,7 @@ export type SerialOptions = {
 	baud: number
 	device: string
 	url: string
+	delimiter: RegExp | null
 }
 
 export enum Direction {

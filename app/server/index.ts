@@ -5,6 +5,8 @@ import * as WebSocket from 'ws'
 import { COM_MOCK } from './constants'
 import { DeviceLogger } from './DeviceLogger'
 import log from './log'
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const RegexParser = require('@serialport/parser-regex')
 
 export class Server extends WebSocket.Server {
 	private connected: SerialPort[] = []
@@ -21,7 +23,8 @@ export class Server extends WebSocket.Server {
 		this.on('connection', (ws, req) => {
 			// const send = (message: object) => ws.send(JSON.stringify(message), err => err && console.error(err))
 			let devices: PortInfo[] = []
-			const { mode } = url.parse(req.url || '', true).query
+			const query = url.parse(req.url || '', true).query
+			const { mode } = query
 			const ping = setInterval(() => ws.ping(), 5 * 1000)
 			ws.on('close', () => clearInterval(ping))
 
@@ -55,7 +58,7 @@ export class Server extends WebSocket.Server {
 					clearInterval(int2)
 				})
 			} else if (mode === 'CONNECT')  {
-				const { baud, device } = url.parse(req.url || '', true).query
+				const { baud, device , delimiter } = query
 				const baudrate = Number.parseInt(baud as any, 10)
 				if (typeof device !== 'string' || isNaN(baudrate)) {
 					ws.close(1007, 'Invalid parameters')
@@ -79,7 +82,12 @@ export class Server extends WebSocket.Server {
 					const serial = existing || new SerialPort(device, { baudRate: baudrate })
 					log('info', `Device ${device} opened`)
 
-					serial.on('data', (data) => {
+					const emitter = delimiter
+						? new RegexParser({ regex: new RegExp(decodeURI(delimiter as string)) })
+						: serial
+					if (delimiter) serial.pipe(emitter)
+
+					emitter.on('data', (data: any) => {
 						ws.send(data.toString())
 					})
 					ws.on('message', message => {

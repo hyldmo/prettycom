@@ -91,8 +91,9 @@ function* listDevices (): any {
 const maxRetries = 10
 
 function* connectToServer (action: Action<'CONNECT'>, retries = maxRetries): any {
-	const { baud, device, url } = action.payload
-	const URI = `ws://${url}?mode=CONNECT&baud=${baud}&device=${encodeURIComponent(device)}`
+	const { baud, url, device } = action.payload
+	const delimiter = action.payload.delimiter && encodeURIComponent(action.payload.delimiter.source)
+	const URI = `ws://${url}?mode=CONNECT&baud=${baud}&device=${encodeURIComponent(device)}&delimiter=${delimiter || ''}`
 	const socket = new WebSocket(URI)
 	try {
 		yield put(Actions.connecting(null, device))

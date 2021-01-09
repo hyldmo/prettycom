@@ -2,6 +2,7 @@ import { Actions } from 'actions'
 import cn from 'classnames'
 import Button from 'components/Button'
 import { push } from 'connected-react-router'
+import { EOM } from 'consts'
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { ConnState } from 'reducers/connection'
@@ -42,6 +43,7 @@ const Connect: React.FunctionComponent<Props> = ({ devices, settings, connectSer
 	const [selected, setDevice] = useState(devices[0]?.path)
 	const [baud, setBaud] = useState('9600')
 	const [customBaud, setCustomBaud] = useState<string | null>(null)
+	const [delimiter, setDelimiter] = useState(EOM.source)
 
 	const selectedDevice = devices.find(dev => dev.path === selected)
 	return (
@@ -67,7 +69,7 @@ const Connect: React.FunctionComponent<Props> = ({ devices, settings, connectSer
 						</div>
 						<div className="control">
 							<Button
-								title="Clear console"
+								title="Clear"
 								types={['info']}
 								icon="times"
 								onClick={() => setServer('')}
@@ -146,12 +148,30 @@ const Connect: React.FunctionComponent<Props> = ({ devices, settings, connectSer
 				</div>
 			</div>
 			<div className="field is-horizontal">
+				<div className="field-label">
+					<label className="label">Delimiter</label>
+				</div>
+				<div className="field-body">
+					<div className="field">
+						<div className="control">
+							<input className="input" type="text" value={delimiter} onChange={e => setDelimiter(e.target.value)} />
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div className="field is-horizontal">
 				<div className="field-label" />
 				<div className="field-body">
 					<Button
 						types={['small', 'success']}
 						disabled={!selected || (selectedDevice && selectedDevice.connState !== 'DISCONNECTED')}
-						onClick={() => connectSerial({ baud: Number.parseInt(customBaud || baud, 10), device: selected, url: selectHost(settings) })}>
+						onClick={() => connectSerial({
+							delimiter: (delimiter.length > 0 && delimiter != '.*') ? new RegExp(delimiter) : null,
+							baud: Number.parseInt(customBaud || baud, 10),
+							device: selected,
+							url: selectHost(settings)
+						})}>
 						Connect{getConnectedText(selectedDevice)}
 					</Button>
 				</div>

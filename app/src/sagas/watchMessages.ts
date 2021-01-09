@@ -5,14 +5,11 @@ import { call, put, race, select, take } from 'redux-saga/effects'
 import { Direction, State } from 'types'
 import { showMessage, sleep } from 'utils'
 
-// eslint-disable-next-line no-control-regex
-const EOM = '\n' // End Of Message
-
 export function* watchMessages (socket: WebSocket, device: string) {
 	const msgChannel = yield call(socketChannel, socket)
-	let buffer = ''
-
 	const timeout = yield select((s: State) => s.settings.reconnectDelay * 1000)
+	const useFilters = yield select((s: State) => s.devices.find(d => d.path == device)?.useFilters)
+	const filters: Settings['filters'] = yield select((s: State) => s.settings.filters)
 
 	while (true) {
 		const [event]: [WebSocketEventMap['message']] = yield race([
@@ -21,25 +18,12 @@ export function* watchMessages (socket: WebSocket, device: string) {
 		])
 		if (!event)
 			throw new Error('4502: No message received within timeout threshold.')
-		const msg: string = event.data
+		const message: string = event.data
 
-		buffer = buffer.concat(msg)
-		if (msg.lastIndexOf(EOM) == msg.length - 1) {
-			const messages = buffer.split(EOM).filter(str => str.length > 0)
-			buffer = messages.length > 1 // Extract last part of transmission as it may not be finished yet
-				? messages.pop() as string
-				: ''
+		const data = { timestamp: new Date(), content: message, direction: Direction.Received }
 
-			const useFilters = yield select((s: State) => s.devices.find(d => d.path == device)?.useFilters)
-			const filters: Settings['filters'] = yield select((s: State) => s.settings.filters)
-
-			for (const message of messages) {
-				const data = { timestamp: new Date(), content: message, direction: Direction.Received }
-				if (useFilters && !showMessage(data, filters))
-					continue
-				yield put(Actions.dataReceived(data, device))
-			}
-		}
+		if (!useFilters || showMessage(data, filters))
+			yield put(Actions.dataReceived(data, device))
 	}
 }
 
