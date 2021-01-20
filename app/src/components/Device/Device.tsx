@@ -4,6 +4,7 @@ import React, { KeyboardEventHandler } from 'react'
 import { SerialDevice } from 'types'
 import { Info } from './Info'
 import Messages from './Messages'
+import { Commands } from './Commands'
 
 import './Device.scss'
 
@@ -28,6 +29,9 @@ type State = {
 	showSent: boolean
 	showSettings: boolean
 	showFiltered: boolean
+	showCommandFile: boolean
+	commandFile: string[] | null
+	commandRunning: boolean
 }
 
 export class Device extends React.PureComponent<Props, State> {
@@ -39,7 +43,10 @@ export class Device extends React.PureComponent<Props, State> {
 		repeat: false,
 		showSent: true,
 		showSettings: false,
-		showFiltered: false
+		showFiltered: false,
+		showCommandFile: false,
+		commandFile: null,
+		commandRunning: false
 	}
 
 	private messageInterval: ReturnType<Window['setInterval']> | null = null
@@ -125,9 +132,19 @@ export class Device extends React.PureComponent<Props, State> {
 		this.setState({ repeatInterval: isNaN(interval) ? null : interval })
 	}
 
+	onCommandOpenFile = async () => {
+		const files = await window.ElectronDialog.showOpenDialog({ properties: ['openFile'] })
+		const filename = files.filePaths.pop()
+		if (filename) {
+			const file = await window.FSreadFile(filename, 'utf-8')
+			const lines = file.replace(/\r/g, '').split('\n').filter(line => line.length)
+			this.setState({ commandFile: lines }, () => console.log(this.state))
+		}
+	}
+
 	render () {
 		const { name, device, onTitleClick, onClear, onClose, onToggleFilters, filters, messageLimit } = this.props
-		const { message, autoScroll, repeatInterval, repeat, showSent, showSettings } = this.state
+		const { message, autoScroll, repeatInterval, repeat, showSent, showSettings, commandFile, showCommandFile, commandRunning } = this.state
 		const useFilters = device.useFilters
 
 		return (
@@ -142,6 +159,24 @@ export class Device extends React.PureComponent<Props, State> {
 							value={repeatInterval !== null ? repeatInterval : ''}
 							onChange={e => this.onIntervalChanged(Number.parseInt(e.target.value, 10))}
 						/>}
+						{commandFile !== null && <Button
+							title="Run script"
+							icon="play"
+							solid={commandRunning}
+							types={['small', 'primary']}
+							onClick={() => this.setState({ commandRunning: !commandRunning })}
+							onMouseEnter={() => this.setState({ showCommandFile: true })}
+							onMouseLeave={() => this.setState({ showCommandFile: false })}
+						/>}
+						<Button
+							title="Load command file"
+							icon="terminal"
+							solid={commandFile !== null}
+							types={['small', 'secondary']}
+							onClick={this.onCommandOpenFile}
+							onMouseEnter={() => this.setState({ showCommandFile: true })}
+							onMouseLeave={() => this.setState({ showCommandFile: false })}
+						/>
 						<Button
 							title="Repeat last sent message"
 							icon="sync"
@@ -197,6 +232,14 @@ export class Device extends React.PureComponent<Props, State> {
 						/>
 					</div>
 				</div>
+				{commandFile && (
+					<div className="command__wrapper">
+						<Commands commands={commandFile} active={commandRunning} visible={commandRunning || showCommandFile}
+							onFinished={() => this.setState({ commandRunning: false })}
+							onSend={msg => this.props.onSend(msg)}
+						/>
+					</div>
+				)}
 				{!showSettings ? (<>
 					<Messages device={device} filters={useFilters ? filters : []} showSent={showSent} autoScroll={autoScroll} messageLimit={messageLimit} />
 					<input
@@ -209,9 +252,8 @@ export class Device extends React.PureComponent<Props, State> {
 						onKeyUp={this.onKey}
 					/>
 				</>) : (
-						<Info device={device} />
-					)}
-
+					<Info device={device} />
+				)}
 			</div>
 		)
 	}

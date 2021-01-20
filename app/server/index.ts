@@ -67,10 +67,8 @@ export class Server extends WebSocket.Server {
 
 				if (device === COM_MOCK.path) {
 					setInterval(async () => {
-						const str = `Time ${Math.round(new Date().getTime() / 1000)}\n`
-						for (const char of str) {
-							ws.send(char)
-						}
+						const str = `Time ${Math.round(new Date().getTime() / 1000)}`
+						ws.send(str)
 					}, 1000)
 
 					ws.on('message', message => {

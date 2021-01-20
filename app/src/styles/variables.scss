@@ -27,3 +27,25 @@ $title-color: $text;
 $input-hover-color: #fff;
 
 $input-color: $background-color;
+
+@mixin scrollbar {
+	&::-webkit-scrollbar {
+		$shadow: inset 0 0 6px rgba(0,0,0,.2);
+		width: 12px;
+
+		&-thumb {
+			border-radius: $border-radius;
+			border: 3px solid $bg-color-2;
+			background-color: #202225;
+		}
+
+		&-track {
+			box-shadow: $shadow;
+			border: 3px solid $bg-color-2;
+			border-radius: $border-radius;
+			&:hover {
+				background-color: $background-color;
+			}
+		}
+	}
+}

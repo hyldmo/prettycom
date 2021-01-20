@@ -1,6 +1,8 @@
 import cn from 'classnames'
 import React from 'react'
 
+import './Button.scss'
+
 type Props<P> = React.HTMLProps<HTMLButtonElement | HTMLAnchorElement> & {
 	title?: string
 	element?: React.ReactElement<P>

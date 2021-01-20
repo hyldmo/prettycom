@@ -39,13 +39,14 @@ type Props = ReturnType<typeof mapStateToProps> & typeof dispatchToProps
 
 const canConnect = (d: SerialDevice) => d.available && d.connState == 'DISCONNECTED'
 
-const Connect: React.FunctionComponent<Props> = ({ devices, settings, connectSerial, setServer, connState }) => {
+const Connect: React.FunctionComponent<Props> = ({ settings, connectSerial, setServer, connState, ...props }) => {
+	const devices = props.devices.filter(device => !settings.hideUnknown || !device.path?.includes('ttyS'))
 	const [selected, setDevice] = useState(devices[0]?.path)
 	const [baud, setBaud] = useState('9600')
 	const [customBaud, setCustomBaud] = useState<string | null>(null)
 	const [delimiter, setDelimiter] = useState(EOM.source)
 
-	const selectedDevice = devices.find(dev => dev.path === selected)
+	const selectedDevice = devices.find(dev => dev.path === selected) || devices[0]
 	return (
 		<div className="connect">
 			<div className="field is-horizontal">
@@ -91,7 +92,6 @@ const Connect: React.FunctionComponent<Props> = ({ devices, settings, connectSer
 									<>
 										<option value="none" disabled>Please select a device</option>
 										{devices
-											.filter(device => !settings.hideUnknown || !device.path?.includes('ttyS'))
 											.sort((a, b) => Number(canConnect(b)) - Number(canConnect(a)))
 											.map(device => (
 												<option key={device.path}
@@ -165,7 +165,7 @@ const Connect: React.FunctionComponent<Props> = ({ devices, settings, connectSer
 				<div className="field-body">
 					<Button
 						types={['small', 'success']}
-						disabled={!selected || (selectedDevice && selectedDevice.connState !== 'DISCONNECTED')}
+						disabled={!selectedDevice || (selectedDevice && selectedDevice.connState !== 'DISCONNECTED')}
 						onClick={() => connectSerial({
 							delimiter: (delimiter.length > 0 && delimiter != '.*') ? new RegExp(delimiter) : null,
 							baud: Number.parseInt(customBaud || baud, 10),

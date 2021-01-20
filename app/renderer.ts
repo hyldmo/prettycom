@@ -1,6 +1,8 @@
 import { ServerOptions } from 'ws'
 import { Server } from './server'
 import open from 'open'
+import { remote } from 'electron'
+import fs from 'fs-extra'
 
 import './src/types/globals'
 
@@ -24,3 +26,6 @@ window.reloadServer = (options: ServerOptions) => {
 		console.warn('Server error:', error)
 	})
 }
+
+window.ElectronDialog = remote.dialog
+window.FSreadFile = fs.readFile as any

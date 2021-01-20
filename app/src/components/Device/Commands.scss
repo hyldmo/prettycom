@@ -1,0 +1,39 @@
+@import "~styles/variables.scss";
+
+.commands {
+	font-family: 'Consolas', monospace;
+	font-size: 0.85rem;
+	line-height: 1;
+	padding: 0.25rem 0;
+	border-color: $border-color;
+
+	background-color: $bg-color-2;
+
+	.line {
+		&__number, &__content {
+			padding: 0.25rem 0.5rem;
+		}
+
+		&__number, &__pos {
+			font-size: 0.85rem;
+			text-align: right;
+			background-color: #00000033;
+		}
+
+		&__pos {
+			padding-top: 0.25rem;
+			padding-left: 0.25rem;
+		}
+
+		&__number {
+			padding-left: .15rem;
+			&:not(.active) {
+				color: darken($main-color, 35%);
+			}
+		}
+
+		&__content {
+			width: 100%;
+		}
+	}
+}

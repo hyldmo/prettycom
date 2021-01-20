@@ -1,0 +1,15 @@
+.button.is-secondary {
+	$btn-color: #9a2bce;
+
+	&.is-outlined {
+		background-color: transparent;
+		border-color: $btn-color;
+		color: $btn-color;
+	}
+
+	&, &:hover, &.is-hovered {
+		color: white;
+		background-color: $btn-color;
+		border-color: transparent;
+	}
+}
