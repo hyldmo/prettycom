@@ -8,10 +8,11 @@ import { showMessage, sleep } from 'utils'
 export function* watchMessages (socket: WebSocket, device: string) {
 	const msgChannel = yield call(socketChannel, socket)
 	const timeout = yield select((s: State) => s.settings.reconnectDelay * 1000)
-	const useFilters = yield select((s: State) => s.devices.find(d => d.path == device)?.useFilters)
-	const filters: Settings['filters'] = yield select((s: State) => s.settings.filters)
 
 	while (true) {
+		const useFilters = yield select((s: State) => s.devices.find(d => d.path == device)?.useFilters)
+		const filters: Settings['filters'] = yield select((s: State) => s.settings.filters)
+
 		const [event]: [WebSocketEventMap['message']] = yield race([
 			take(msgChannel),
 			call(sleep, timeout || 9999999999999)
