@@ -39,7 +39,7 @@ export const Commands: React.FunctionComponent<Props> = (props) => {
 					break
 
 				default:
-					onSend && onSend(commands[line])
+					onSend && onSend(`${commands[line]}\n`)
 					nextLine = line + 1
 					break
 			}
