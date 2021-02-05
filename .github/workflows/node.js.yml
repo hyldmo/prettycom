@@ -11,7 +11,7 @@ on:
   create:
     tags:
       - v*
-  
+
 
 jobs:
   dist:
@@ -23,19 +23,40 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: Install deps
+        run: yarn --frozen-lockfile
+
+      - name: Lint
+        run: yarn npm-run-all --parallel lint:*
+
+      - name: Build
+        run: yarn build
+
+      - name: Tag release
+        if: github.ref == 'refs/heads/master'
+        run: yarn package-version-git-tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Release
+        if: contains(github.ref, 'tags')
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          draft: true
+
       - name: Build/release Electron app
+        if: contains(github.ref, 'tags')
         uses: samuelmeuli/action-electron-builder@v1
         with:
-          # GitHub token, automatically provided to the action
-          # (No need to define this secret in the repo settings)
+          skip_build: true
           github_token: ${{ secrets.github_token }}
-
-          # If the commit is tagged with a version (e.g. "v1.0.0"),
-          # release the app after building
           release: ${{ startsWith(github.ref, 'refs/tags/v') }}
