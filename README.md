@@ -4,6 +4,12 @@ Inspired by [CuteCom](https://gitlab.com/cutecom/cutecom/), Prettycom is a cross
 
 ![Screenshot](./screenshot.png)
 
+![image](https://github.com/hyldmo/prettycom/assets/3465788/bc7be5ff-2c57-42ac-8d00-b82e8cac9bd1)
+
+![image](https://github.com/hyldmo/prettycom/assets/3465788/a917adf3-0d80-4647-8714-27ca60ecd2d6)
+
+
+
 ## Installation
 Binaries can be found [here](https://github.com/hyldmo/prettycom/releases).
 
